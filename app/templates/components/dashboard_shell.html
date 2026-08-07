@@ -1,0 +1,80 @@
+{% macro dashboard_shell(role_name, accent_class, stats) %}
+<section class="dashboard-wrap">
+    <aside class="role-sidebar {{ accent_class }}">
+        <div class="sidebar-brand">
+            <span class="brand-mark"><i class="bi bi-mortarboard-fill"></i></span>
+            <div>
+                <strong>PRAVA</strong>
+                <span>{{ role_name }} System</span>
+            </div>
+        </div>
+        <nav class="role-nav">
+            <a class="active" href="{{ url_for(current_user.role + '.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            {% if role_name == "Faculty" %}
+            <a href="{{ url_for('faculty.profile') }}"><i class="bi bi-person"></i> Profile</a>
+            {% elif role_name == "Student" %}
+            <a href="{{ url_for('student.profile') }}"><i class="bi bi-person"></i> Profile</a>
+            {% else %}
+            <a href="#"><i class="bi bi-person"></i> Profile</a>
+            {% endif %}
+            {% if role_name == "Admin" %}
+            <a href="{{ url_for('admin.students') }}"><i class="bi bi-people"></i> Students</a>
+            <a href="{{ url_for('admin.faculty') }}"><i class="bi bi-person-workspace"></i> Faculty</a>
+            <a href="{{ url_for('admin.courses') }}"><i class="bi bi-journal-bookmark"></i> Courses</a>
+            <a href="{{ url_for('admin.subjects') }}"><i class="bi bi-book"></i> Subjects</a>
+            <a href="{{ url_for('admin.notifications') }}"><i class="bi bi-bell"></i> Notifications</a>
+            <a href="{{ url_for('admin.reports') }}"><i class="bi bi-file-earmark-spreadsheet"></i> Reports</a>
+            {% elif role_name == "Faculty" %}
+            <a href="{{ url_for('faculty.subjects') }}"><i class="bi bi-book"></i> Subjects</a>
+            <a href="{{ url_for('faculty.students') }}"><i class="bi bi-people"></i> Students</a>
+            <a href="{{ url_for('faculty.attendance') }}"><i class="bi bi-calendar2-check"></i> Attendance</a>
+            <a href="{{ url_for('faculty.marks') }}"><i class="bi bi-award"></i> Marks</a>
+            <a href="{{ url_for('faculty.materials') }}"><i class="bi bi-cloud-arrow-up"></i> Materials</a>
+            <a href="{{ url_for('faculty.assignments') }}"><i class="bi bi-clipboard-check"></i> Assignments</a>
+            {% else %}
+            <a href="{{ url_for('student.subjects') }}"><i class="bi bi-book"></i> Subjects</a>
+            <a href="{{ url_for('student.attendance') }}"><i class="bi bi-calendar2-check"></i> Attendance</a>
+            <a href="{{ url_for('student.marks') }}"><i class="bi bi-award"></i> Marks</a>
+            <a href="{{ url_for('student.materials') }}"><i class="bi bi-download"></i> Materials</a>
+            <a href="{{ url_for('student.assignments') }}"><i class="bi bi-clipboard"></i> Assignments</a>
+            {% endif %}
+            {% if role_name == "Faculty" %}
+            <a href="{{ url_for('faculty.notifications') }}"><i class="bi bi-bell"></i> Notifications</a>
+            {% elif role_name == "Student" %}
+            <a href="{{ url_for('student.notifications') }}"><i class="bi bi-bell"></i> Notifications</a>
+            {% else %}
+            <a href="#"><i class="bi bi-bell"></i> Notifications</a>
+            {% endif %}
+            <form method="post" action="{{ url_for('auth.logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </form>
+        </nav>
+    </aside>
+    <div class="dashboard-main">
+        <div class="dashboard-topbar">
+            <div>
+                <p class="section-label mb-1">{{ role_name }} System</p>
+                <h1 class="h3 fw-bold mb-0">Welcome, {{ current_user.full_name }}</h1>
+            </div>
+            <span class="status-pill">{{ current_user.role|title }}</span>
+        </div>
+
+        {% if message is defined %}
+        <div class="alert alert-warning mt-3">{{ message }}</div>
+        {% endif %}
+
+        <div class="dashboard-stats">
+            {% for label, value, icon, tone in stats %}
+            <div class="stat-card tone-{{ tone }}">
+                <i class="bi {{ icon }}"></i>
+                <strong>{{ value }}</strong>
+                <span>{{ label }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        {{ caller() }}
+    </div>
+</section>
+{% endmacro %}

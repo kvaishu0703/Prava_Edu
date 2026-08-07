@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}System Overview{% endblock %}
+
+{% block content %}
+<section class="summary-header">
+    <div class="container py-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <p class="section-label mb-1">PRAVA Progress</p>
+                <h1 class="h2 fw-bold mb-1">What Is Ready So Far</h1>
+                <p class="text-secondary mb-0">System-wise overview up to Phase 9.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-light" href="{{ url_for('core.phase_summary') }}">
+                    <i class="bi bi-list-check me-1"></i> Phase Summary
+                </a>
+                <a class="btn btn-light" href="{{ url_for('auth.login') }}">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-4">
+    <div class="overview-grid">
+        {% for system in systems %}
+        <article class="overview-card tone-{{ system.accent }}">
+            <div class="overview-card-head">
+                <i class="bi {{ system.icon }}"></i>
+                <div>
+                    <h2>{{ system.name }}</h2>
+                    <span>{{ system.status }}</span>
+                </div>
+            </div>
+            <ul class="phase-list">
+                {% for feature in system.features %}
+                <li><i class="bi bi-check2-circle"></i><span>{{ feature }}</span></li>
+                {% endfor %}
+            </ul>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div class="data-panel mt-4">
+        <div class="panel-heading">
+            <div>
+                <h2>Demo Login Accounts</h2>
+                <p>Use username or email on the login page.</p>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Admin</td><td>admin</td><td>admin@example.com</td><td>Admin@123</td></tr>
+                    <tr><td>Faculty</td><td>faculty</td><td>faculty@example.com</td><td>Faculty@123</td></tr>
+                    <tr><td>Student</td><td>student</td><td>vaishnavi@example.com</td><td>Student@123</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

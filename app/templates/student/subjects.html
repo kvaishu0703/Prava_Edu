@@ -1,0 +1,42 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}My Subjects{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Student Module</p>
+        <h1>My Subjects</h1>
+        <p>{{ student.course.code if student else '' }} semester subjects assigned by Admin.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Subject</th>
+                    <th>Faculty</th>
+                    <th>Maximum Marks</th>
+                    <th>Passing Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                <tr>
+                    <td>{{ subject.code }}</td>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ subject.faculty.user.full_name if subject.faculty else '-' }}</td>
+                    <td>{{ subject.maximum_marks }}</td>
+                    <td>{{ subject.passing_marks }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-secondary">No subjects found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

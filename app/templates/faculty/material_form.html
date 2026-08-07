@@ -1,0 +1,46 @@
+{% extends "faculty/faculty_base.html" %}
+{% from "admin/_field.html" import render_field, render_select %}
+
+{% block title %}Upload Material{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Study Materials Module</p>
+        <h1>Upload Material</h1>
+        <p>Upload notes, PDFs, presentations, documents, spreadsheets, text files, or images.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('faculty.materials') }}">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<section class="data-panel">
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+            {{ render_field(form.title) }}
+            {{ render_select(form.subject_id) }}
+        </div>
+        <div class="mb-3">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control", rows="3") }}
+            {% for error in form.description.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ form.file.label(class="form-label") }}
+            {{ form.file(class="form-control") }}
+            {% for error in form.file.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+            <div class="form-text">Allowed: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, PNG, JPG, JPEG, GIF. Max size: 10 MB.</div>
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('faculty.materials') }}">Cancel</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</section>
+{% endblock %}

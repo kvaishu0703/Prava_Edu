@@ -1,0 +1,46 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}My Attendance{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Student Module</p>
+        <h1>My Attendance</h1>
+        <p>Subject-wise attendance summary.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Total</th>
+                    <th>Present/Late</th>
+                    <th>Absent</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row.subject.code }} - {{ row.subject.name }}</td>
+                    <td>{{ row.total }}</td>
+                    <td>{{ row.present }}</td>
+                    <td>{{ row.absent }}</td>
+                    <td>
+                        <div class="progress compact-progress">
+                            <div class="progress-bar" style="width: {{ row.percentage }}%">{{ row.percentage }}%</div>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-secondary">No attendance records found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

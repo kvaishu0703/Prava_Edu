@@ -1,0 +1,35 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block admin_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Reports Module</p>
+        <h1>Reports</h1>
+        <p>Generate CSV reports for academic and master data.</p>
+    </div>
+    <button class="btn btn-outline-secondary" type="button" data-print-page>
+        <i class="bi bi-printer"></i> Print
+    </button>
+</div>
+
+<section class="overview-grid">
+    {% for report in report_cards %}
+    <article class="overview-card">
+        <div class="overview-card-head">
+            <i class="bi {{ report.icon }}"></i>
+            <div>
+                <h2>{{ report.title }}</h2>
+                <span>{{ report.description }}</span>
+            </div>
+        </div>
+        <div class="mt-3">
+            <a class="btn btn-primary w-100" href="{{ url_for('admin.export_report', report_type=report.endpoint) }}">
+                <i class="bi bi-download"></i> Download CSV
+            </a>
+        </div>
+    </article>
+    {% endfor %}
+</section>
+{% endblock %}

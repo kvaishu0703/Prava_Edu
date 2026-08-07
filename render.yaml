@@ -1,0 +1,38 @@
+# Free-tier demo blueprint. PostgreSQL data persists for the database lifetime,
+# but uploaded files on the web service filesystem are ephemeral. See the
+# deployment guide before using this configuration for real college data.
+services:
+  - type: web
+    name: prava-edu
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    preDeployCommand: flask --app wsgi:app init-db && flask --app wsgi:app bootstrap-admin
+    startCommand: gunicorn --workers 2 --threads 4 --bind 0.0.0.0:$PORT --access-logfile - wsgi:app
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prava-edu-db
+          property: connectionString
+      - key: SUPABASE_AUTH_ENABLED
+        value: "false"
+      - key: BOOTSTRAP_ADMIN_USERNAME
+        value: admin
+      - key: BOOTSTRAP_ADMIN_NAME
+        value: System Admin
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: prava-edu-db
+    plan: free
+    databaseName: prava_edu
+    user: prava_edu

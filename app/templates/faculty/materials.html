@@ -1,0 +1,63 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Study Materials{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Study Materials Module</p>
+        <h1>Study Materials</h1>
+        <p>Upload, search, download, and deactivate your materials.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('faculty.upload_material') }}">
+        <i class="bi bi-cloud-arrow-up"></i> Upload Material
+    </a>
+</div>
+
+<section class="data-panel">
+    <form class="search-row" method="get">
+        <input class="form-control" name="q" value="{{ search }}" placeholder="Search materials...">
+        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+
+    <div class="table-responsive mt-3">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Subject</th>
+                    <th>Type</th>
+                    <th>Uploaded</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materials %}
+                <tr>
+                    <td>
+                        <strong>{{ material.title }}</strong><br>
+                        <span class="text-secondary small">{{ material.file_name }}</span>
+                    </td>
+                    <td>{{ material.subject.code }}</td>
+                    <td>{{ material.file_type|upper }}</td>
+                    <td>{{ material.uploaded_at.strftime("%d %b %Y") }}</td>
+                    <td><span class="badge {{ 'text-bg-success' if material.is_active else 'text-bg-secondary' }}">{{ 'Active' if material.is_active else 'Inactive' }}</span></td>
+                    <td class="action-cell">
+                        <a class="icon-btn" title="Download material" href="{{ url_for('faculty.download_material', material_id=material.id) }}"><i class="bi bi-download"></i></a>
+                        {% if material.is_active %}
+                        <form method="post" action="{{ url_for('faculty.deactivate_material', material_id=material.id) }}">
+                            {{ action_form.hidden_tag() }}
+                            <button class="icon-btn danger" title="Deactivate material" type="submit"><i class="bi bi-trash"></i></button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-secondary">No materials found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

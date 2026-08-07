@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}File Too Large{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="error-panel">
+        <h1>413</h1>
+        <p>The uploaded file is larger than the allowed 10 MB limit.</p>
+        <a class="btn btn-primary" href="{{ url_for('core.index') }}">Go Home</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% from "components/dashboard_shell.html" import dashboard_shell with context %}
+
+{% block title %}Faculty Dashboard{% endblock %}
+
+{% block content %}
+{% call dashboard_shell("Faculty", "accent-faculty", stats) %}
+<div class="dashboard-grid mt-4">
+    <section class="data-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Assigned Subjects</h2>
+                <p>Subjects connected with this faculty account.</p>
+            </div>
+        </div>
+        <div class="compact-list">
+            {% for subject in subjects %}
+            <article>
+                <strong>{{ subject.name }}</strong>
+                <span>{{ subject.code }} | {{ subject.course.code }} Semester {{ subject.semester }}</span>
+            </article>
+            {% else %}
+            <p class="text-secondary mb-0">No subjects assigned yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="data-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Active Assignments</h2>
+                <p>Recent assignments created by you.</p>
+            </div>
+        </div>
+        <div class="compact-list">
+            {% for assignment in assignments %}
+            <article>
+                <strong>{{ assignment.title }}</strong>
+                <span>{{ assignment.subject.code }} | Due {{ assignment.due_date.strftime("%d %b %Y") }}</span>
+            </article>
+            {% else %}
+            <p class="text-secondary mb-0">No assignments created yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="data-panel panel-wide">
+        <div class="panel-heading">
+            <div>
+                <h2>Notifications</h2>
+                <p>Announcements visible in the academic system.</p>
+            </div>
+        </div>
+        <div class="notification-list notification-grid">
+            {% for notification in notifications %}
+            <article>
+                <i class="bi bi-megaphone"></i>
+                <div>
+                    <strong>{{ notification.title }}</strong>
+                    <span>{{ notification.message }}</span>
+                </div>
+            </article>
+            {% else %}
+            <p class="text-secondary mb-0">No notifications found.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endcall %}
+{% endblock %}

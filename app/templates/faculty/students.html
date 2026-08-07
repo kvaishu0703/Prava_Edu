@@ -1,0 +1,48 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Assigned Students{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Faculty Module</p>
+        <h1>Assigned Students</h1>
+        <p>Students from the courses and semesters you teach.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <form class="search-row" method="get">
+        <input class="form-control" name="q" value="{{ search }}" placeholder="Search assigned students...">
+        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+    <div class="table-responsive mt-3">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Enrollment</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Semester</th>
+                    <th>Mobile</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.enrollment_number }}</td>
+                    <td>{{ student.user.full_name }}</td>
+                    <td>{{ student.user.email }}</td>
+                    <td>{{ student.course.code }}</td>
+                    <td>{{ student.semester }}</td>
+                    <td>{{ student.mobile_number or '-' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-secondary">No assigned students found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

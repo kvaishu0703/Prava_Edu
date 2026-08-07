@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% from "components/dashboard_shell.html" import dashboard_shell with context %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+{% call dashboard_shell("Admin", "accent-admin", stats) %}
+<div class="dashboard-grid mt-4">
+    <section class="data-panel panel-wide">
+        <div class="panel-heading">
+            <div>
+                <h2>Recent Students</h2>
+                <p>Latest student profiles from the sample database.</p>
+            </div>
+            <span class="status-pill">{{ attendance_percentage }}% Avg Attendance</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Enrollment</th>
+                        <th>Name</th>
+                        <th>Course</th>
+                        <th>Semester</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in recent_students %}
+                    <tr>
+                        <td>{{ student.enrollment_number }}</td>
+                        <td>{{ student.user.full_name }}</td>
+                        <td>{{ student.course.code }}</td>
+                        <td>{{ student.semester }}</td>
+                        <td>{{ student.user.email }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-secondary">No students found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="data-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Recent Notifications</h2>
+                <p>Latest announcements across roles.</p>
+            </div>
+        </div>
+        <div class="notification-list">
+            {% for notification in notifications %}
+            <article>
+                <i class="bi bi-bell"></i>
+                <div>
+                    <strong>{{ notification.title }}</strong>
+                    <span>{{ notification.notification_type }} · {{ notification.target_role|title }}</span>
+                </div>
+            </article>
+            {% else %}
+            <p class="text-secondary mb-0">No notifications found.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endcall %}
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% from "components/dashboard_shell.html" import dashboard_shell with context %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+{% call dashboard_shell("Student", "accent-student", stats) %}
+<div class="dashboard-grid mt-4">
+    <section class="data-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>My Subjects</h2>
+                <p>{{ student.course.code }} | Semester {{ student.semester }}</p>
+            </div>
+        </div>
+        <div class="compact-list">
+            {% for subject in subjects %}
+            <article>
+                <strong>{{ subject.name }}</strong>
+                <span>{{ subject.code }} | {{ subject.faculty.user.full_name if subject.faculty else "Faculty pending" }}</span>
+            </article>
+            {% else %}
+            <p class="text-secondary mb-0">No subjects found.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="data-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Recent Materials</h2>
+                <p>Latest notes uploaded for your semester.</p>
+            </div>
+        </div>
+        <div class="compact-list">
+            {% for material in materials %}
+            <article>
+                <strong>{{ material.title }}</strong>
+                <span>{{ material.subject.code }} | {{ material.file_type|upper }}</span>
+            </article>
+            {% else %}
+            <p class="text-secondary mb-0">No materials found.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="data-panel panel-wide">
+        <div class="panel-heading">
+            <div>
+                <h2>Recent Notifications</h2>
+                <p>Important updates for students.</p>
+            </div>
+        </div>
+        <div class="notification-list notification-grid">
+            {% for notification in notifications %}
+            <article>
+                <i class="bi bi-bell"></i>
+                <div>
+                    <strong>{{ notification.title }}</strong>
+                    <span>{{ notification.message }}</span>
+                </div>
+            </article>
+            {% else %}
+            <p class="text-secondary mb-0">No notifications found.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endcall %}
+{% endblock %}

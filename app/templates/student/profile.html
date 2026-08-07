@@ -1,0 +1,40 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}Student Profile{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Student Module</p>
+        <h1>My Profile</h1>
+        <p>View your personal and academic details.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('student.edit_profile') }}">
+        <i class="bi bi-pencil"></i> Edit Profile
+    </a>
+</div>
+
+<section class="data-panel">
+    {% if student %}
+    <div class="profile-grid student-profile">
+        <div class="profile-avatar">
+            <i class="bi bi-person-circle"></i>
+            <strong>{{ current_user.full_name }}</strong>
+            <span>{{ student.enrollment_number }}</span>
+        </div>
+        <div class="detail-grid">
+            <div><span>Email</span><strong>{{ current_user.email }}</strong></div>
+            <div><span>Mobile</span><strong>{{ student.mobile_number or '-' }}</strong></div>
+            <div><span>Course</span><strong>{{ student.course.code }} - {{ student.course.name }}</strong></div>
+            <div><span>Semester</span><strong>{{ student.semester }}</strong></div>
+            <div><span>Admission Year</span><strong>{{ student.admission_year }}</strong></div>
+            <div><span>Gender</span><strong>{{ student.gender or '-' }}</strong></div>
+            <div><span>Date of Birth</span><strong>{{ student.date_of_birth.strftime("%d %b %Y") if student.date_of_birth else '-' }}</strong></div>
+            <div><span>Status</span><strong>{{ 'Active' if current_user.is_active else 'Inactive' }}</strong></div>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-secondary mb-0">Student profile is not linked yet. Please contact Admin.</p>
+    {% endif %}
+</section>
+{% endblock %}

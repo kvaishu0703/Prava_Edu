@@ -1,0 +1,36 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Grade Submission{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Assignment Module</p>
+        <h1>Grade Submission</h1>
+        <p>{{ submission.student.user.full_name }} · {{ submission.assignment.title }}</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+            <div class="mb-3">
+                {{ form.marks_obtained.label(class="form-label") }}
+                {{ form.marks_obtained(class="form-control", max=submission.assignment.maximum_marks) }}
+                <div class="form-text">Maximum marks: {{ submission.assignment.maximum_marks }}</div>
+                {% for error in form.marks_obtained.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.faculty_feedback.label(class="form-label") }}
+                {{ form.faculty_feedback(class="form-control", rows="4", placeholder="Feedback for student") }}
+                {% for error in form.faculty_feedback.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('faculty.assignment_submissions', assignment_id=submission.assignment_id) }}">Cancel</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</section>
+{% endblock %}

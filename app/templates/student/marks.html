@@ -1,0 +1,44 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}My Marks{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Student Module</p>
+        <h1>My Marks</h1>
+        <p>Subject-wise marks entered by faculty.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Exam Type</th>
+                    <th>Internal</th>
+                    <th>External</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mark in marks %}
+                <tr>
+                    <td>{{ mark.subject.code }} - {{ mark.subject.name }}</td>
+                    <td>{{ mark.exam_type }}</td>
+                    <td>{{ mark.internal_marks }}</td>
+                    <td>{{ mark.external_marks }}</td>
+                    <td>{{ mark.total_marks }}</td>
+                    <td><span class="badge text-bg-primary">{{ mark.grade or '-' }}</span></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-secondary">No marks found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

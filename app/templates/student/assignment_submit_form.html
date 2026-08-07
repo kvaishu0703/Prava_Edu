@@ -1,0 +1,43 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}Submit Assignment{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Assignment Module</p>
+        <h1>Submit Assignment</h1>
+        <p>{{ assignment.title }} · {{ assignment.subject.code }} · Due {{ assignment.due_date.strftime("%d %b %Y, %I:%M %p") }}</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    {% if assignment.description %}
+    <div class="mb-3">
+        <span class="text-secondary small">Instructions</span>
+        <p class="mb-0">{{ assignment.description }}</p>
+    </div>
+    {% endif %}
+
+    {% if submission %}
+    <div class="alert alert-info">
+        Current status: <strong>{{ submission.status }}</strong>
+        {% if submission.submitted_at %} · Submitted {{ submission.submitted_at.strftime("%d %b %Y, %I:%M %p") }}{% endif %}
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.file.label(class="form-label") }}
+            {{ form.file(class="form-control") }}
+            <div class="form-text">Allowed: PDF, Word, PPT, Excel, text, and image files up to 10 MB.</div>
+            {% for error in form.file.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('student.assignments') }}">Cancel</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</section>
+{% endblock %}

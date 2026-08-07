@@ -1,0 +1,94 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Attendance Module</p>
+        <h1>Mark Attendance</h1>
+        <p>Select subject and date, then save attendance for all assigned students.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('faculty.attendance_report') }}">
+        <i class="bi bi-file-earmark-bar-graph"></i> Report
+    </a>
+</div>
+
+<section class="data-panel">
+    <form method="get" class="attendance-filter">
+        <div>
+            {{ form.subject_id.label(class="form-label") }}
+            {{ form.subject_id(class="form-select") }}
+        </div>
+        <div>
+            {{ form.attendance_date.label(class="form-label") }}
+            {{ form.attendance_date(class="form-control") }}
+        </div>
+        <div class="align-self-end">
+            <button class="btn btn-outline-secondary w-100" type="submit">
+                <i class="bi bi-funnel"></i> Load
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="data-panel mt-3">
+    {% if subject %}
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <input type="hidden" name="subject_id" value="{{ form.subject_id.data }}">
+        <input type="hidden" name="attendance_date" value="{{ form.attendance_date.data.isoformat() }}">
+
+        <div class="panel-heading">
+            <div>
+                <h2>{{ subject.code }} - {{ subject.name }}</h2>
+                <p>{{ subject.course.code }} Semester {{ subject.semester }} | {{ form.attendance_date.data.strftime("%d %b %Y") }}</p>
+            </div>
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-check2-circle"></i> Save Attendance
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Enrollment</th>
+                        <th>Student</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    {% set record = existing.get(student.id) %}
+                    {% set current_status = record.status if record else 'Present' %}
+                    <tr>
+                        <td>{{ student.enrollment_number }}</td>
+                        <td>
+                            <strong>{{ student.user.full_name }}</strong><br>
+                            <span class="text-secondary small">{{ student.user.email }}</span>
+                        </td>
+                        <td>
+                            <select class="form-select attendance-status" name="status_{{ student.id }}">
+                                {% for status in statuses %}
+                                <option value="{{ status }}" {% if current_status == status %}selected{% endif %}>{{ status }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <input class="form-control" name="remarks_{{ student.id }}" value="{{ record.remarks if record else '' }}" placeholder="Optional remarks">
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-secondary">No active students found for this subject.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+    {% else %}
+    <p class="text-secondary mb-0">No subject selected.</p>
+    {% endif %}
+</section>
+{% endblock %}

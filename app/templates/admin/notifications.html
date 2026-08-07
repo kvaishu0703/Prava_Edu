@@ -1,0 +1,70 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block admin_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Notification Module</p>
+        <h1>Notifications</h1>
+        <p>Create announcements and manage active system notifications.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('admin.new_notification') }}">
+        <i class="bi bi-send"></i> Send Notification
+    </a>
+</div>
+
+<section class="data-panel">
+    <form class="search-row mb-3" method="get">
+        <input class="form-control" name="q" value="{{ search }}" placeholder="Search notifications...">
+        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Target</th>
+                    <th>Created By</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for notification in notifications %}
+                <tr>
+                    <td>
+                        <strong>{{ notification.title }}</strong><br>
+                        <span class="text-secondary small">{{ notification.message }}</span>
+                    </td>
+                    <td>{{ notification.notification_type }}</td>
+                    <td>
+                        {{ notification.target_role|title }}
+                        {% if notification.target_course %}<br><span class="text-secondary small">{{ notification.target_course.code }}</span>{% endif %}
+                        {% if notification.target_semester %}<br><span class="text-secondary small">Sem {{ notification.target_semester }}</span>{% endif %}
+                    </td>
+                    <td>{{ notification.creator.full_name }}</td>
+                    <td>{{ notification.created_at.strftime("%d %b %Y") }}</td>
+                    <td><span class="badge {{ 'text-bg-success' if notification.is_active else 'text-bg-secondary' }}">{{ 'Active' if notification.is_active else 'Inactive' }}</span></td>
+                    <td class="action-cell">
+                        {% if notification.is_active %}
+                        <form method="post" action="{{ url_for('admin.deactivate_notification', notification_id=notification.id) }}">
+                            {{ action_form.hidden_tag() }}
+                            <button class="icon-btn danger" title="Deactivate notification" type="submit"><i class="bi bi-trash"></i></button>
+                        </form>
+                        {% else %}
+                        <span class="text-secondary small">Done</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-secondary">No notifications found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

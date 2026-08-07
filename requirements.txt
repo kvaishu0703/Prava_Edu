@@ -1,0 +1,10 @@
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Flask-WTF==1.2.1
+WTForms==3.1.2
+python-dotenv==1.0.1
+supabase==2.31.0
+Werkzeug==3.0.3
+gunicorn==26.0.0
+psycopg[binary]==3.3.4

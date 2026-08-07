@@ -1,0 +1,58 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}My Assignments{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Student Module</p>
+        <h1>My Assignments</h1>
+        <p>View assignment details, submit work, and check grades.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Subject</th>
+                    <th>Due Date</th>
+                    <th>Max Marks</th>
+                    <th>Status</th>
+                    <th>Marks</th>
+                    <th>Feedback</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                {% set assignment = row.assignment %}
+                {% set submission = row.submission %}
+                <tr>
+                    <td>{{ assignment.title }}</td>
+                    <td>{{ assignment.subject.code }}</td>
+                    <td>{{ assignment.due_date.strftime("%d %b %Y") }}</td>
+                    <td>{{ assignment.maximum_marks }}</td>
+                    <td><span class="badge {{ 'text-bg-success' if submission and submission.status == 'Graded' else ('text-bg-info' if submission else 'text-bg-secondary') }}">{{ submission.status if submission else 'Not Submitted' }}</span></td>
+                    <td>{{ submission.marks_obtained if submission and submission.marks_obtained is not none else '-' }}</td>
+                    <td>{{ submission.faculty_feedback if submission and submission.faculty_feedback else '-' }}</td>
+                    <td class="action-cell">
+                        {% if assignment.attachment_path %}
+                        <a class="icon-btn" title="Download assignment" href="{{ url_for('student.download_assignment_attachment', assignment_id=assignment.id) }}"><i class="bi bi-download"></i></a>
+                        {% endif %}
+                        {% if submission and submission.submitted_file %}
+                        <a class="icon-btn" title="Download your submission" href="{{ url_for('student.download_submission', submission_id=submission.id) }}"><i class="bi bi-file-earmark-arrow-down"></i></a>
+                        {% endif %}
+                        <a class="icon-btn" title="Submit assignment" href="{{ url_for('student.submit_assignment_route', assignment_id=assignment.id) }}"><i class="bi bi-upload"></i></a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-secondary">No assignments found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

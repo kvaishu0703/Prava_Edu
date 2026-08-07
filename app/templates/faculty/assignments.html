@@ -1,0 +1,65 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Faculty Assignments{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Assignment Module</p>
+        <h1>Assignments</h1>
+        <p>Create assignments, track submissions, and grade student work.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('faculty.create_assignment_route') }}">
+        <i class="bi bi-plus-lg"></i> Add Assignment
+    </a>
+</div>
+
+<section class="data-panel">
+    <form class="search-row mb-3" method="get">
+        <input class="form-control" name="q" value="{{ search }}" placeholder="Search assignments...">
+        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Subject</th>
+                    <th>Due Date</th>
+                    <th>Max Marks</th>
+                    <th>Submissions</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                <tr>
+                    <td>{{ assignment.title }}</td>
+                    <td>{{ assignment.subject.code }}</td>
+                    <td>{{ assignment.due_date.strftime("%d %b %Y") }}</td>
+                    <td>{{ assignment.maximum_marks }}</td>
+                    <td>{{ assignment.submissions|length }}</td>
+                    <td><span class="badge {{ 'text-bg-success' if assignment.is_active else 'text-bg-secondary' }}">{{ 'Active' if assignment.is_active else 'Inactive' }}</span></td>
+                    <td class="action-cell">
+                        {% if assignment.attachment_path %}
+                        <a class="icon-btn" title="Download attachment" href="{{ url_for('faculty.download_assignment_attachment', assignment_id=assignment.id) }}"><i class="bi bi-download"></i></a>
+                        {% endif %}
+                        <a class="icon-btn" title="View submissions" href="{{ url_for('faculty.assignment_submissions', assignment_id=assignment.id) }}"><i class="bi bi-list-check"></i></a>
+                        {% if assignment.is_active %}
+                        <form method="post" action="{{ url_for('faculty.deactivate_assignment', assignment_id=assignment.id) }}">
+                            {{ action_form.hidden_tag() }}
+                            <button class="icon-btn danger" title="Deactivate assignment" type="submit"><i class="bi bi-trash"></i></button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-secondary">No assignments found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "admin/admin_base.html" %}
+{% from "admin/_field.html" import render_field, render_select, render_check %}
+
+{% block title %}{{ mode }} Subject{% endblock %}
+
+{% block admin_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Admin Module</p>
+        <h1>{{ mode }} Subject</h1>
+        <p>Subject and faculty assignment details.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.subjects') }}">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<section class="data-panel">
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+            {{ render_field(form.name) }}
+            {{ render_field(form.code) }}
+            {{ render_select(form.course_id) }}
+            {{ render_field(form.semester) }}
+            {{ render_select(form.faculty_id) }}
+            {{ render_field(form.maximum_marks) }}
+            {{ render_field(form.passing_marks) }}
+            {{ render_check(form.is_active, "form-check form-switch align-self-end mb-3") }}
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('admin.subjects') }}">Cancel</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</section>
+{% endblock %}

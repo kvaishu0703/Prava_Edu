@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard-wrap">
+    <aside class="role-sidebar accent-faculty">
+        <div class="sidebar-brand">
+            <span class="brand-mark"><i class="bi bi-mortarboard-fill"></i></span>
+            <div>
+                <strong>PRAVA</strong>
+                <span>Faculty System</span>
+            </div>
+        </div>
+        <nav class="role-nav">
+            <a href="{{ url_for('faculty.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="{{ url_for('faculty.profile') }}"><i class="bi bi-person"></i> Profile</a>
+            <a href="{{ url_for('faculty.subjects') }}"><i class="bi bi-book"></i> Subjects</a>
+            <a href="{{ url_for('faculty.students') }}"><i class="bi bi-people"></i> Students</a>
+            <a href="{{ url_for('faculty.attendance') }}"><i class="bi bi-calendar2-check"></i> Attendance</a>
+            <a href="{{ url_for('faculty.attendance_report') }}"><i class="bi bi-file-earmark-bar-graph"></i> Attendance Report</a>
+            <a href="{{ url_for('faculty.marks') }}"><i class="bi bi-award"></i> Marks</a>
+            <a href="{{ url_for('faculty.marks_report') }}"><i class="bi bi-file-earmark-spreadsheet"></i> Marks Report</a>
+            <a href="{{ url_for('faculty.materials') }}"><i class="bi bi-cloud-arrow-up"></i> Materials</a>
+            <a href="{{ url_for('faculty.assignments') }}"><i class="bi bi-clipboard-check"></i> Assignments</a>
+            <a href="{{ url_for('faculty.notifications') }}"><i class="bi bi-bell"></i> Notifications</a>
+            <form method="post" action="{{ url_for('auth.logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </form>
+        </nav>
+    </aside>
+    <div class="dashboard-main">
+        {% block faculty_content %}{% endblock %}
+    </div>
+</section>
+{% endblock %}

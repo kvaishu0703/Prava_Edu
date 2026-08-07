@@ -1,0 +1,41 @@
+{% extends "student/student_base.html" %}
+{% from "admin/_field.html" import render_field, render_select %}
+
+{% block title %}Edit Student Profile{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Student Module</p>
+        <h1>Edit Profile</h1>
+        <p>Update your contact and personal details.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('student.profile') }}">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<section class="data-panel">
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+            {{ render_field(form.full_name) }}
+            {{ render_field(form.email) }}
+            {{ render_field(form.mobile_number) }}
+            {{ render_field(form.date_of_birth) }}
+            {{ render_select(form.gender) }}
+        </div>
+        <div class="mb-3">
+            {{ form.address.label(class="form-label") }}
+            {{ form.address(class="form-control", rows="3") }}
+            {% for error in form.address.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('student.profile') }}">Cancel</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</section>
+{% endblock %}

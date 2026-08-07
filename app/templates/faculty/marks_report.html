@@ -1,0 +1,100 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Marks Report{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Marks Module</p>
+        <h1>Marks Report</h1>
+        <p>Subject-wise marks report with grades.</p>
+    </div>
+    <div class="action-cell">
+        {% if subject %}
+        <a class="btn btn-primary" href="{{ url_for('faculty.export_marks_report', subject_id=subject.id, exam_type=selected_exam_type) }}">
+            <i class="bi bi-download"></i> CSV
+        </a>
+        {% endif %}
+        <button class="btn btn-outline-secondary" type="button" data-print-page>
+            <i class="bi bi-printer"></i> Print
+        </button>
+        <a class="btn btn-outline-primary" href="{{ url_for('faculty.marks') }}">
+            <i class="bi bi-award"></i> Enter Marks
+        </a>
+    </div>
+</div>
+
+<section class="data-panel">
+    <form method="get" class="attendance-filter">
+        <div>
+            <label class="form-label" for="subject_id">Subject</label>
+            <select class="form-select" id="subject_id" name="subject_id">
+                {% for value, label in choices %}
+                <option value="{{ value }}" {% if selected_subject_id == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="form-label" for="exam_type">Exam Type</label>
+            <select class="form-select" id="exam_type" name="exam_type">
+                <option value="">All Exams</option>
+                {% for value, label in exam_choices %}
+                <option value="{{ value }}" {% if selected_exam_type == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="align-self-end">
+            <button class="btn btn-outline-secondary w-100" type="submit">
+                <i class="bi bi-funnel"></i> Filter
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="data-panel mt-3">
+    <div class="panel-heading">
+        <div>
+            <h2>{{ subject.code if subject else 'No Subject' }} Marks</h2>
+            <p>{{ subject.name if subject else 'Select a subject to view report.' }}</p>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Enrollment</th>
+                    <th>Student</th>
+                    <th>Exam Type</th>
+                    <th>Internal</th>
+                    <th>External</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mark in rows %}
+                <tr>
+                    <td>{{ mark.student.enrollment_number }}</td>
+                    <td>{{ mark.student.user.full_name }}</td>
+                    <td>{{ mark.exam_type }}</td>
+                    <td>{{ mark.internal_marks }}</td>
+                    <td>{{ mark.external_marks }}</td>
+                    <td>{{ mark.total_marks }}</td>
+                    <td><span class="badge text-bg-primary">{{ mark.grade }}</span></td>
+                    <td>
+                        {% if mark.total_marks >= mark.subject.passing_marks %}
+                        <span class="badge text-bg-success">Pass</span>
+                        {% else %}
+                        <span class="badge text-bg-danger">Fail</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-secondary">No marks found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

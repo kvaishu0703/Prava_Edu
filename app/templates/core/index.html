@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<section class="welcome-section">
+    <div class="container py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <p class="section-label">College Academic Management System</p>
+                <h1 class="display-5 fw-bold">PRAVA</h1>
+                <p class="lead text-secondary">
+                    A Flask-based system for Admin, Faculty, and Student academic workflows.
+                </p>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <a class="btn btn-primary" href="{{ url_for('core.health') }}">
+                        <i class="bi bi-activity me-1"></i> Check App Health
+                    </a>
+                    <a class="btn btn-outline-secondary" href="{{ url_for('core.phase_summary') }}">
+                        <i class="bi bi-list-check me-1"></i> View Phase Summary
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="login-preview shadow-sm">
+                    <div class="text-center mb-4">
+                        <div class="preview-logo"><i class="bi bi-mortarboard-fill"></i></div>
+                        <h2 class="h4 mt-3">Login System</h2>
+                        <p class="text-secondary mb-0">Authentication is ready in Phase 3.</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Username or Email</label>
+                        <input class="form-control" value="admin" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input class="form-control" value="Admin@123" type="password" disabled>
+                    </div>
+                    <a class="btn btn-primary w-100" href="{{ url_for('auth.login') }}">Open Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="phase-plan" class="container py-5">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="bi bi-folder2-open"></i>
+                <h2>Folder Structure</h2>
+                <p>Modular Flask folders are ready for auth, admin, faculty, student, services, templates, and static files.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="bi bi-database-check"></i>
+                <h2>Database Models</h2>
+                <p>Users, students, faculty, courses, subjects, attendance, marks, assignments, and notifications are modeled.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="bi bi-journal-code"></i>
+                <h2>Learning Docs</h2>
+                <p>Marathi phase notes explain what was built, why it matters, and how to run and test it.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

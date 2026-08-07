@@ -1,0 +1,35 @@
+{% extends "faculty/faculty_base.html" %}
+{% from "admin/_field.html" import render_field %}
+
+{% block title %}Edit Faculty Profile{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Faculty Module</p>
+        <h1>Edit Profile</h1>
+        <p>Update your basic contact and department details.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('faculty.profile') }}">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<section class="data-panel">
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+            {{ render_field(form.full_name) }}
+            {{ render_field(form.email) }}
+            {{ render_field(form.mobile_number) }}
+            {{ render_field(form.qualification) }}
+            {{ render_field(form.department) }}
+            {{ render_field(form.joining_date) }}
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('faculty.profile') }}">Cancel</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</section>
+{% endblock %}

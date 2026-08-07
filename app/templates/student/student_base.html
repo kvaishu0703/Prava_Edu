@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard-wrap">
+    <aside class="role-sidebar accent-student">
+        <div class="sidebar-brand">
+            <span class="brand-mark"><i class="bi bi-mortarboard-fill"></i></span>
+            <div>
+                <strong>PRAVA</strong>
+                <span>Student System</span>
+            </div>
+        </div>
+        <nav class="role-nav">
+            <a href="{{ url_for('student.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="{{ url_for('student.profile') }}"><i class="bi bi-person"></i> Profile</a>
+            <a href="{{ url_for('student.subjects') }}"><i class="bi bi-book"></i> Subjects</a>
+            <a href="{{ url_for('student.attendance') }}"><i class="bi bi-calendar2-check"></i> Attendance</a>
+            <a href="{{ url_for('student.marks') }}"><i class="bi bi-award"></i> Marks</a>
+            <a href="{{ url_for('student.materials') }}"><i class="bi bi-download"></i> Materials</a>
+            <a href="{{ url_for('student.assignments') }}"><i class="bi bi-clipboard"></i> Assignments</a>
+            <a href="{{ url_for('student.notifications') }}"><i class="bi bi-bell"></i> Notifications</a>
+            <form method="post" action="{{ url_for('auth.logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </form>
+        </nav>
+    </aside>
+    <div class="dashboard-main">
+        {% block student_content %}{% endblock %}
+    </div>
+</section>
+{% endblock %}

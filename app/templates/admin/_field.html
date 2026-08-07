@@ -1,0 +1,29 @@
+{% macro render_field(field, wrapper_class="mb-3") %}
+<div class="{{ wrapper_class }}">
+    {{ field.label(class="form-label") }}
+    {{ field(class="form-control") }}
+    {% for error in field.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro render_select(field, wrapper_class="mb-3") %}
+<div class="{{ wrapper_class }}">
+    {{ field.label(class="form-label") }}
+    {{ field(class="form-select") }}
+    {% for error in field.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro render_check(field, wrapper_class="form-check mb-3") %}
+<div class="{{ wrapper_class }}">
+    {{ field(class="form-check-input") }}
+    {{ field.label(class="form-check-label") }}
+    {% for error in field.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endmacro %}

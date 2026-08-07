@@ -1,0 +1,50 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}Study Materials{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Student Module</p>
+        <h1>Study Materials</h1>
+        <p>Subject-wise notes and learning files.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <form class="search-row" method="get">
+        <input class="form-control" name="q" value="{{ search }}" placeholder="Search materials...">
+        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+    <div class="table-responsive mt-3">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Subject</th>
+                    <th>Type</th>
+                    <th>Uploaded</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materials %}
+                <tr>
+                    <td>{{ material.title }}</td>
+                    <td>{{ material.subject.code }}</td>
+                    <td>{{ material.file_type|upper }}</td>
+                    <td>{{ material.uploaded_at.strftime("%d %b %Y") }}</td>
+                    <td>
+                        <a class="icon-btn" title="Download material" href="{{ url_for('student.download_material', material_id=material.id) }}">
+                            <i class="bi bi-download"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-secondary">No materials found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

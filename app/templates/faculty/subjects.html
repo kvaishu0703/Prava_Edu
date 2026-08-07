@@ -1,0 +1,44 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Assigned Subjects{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Faculty Module</p>
+        <h1>Assigned Subjects</h1>
+        <p>Subjects currently mapped to your faculty profile.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Subject</th>
+                    <th>Course</th>
+                    <th>Semester</th>
+                    <th>Maximum Marks</th>
+                    <th>Passing Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                <tr>
+                    <td>{{ subject.code }}</td>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ subject.course.code }}</td>
+                    <td>{{ subject.semester }}</td>
+                    <td>{{ subject.maximum_marks }}</td>
+                    <td>{{ subject.passing_marks }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-secondary">No subjects assigned yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

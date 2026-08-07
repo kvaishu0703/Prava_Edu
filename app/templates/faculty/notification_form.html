@@ -1,0 +1,50 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Send Notification{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Notification Module</p>
+        <h1>Send Notification</h1>
+        <p>Send an announcement to students from one of your assigned subjects.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+            <div class="mb-3">
+                {{ form.title.label(class="form-label") }}
+                {{ form.title(class="form-control", placeholder="Notification title") }}
+                {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.notification_type.label(class="form-label") }}
+                {{ form.notification_type(class="form-select") }}
+                {% for error in form.notification_type.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.subject_id.label(class="form-label") }}
+                {{ form.subject_id(class="form-select") }}
+                {% for error in form.subject_id.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.expires_at.label(class="form-label") }}
+                {{ form.expires_at(class="form-control") }}
+                {% for error in form.expires_at.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.message.label(class="form-label") }}
+                {{ form.message(class="form-control", rows="5", placeholder="Announcement message") }}
+                {% for error in form.message.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('faculty.notifications') }}">Cancel</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</section>
+{% endblock %}

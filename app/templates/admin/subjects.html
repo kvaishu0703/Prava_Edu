@@ -1,0 +1,61 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Subjects{% endblock %}
+
+{% block admin_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Admin Module</p>
+        <h1>Subjects</h1>
+        <p>Manage semester subjects and faculty assignments.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('admin.new_subject') }}">
+        <i class="bi bi-plus-lg"></i> Add Subject
+    </a>
+</div>
+
+<section class="data-panel">
+    <form class="search-row" method="get">
+        <input class="form-control" name="q" value="{{ search }}" placeholder="Search subjects...">
+        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+    <div class="table-responsive mt-3">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Subject</th>
+                    <th>Course</th>
+                    <th>Semester</th>
+                    <th>Faculty</th>
+                    <th>Marks</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                <tr>
+                    <td>{{ subject.code }}</td>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ subject.course.code }}</td>
+                    <td>{{ subject.semester }}</td>
+                    <td>{{ subject.faculty.user.full_name if subject.faculty else '-' }}</td>
+                    <td>{{ subject.passing_marks }}/{{ subject.maximum_marks }}</td>
+                    <td><span class="badge {{ 'text-bg-success' if subject.is_active else 'text-bg-secondary' }}">{{ 'Active' if subject.is_active else 'Inactive' }}</span></td>
+                    <td class="action-cell">
+                        <a class="icon-btn" title="Edit subject" href="{{ url_for('admin.edit_subject', subject_id=subject.id) }}"><i class="bi bi-pencil"></i></a>
+                        <form method="post" action="{{ url_for('admin.deactivate_subject', subject_id=subject.id) }}">
+                            {{ action_form.hidden_tag() }}
+                            <button class="icon-btn danger" title="Deactivate subject" type="submit"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-secondary">No subjects found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

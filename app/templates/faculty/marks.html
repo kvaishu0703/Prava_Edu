@@ -1,0 +1,93 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Enter Marks{% endblock %}
+
+{% block faculty_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Marks Module</p>
+        <h1>Enter Marks</h1>
+        <p>Select subject and exam type, then save marks for all assigned students.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('faculty.marks_report') }}">
+        <i class="bi bi-file-earmark-spreadsheet"></i> Report
+    </a>
+</div>
+
+<section class="data-panel">
+    <form method="get" class="attendance-filter">
+        <div>
+            {{ form.subject_id.label(class="form-label") }}
+            {{ form.subject_id(class="form-select") }}
+        </div>
+        <div>
+            {{ form.exam_type.label(class="form-label") }}
+            {{ form.exam_type(class="form-select") }}
+        </div>
+        <div class="align-self-end">
+            <button class="btn btn-outline-secondary w-100" type="submit">
+                <i class="bi bi-funnel"></i> Load
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="data-panel mt-3">
+    {% if subject %}
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <input type="hidden" name="subject_id" value="{{ form.subject_id.data }}">
+        <input type="hidden" name="exam_type" value="{{ form.exam_type.data }}">
+
+        <div class="panel-heading">
+            <div>
+                <h2>{{ subject.code }} - {{ subject.name }}</h2>
+                <p>Maximum marks: {{ subject.maximum_marks }} | Passing marks: {{ subject.passing_marks }} | Exam: {{ form.exam_type.data }}</p>
+            </div>
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-check2-circle"></i> Save Marks
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Enrollment</th>
+                        <th>Student</th>
+                        <th>Internal</th>
+                        <th>External</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    {% set record = existing.get(student.id) %}
+                    {% set internal = record.internal_marks if record else 0 %}
+                    {% set external = record.external_marks if record else 0 %}
+                    <tr>
+                        <td>{{ student.enrollment_number }}</td>
+                        <td>
+                            <strong>{{ student.user.full_name }}</strong><br>
+                            <span class="text-secondary small">{{ student.user.email }}</span>
+                        </td>
+                        <td><input class="form-control marks-input" type="number" min="0" name="internal_{{ student.id }}" value="{{ internal }}"></td>
+                        <td><input class="form-control marks-input" type="number" min="0" name="external_{{ student.id }}" value="{{ external }}"></td>
+                        <td>{{ record.total_marks if record else internal + external }}</td>
+                        <td><span class="badge text-bg-primary">{{ record.grade if record else '-' }}</span></td>
+                        <td><input class="form-control" name="remarks_{{ student.id }}" value="{{ record.remarks if record else '' }}" placeholder="Optional remarks"></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="text-secondary">No active students found for this subject.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+    {% else %}
+    <p class="text-secondary mb-0">No subject selected.</p>
+    {% endif %}
+</section>
+{% endblock %}

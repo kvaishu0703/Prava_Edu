@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Phase Summary{% endblock %}
+
+{% block content %}
+<section class="summary-header">
+    <div class="container py-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <p class="section-label mb-1">Project Progress</p>
+                <h1 class="h2 fw-bold mb-1">Phase 1 to Phase 15 Completed</h1>
+                <p class="text-secondary mb-0">The application, tests, final documentation, viva guide, and deployment setup are ready.</p>
+            </div>
+            <a class="btn btn-outline-light" href="{{ url_for('core.index') }}">
+                <i class="bi bi-house-door me-1"></i> Home
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="container py-4">
+    <div class="row g-3">
+        {% for phase in phases %}
+        <div class="col-lg-6">
+            <div class="phase-card">
+                <div class="d-flex align-items-start justify-content-between gap-3">
+                    <div>
+                        <span class="phase-kicker">{{ phase.name }}</span>
+                        <h2>{{ phase.title }}</h2>
+                    </div>
+                    <span class="status-pill">{{ phase.status }}</span>
+                </div>
+                <ul class="phase-list">
+                    {% for item in phase.tasks %}
+                    <li><i class="bi bi-check2-circle"></i><span>{{ item }}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="data-panel mt-4">
+        <h2 class="h5 fw-bold">Phase 2 Database Tables</h2>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Table</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>users</td><td>Login accounts for Admin, Faculty, and Student</td></tr>
+                    <tr><td>students</td><td>Student academic profiles</td></tr>
+                    <tr><td>faculty</td><td>Faculty academic profiles</td></tr>
+                    <tr><td>courses</td><td>Course master data</td></tr>
+                    <tr><td>subjects</td><td>Semester-wise subjects</td></tr>
+                    <tr><td>attendance</td><td>Daily attendance records</td></tr>
+                    <tr><td>marks</td><td>Subject marks and grades</td></tr>
+                    <tr><td>study_materials</td><td>Uploaded learning files</td></tr>
+                    <tr><td>assignments</td><td>Faculty assignments</td></tr>
+                    <tr><td>submissions</td><td>Student assignment submissions</td></tr>
+                    <tr><td>notifications</td><td>Announcements</td></tr>
+                    <tr><td>notification_reads</td><td>Read tracking</td></tr>
+                    <tr><td>activity_logs</td><td>Security and audit events</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

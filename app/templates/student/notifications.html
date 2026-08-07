@@ -1,0 +1,42 @@
+{% extends "student/student_base.html" %}
+
+{% block title %}Student Notifications{% endblock %}
+
+{% block student_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Notification Module</p>
+        <h1>Notifications</h1>
+        <p>Announcements relevant to your course and semester.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <div class="notification-list">
+        {% for row in rows %}
+        {% set notification = row.notification %}
+        <article>
+            <i class="bi bi-bell"></i>
+            <div>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <strong>{{ notification.title }}</strong>
+                    <span class="badge {{ 'text-bg-secondary' if row.is_read else 'text-bg-success' }}">{{ 'Read' if row.is_read else 'Unread' }}</span>
+                </div>
+                <span>{{ notification.notification_type }} | {{ notification.message }}</span>
+                <span>{{ notification.created_at.strftime("%d %b %Y") }}</span>
+                {% if not row.is_read %}
+                <div class="action-cell mt-2">
+                    <form method="post" action="{{ url_for('student.mark_notification_read_route', notification_id=notification.id) }}">
+                        {{ action_form.hidden_tag() }}
+                        <button class="btn btn-sm btn-outline-success" type="submit"><i class="bi bi-check2"></i> Mark Read</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% else %}
+        <p class="text-secondary mb-0">No notifications found.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
