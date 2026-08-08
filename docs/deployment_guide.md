@@ -88,6 +88,8 @@ flask --app wsgi:app init-db
 flask --app wsgi:app bootstrap-admin
 ```
 
+The free Render web-service plan does not support a separate pre-deploy command. The included `render.yaml` therefore runs `init-db` and the idempotent `bootstrap-admin` command immediately before Gunicorn in `startCommand`. Existing tables and an existing Admin account are preserved on later restarts.
+
 The bootstrap command reads `BOOTSTRAP_ADMIN_EMAIL`,
 `BOOTSTRAP_ADMIN_PASSWORD`, `BOOTSTRAP_ADMIN_USERNAME`, and
 `BOOTSTRAP_ADMIN_NAME`.

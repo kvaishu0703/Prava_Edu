@@ -167,3 +167,4 @@
 - Added an Admin-only response list with scores and feedback.
 - Added the `student_test_responses` database table, documentation, and four automated tests.
 - Verified the full flow in desktop and mobile browser layouts.
+- Updated the Render free-tier start command after Blueprint validation confirmed that free web services do not support `preDeployCommand`.
