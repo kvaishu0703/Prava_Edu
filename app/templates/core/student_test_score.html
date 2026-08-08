@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Student Test Score{% endblock %}
+
+{% block content %}
+<section class="student-test-page py-4 py-md-5">
+    <div class="container test-form-container">
+        <header class="score-summary">
+            <div>
+                <p class="section-label mb-2">Student Test Result</p>
+                <h1>{{ response.full_name }}</h1>
+                <p class="mb-0">{{ response.course_year }}</p>
+            </div>
+            <div class="score-ring" aria-label="Score {{ response.score }} out of {{ response.total_questions }}">
+                <strong>{{ response.score }}/{{ response.total_questions }}</strong>
+                <span>{{ response.score_percentage }}%</span>
+            </div>
+        </header>
+
+        <div class="result-list">
+            {% for row in result_rows %}
+            <article class="result-item {{ 'correct' if row.is_correct else 'incorrect' }}">
+                <div class="result-heading">
+                    <span class="result-number">{{ row.number }}</span>
+                    <h2>{{ row.prompt }}</h2>
+                    <i class="bi {{ 'bi-check-circle-fill' if row.is_correct else 'bi-x-circle-fill' }}"></i>
+                </div>
+                <dl>
+                    <div><dt>Your answer</dt><dd>{{ row.selected_label }}</dd></div>
+                    {% if not row.is_correct %}<div><dt>Correct answer</dt><dd>{{ row.correct_label }}</dd></div>{% endif %}
+                </dl>
+                <p>{{ row.explanation }}</p>
+            </article>
+            {% endfor %}
+        </div>
+
+        <div class="test-submit-row">
+            <a class="btn btn-primary" href="{{ url_for('core.student_test') }}">
+                <i class="bi bi-arrow-repeat me-1"></i> Submit another response
+            </a>
+            <a class="btn btn-outline-secondary" href="{{ url_for('core.index') }}">Back to PRAVA</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

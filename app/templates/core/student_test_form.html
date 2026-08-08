@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Student Test Form{% endblock %}
+
+{% block content %}
+<section class="student-test-page py-4 py-md-5">
+    <div class="container test-form-container">
+        <header class="test-form-header">
+            <span class="test-form-icon"><i class="bi bi-ui-checks-grid"></i></span>
+            <p class="section-label mb-2">PRAVA Website Test</p>
+            <h1>Student Test Form</h1>
+            <p>College Academic Management System</p>
+        </header>
+
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            <section class="test-section" aria-labelledby="student-details-heading">
+                <h2 id="student-details-heading">Student Details</h2>
+                <div class="form-grid mt-3">
+                    <div class="mb-3">
+                        {{ form.full_name.label(class="form-label") }}
+                        {{ form.full_name(class="form-control", placeholder="Enter your full name") }}
+                        {% for error in form.full_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control", placeholder="name@example.com") }}
+                        {% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-0">
+                        {{ form.college_name.label(class="form-label") }}
+                        {{ form.college_name(class="form-control", placeholder="Enter college name") }}
+                        {% for error in form.college_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-0">
+                        {{ form.course_year.label(class="form-label") }}
+                        {{ form.course_year(class="form-control", placeholder="Example: BCA Third Year") }}
+                        {% for error in form.course_year.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            {% for question in questions %}
+                {% set field = form[question.key] %}
+                <fieldset class="test-section test-question">
+                    <legend><span>{{ loop.index }}</span>{{ question.prompt }}</legend>
+                    <div class="test-options">
+                        {% for option in field %}
+                        <label class="test-option" for="{{ option.id }}">
+                            {{ option() }}
+                            <span>{{ option.label.text }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% for error in field.errors %}<div class="invalid-feedback d-block mt-2">कृपया एक उत्तर निवडा.</div>{% endfor %}
+                </fieldset>
+            {% endfor %}
+
+            <section class="test-section" aria-labelledby="feedback-heading">
+                <h2 id="feedback-heading">Website Feedback</h2>
+                <div class="mb-3 mt-3">
+                    {{ form.website_rating.label(class="form-label") }}
+                    {{ form.website_rating(class="form-select") }}
+                    {% for error in form.website_rating.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div>
+                    {{ form.feedback.label(class="form-label") }}
+                    {{ form.feedback(class="form-control", rows="4", placeholder="Share your feedback") }}
+                    {% for error in form.feedback.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+            </section>
+
+            <div class="test-submit-row">
+                {{ form.submit(class="btn btn-primary px-4") }}
+                <span><i class="bi bi-shield-check"></i> Secure response</span>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

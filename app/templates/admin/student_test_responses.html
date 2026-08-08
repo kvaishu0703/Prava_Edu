@@ -1,0 +1,60 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Student Test Responses{% endblock %}
+
+{% block admin_content %}
+<div class="dashboard-topbar">
+    <div>
+        <h1>Student Test Responses</h1>
+        <p>Submitted website test scores and feedback.</p>
+    </div>
+    <span class="status-pill">{{ responses|length }} Responses</span>
+</div>
+
+<section class="data-panel mt-4">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course / Year</th>
+                    <th>Score</th>
+                    <th>Rating</th>
+                    <th>Submitted</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for response in responses %}
+                <tr>
+                    <td>
+                        <strong>{{ response.full_name }}</strong><br>
+                        <span class="small text-secondary">{{ response.email }}</span>
+                    </td>
+                    <td>{{ response.course_year }}</td>
+                    <td><strong>{{ response.score }}/{{ response.total_questions }}</strong> ({{ response.score_percentage }}%)</td>
+                    <td>
+                        <span class="rating-stars" aria-label="{{ response.website_rating }} out of 5">
+                            {% for _ in range(response.website_rating) %}<i class="bi bi-star-fill"></i>{% endfor %}
+                        </span>
+                    </td>
+                    <td>{{ response.created_at.strftime("%d %b %Y, %I:%M %p") }}</td>
+                    <td>
+                        <a class="icon-btn" title="View score" href="{{ url_for('core.student_test_score', token=response.public_token) }}">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% if response.feedback %}
+                <tr class="feedback-row">
+                    <td colspan="6"><strong>Feedback:</strong> {{ response.feedback }}</td>
+                </tr>
+                {% endif %}
+                {% else %}
+                <tr><td colspan="6" class="text-secondary">No student test responses yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

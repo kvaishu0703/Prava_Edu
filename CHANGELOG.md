@@ -158,3 +158,12 @@
 - Added a detailed deployment guide with persistence warnings and verification steps.
 - Added a viva guide with demonstration order and 25 common questions and answers.
 - Completed Phase 15 learning notes, roadmap, progress tracker, health status, and Phase Summary.
+
+## Student Test Form - 2026-08-08
+
+- Added a public, shareable Student Test Form with eight PRAVA website MCQs.
+- Added server-side scoring, response confirmation, and question-wise score review.
+- Added website rating and feedback collection.
+- Added an Admin-only response list with scores and feedback.
+- Added the `student_test_responses` database table, documentation, and four automated tests.
+- Verified the full flow in desktop and mobile browser layouts.

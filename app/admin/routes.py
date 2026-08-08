@@ -8,7 +8,7 @@ from flask_login import current_user
 from app.admin.forms import CourseForm, EmptyForm, FacultyForm, NotificationForm, StudentForm, SubjectForm
 from app.decorators import roles_required
 from app.extensions import db
-from app.models import Course, Faculty, Notification, Student, Subject, User
+from app.models import Course, Faculty, Notification, Student, StudentTestResponse, Subject, User
 from app.services.dashboard import get_admin_dashboard_data
 from app.services.notifications import (
     admin_notifications,
@@ -39,6 +39,14 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 def dashboard():
     """Show the protected Admin dashboard."""
     return render_template("admin/dashboard.html", **get_admin_dashboard_data())
+
+
+@admin_bp.get("/student-test-responses")
+@roles_required("admin")
+def student_test_responses():
+    """List scored responses submitted through the public student test."""
+    responses = StudentTestResponse.query.order_by(StudentTestResponse.created_at.desc()).all()
+    return render_template("admin/student_test_responses.html", responses=responses)
 
 
 @admin_bp.get("/students")

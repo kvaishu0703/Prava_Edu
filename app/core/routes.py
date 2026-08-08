@@ -1,6 +1,13 @@
-"""Routes that are available before role-based modules are added."""
+"""Public routes and project overview pages."""
 
-from flask import Blueprint, current_app, render_template
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from sqlalchemy.exc import SQLAlchemyError
+
+from app.extensions import db
+from app.models import StudentTestResponse
+from app.services.student_test import TEST_QUESTIONS, grade_answers, response_result_rows, serialize_answers
+from app.student.forms import StudentTestForm
 
 core_bp = Blueprint("core", __name__)
 
@@ -9,6 +16,59 @@ core_bp = Blueprint("core", __name__)
 def index():
     """Render the Phase 1 welcome page."""
     return render_template("core/index.html")
+
+
+@core_bp.route("/student-test", methods=["GET", "POST"])
+def student_test():
+    """Show and process the public PRAVA student website test."""
+    form = StudentTestForm()
+    if request.method == "GET" and current_user.is_authenticated:
+        form.full_name.data = current_user.full_name
+        form.email.data = current_user.email
+        if current_user.role == "student" and current_user.student_profile:
+            student = current_user.student_profile
+            form.course_year.data = f"{student.course.code} - Semester {student.semester}"
+
+    if form.validate_on_submit():
+        answers, score = grade_answers(request.form)
+        response = StudentTestResponse(
+            full_name=form.full_name.data.strip(),
+            email=form.email.data.strip().lower(),
+            college_name=form.college_name.data.strip() if form.college_name.data else None,
+            course_year=form.course_year.data.strip(),
+            answers_json=serialize_answers(answers),
+            score=score,
+            total_questions=len(TEST_QUESTIONS),
+            website_rating=form.website_rating.data,
+            feedback=form.feedback.data.strip() if form.feedback.data else None,
+        )
+        try:
+            db.session.add(response)
+            db.session.commit()
+            return redirect(url_for("core.student_test_confirmation", token=response.public_token))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("Your response could not be saved. Please try again.", "danger")
+
+    return render_template("core/student_test_form.html", form=form, questions=TEST_QUESTIONS)
+
+
+@core_bp.get("/student-test/response/<uuid:token>")
+def student_test_confirmation(token):
+    """Show a Google Forms-style response confirmation page."""
+    response = StudentTestResponse.query.filter_by(public_token=str(token)).first_or_404()
+    return render_template("core/student_test_confirmation.html", response=response)
+
+
+@core_bp.get("/student-test/response/<uuid:token>/score")
+def student_test_score(token):
+    """Show the student's score and question-wise review."""
+    response = StudentTestResponse.query.filter_by(public_token=str(token)).first_or_404()
+    return render_template(
+        "core/student_test_score.html",
+        response=response,
+        result_rows=response_result_rows(response),
+    )
 
 
 @core_bp.get("/phase-summary")
@@ -33,7 +93,7 @@ def phase_summary():
             "status": "Completed",
             "tasks": [
                 "SQLAlchemy database extension",
-                "13 database models",
+                "14 database models",
                 "Foreign keys and relationships",
                 "Duplicate prevention constraints",
                 "Seed script with Admin, Faculty, Student, BCA sample data",
@@ -230,6 +290,21 @@ def phase_summary():
                 "Viva demonstration flow and 25 expected Q&A",
             ],
         },
+        {
+            "name": "Enhancement",
+            "title": "Public Student Test Form",
+            "status": "Completed",
+            "tasks": [
+                "Shareable form that works without login",
+                "Student details and eight PRAVA website MCQs",
+                "Server-side scoring and response storage",
+                "Google Forms-style confirmation screen",
+                "Question-wise score and answer review",
+                "Website rating and student feedback",
+                "Admin-only response list",
+                "Responsive desktop and mobile layout",
+            ],
+        },
     ]
     return render_template("core/phase_summary.html", phases=phases)
 
@@ -251,6 +326,7 @@ def system_overview():
                 "Subject list, search, add, edit, deactivate",
                 "Notification create, target, list, and deactivate",
                 "CSV reports for student, faculty, attendance, marks, assignments, notifications",
+                "Student website test scores and feedback review",
                 "Duplicate validation for important fields",
             ],
         },
@@ -282,6 +358,7 @@ def system_overview():
                 "Assignment list, submit, marks, and feedback",
                 "Targeted notifications with read tracking",
                 "Printable student-facing report pages",
+                "Public website test with instant score review",
             ],
         },
         {
@@ -310,6 +387,7 @@ def system_overview():
                 "Users, students, faculty, courses, subjects",
                 "Attendance, marks, materials, assignments",
                 "Submissions, notifications, notification reads, activity logs",
+                "Student website test responses and feedback",
                 "Sample seed data",
                 "Foreign keys and duplicate prevention constraints",
             ],
@@ -324,6 +402,7 @@ def system_overview():
                 "Final report and role-wise user guide",
                 "Production deployment configuration",
                 "Viva questions and demonstration flow",
+                "Public Student Test Form with Admin response review",
             ],
         },
     ]

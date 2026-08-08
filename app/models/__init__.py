@@ -8,6 +8,7 @@ from app.models.marks import Marks
 from app.models.material import StudyMaterial
 from app.models.notification import ActivityLog, Notification, NotificationRead
 from app.models.student import Student
+from app.models.student_test import StudentTestResponse
 from app.models.subject import Subject
 from app.models.submission import Submission
 from app.models.user import User
@@ -22,6 +23,7 @@ __all__ = [
     "Notification",
     "NotificationRead",
     "Student",
+    "StudentTestResponse",
     "StudyMaterial",
     "Subject",
     "Submission",

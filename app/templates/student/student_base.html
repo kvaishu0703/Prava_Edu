@@ -19,6 +19,7 @@
             <a href="{{ url_for('student.materials') }}"><i class="bi bi-download"></i> Materials</a>
             <a href="{{ url_for('student.assignments') }}"><i class="bi bi-clipboard"></i> Assignments</a>
             <a href="{{ url_for('student.notifications') }}"><i class="bi bi-bell"></i> Notifications</a>
+            <a href="{{ url_for('core.student_test') }}"><i class="bi bi-ui-checks-grid"></i> Student Test</a>
             <form method="post" action="{{ url_for('auth.logout') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button>

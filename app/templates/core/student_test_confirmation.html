@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Response Recorded{% endblock %}
+
+{% block content %}
+<section class="student-test-page confirmation-page py-5">
+    <div class="container test-form-container">
+        <div class="test-confirmation-panel">
+            <div class="confirmation-mark"><i class="bi bi-check2"></i></div>
+            <p class="section-label mb-2">PRAVA Website Test</p>
+            <h1>Student Test Form</h1>
+            <p class="confirmation-message">Your response has been recorded.</p>
+            <div class="d-flex flex-wrap gap-3 mt-4">
+                <a class="btn btn-primary" href="{{ url_for('core.student_test_score', token=response.public_token) }}">
+                    <i class="bi bi-bar-chart-fill me-1"></i> View score
+                </a>
+                <a class="btn btn-outline-secondary" href="{{ url_for('core.student_test') }}">
+                    Submit another response
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
