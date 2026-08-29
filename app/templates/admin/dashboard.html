@@ -63,6 +63,27 @@
             {% endfor %}
         </div>
     </section>
+
+    <section class="data-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Recent Inquiries</h2>
+                <p>Latest messages from the public website.</p>
+            </div>
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.contact_inquiries') }}">View All</a>
+        </div>
+        <div class="compact-list">
+            {% for inquiry in recent_inquiries %}
+            <article>
+                <strong>{{ inquiry.full_name }}</strong>
+                <span>{{ inquiry.subject }} · {{ inquiry.status }}</span>
+                <span>{{ inquiry.email }}</span>
+            </article>
+            {% else %}
+            <p class="text-secondary mb-0">No contact inquiries yet.</p>
+            {% endfor %}
+        </div>
+    </section>
 </div>
 {% endcall %}
 {% endblock %}

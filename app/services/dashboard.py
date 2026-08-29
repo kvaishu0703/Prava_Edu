@@ -11,6 +11,7 @@ from sqlalchemy import func
 from app.models import (
     Assignment,
     Attendance,
+    ContactInquiry,
     Course,
     Faculty,
     Marks,
@@ -65,7 +66,7 @@ def get_admin_dashboard_data() -> dict:
         ("Students", Student.query.count(), "bi-people-fill", "purple"),
         ("Faculty", Faculty.query.count(), "bi-person-workspace", "orange"),
         ("Courses", Course.query.filter_by(is_active=True).count(), "bi-journal-bookmark-fill", "green"),
-        ("Attendance", f"{attendance_percentage()}%", "bi-calendar2-check", "blue"),
+        ("New Inquiries", ContactInquiry.query.filter_by(status="New").count(), "bi-envelope-paper", "blue"),
     ]
     recent_students = (
         Student.query.join(Student.user)
@@ -77,6 +78,7 @@ def get_admin_dashboard_data() -> dict:
     return {
         "stats": stats,
         "recent_students": recent_students,
+        "recent_inquiries": ContactInquiry.query.order_by(ContactInquiry.created_at.desc()).limit(4).all(),
         "notifications": recent_notifications(),
         "attendance_percentage": attendance_percentage(),
     }

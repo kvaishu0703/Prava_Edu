@@ -78,6 +78,7 @@ class PublicHomepageTestCase(TestCase):
         self.assertIn(b"Bachelor of Computer Applications", response.data)
         self.assertIn(b"Semester 5", response.data)
         self.assertIn(b"Web Technology", response.data)
+        self.assertIn(b"Course Academic Workflow", response.data)
 
     def test_contact_form_saves_public_inquiry(self):
         response = self.client.post(
@@ -113,6 +114,23 @@ class PublicHomepageTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Parent User", response.data)
         self.assertIn(b"Please share fees details.", response.data)
+
+    def test_admin_dashboard_shows_recent_inquiries(self):
+        self.client.post("/", data={
+            "full_name": "Parent User",
+            "email": "parent@example.com",
+            "phone": "9876543210",
+            "subject": "Fees",
+            "message": "Please share fees details.",
+        })
+        self.client.post("/auth/login", data={"username_or_email": "admin", "password": "Password@123"})
+
+        response = self.client.get("/admin/dashboard")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"New Inquiries", response.data)
+        self.assertIn(b"Recent Inquiries", response.data)
+        self.assertIn(b"Parent User", response.data)
 
     def test_admin_can_update_contact_inquiry_status(self):
         self.client.post("/", data={

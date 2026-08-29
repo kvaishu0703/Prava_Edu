@@ -392,6 +392,37 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.course-workflow-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 1.5rem;
+}
+
+.course-workflow-grid article {
+    background: #ffffff;
+    border: 1px solid var(--prava-border);
+    border-radius: 8px;
+    display: grid;
+    gap: 0.45rem;
+    min-height: 180px;
+    padding: 1.25rem;
+}
+
+.course-workflow-grid i {
+    color: var(--prava-green);
+    font-size: 1.6rem;
+}
+
+.course-workflow-grid strong {
+    color: var(--prava-navy);
+    font-size: 1.02rem;
+}
+
+.course-workflow-grid span {
+    color: #5d6678;
+}
+
 .semester-card {
     background: #ffffff;
     border: 1px solid var(--prava-border);
@@ -1315,7 +1346,8 @@ body {
     .home-summary-grid,
     .course-preview-grid,
     .corner-grid,
-    .semester-grid {
+    .semester-grid,
+    .course-workflow-grid {
         grid-template-columns: 1fr;
     }
 
@@ -1388,6 +1420,10 @@ body {
     .overview-grid,
     .course-preview-grid {
         grid-template-columns: 1fr;
+    }
+
+    .course-workflow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .home-summary-grid {
