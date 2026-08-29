@@ -16,8 +16,24 @@
 </div>
 
 <section class="data-panel">
-    <form method="post" novalidate>
+    <form method="post" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
+        <div class="profile-upload-row">
+            <div class="profile-avatar student-profile">
+                {% if student and student.profile_image %}
+                    <img src="{{ url_for('static', filename=student.profile_image) }}" alt="{{ current_user.full_name }} profile photo">
+                {% else %}
+                    <i class="bi bi-person-circle"></i>
+                {% endif %}
+            </div>
+            <div>
+                {{ form.profile_image.label(class="form-label") }}
+                {{ form.profile_image(class="form-control", accept=".jpg,.jpeg,.png,.gif,.webp") }}
+                {% for error in form.profile_image.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
         <div class="form-grid">
             {{ render_field(form.full_name) }}
             {{ render_field(form.email) }}

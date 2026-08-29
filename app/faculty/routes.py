@@ -58,6 +58,7 @@ from app.services.notifications import (
     notification_type_choices,
     visible_notifications_for_user,
 )
+from app.services.profile_images import save_profile_image
 from app.services.reports import csv_response, marks_report_rows
 
 faculty_bp = Blueprint("faculty", __name__, url_prefix="/faculty")
@@ -108,14 +109,20 @@ def edit_profile():
         faculty.department = form.department.data.strip()
         faculty.joining_date = form.joining_date.data
         try:
+            profile_image = save_profile_image(request.files.get("profile_image"))
+            if profile_image:
+                faculty.profile_image = profile_image
             db.session.commit()
             flash("Profile updated successfully.", "success")
             return redirect(url_for("faculty.profile"))
+        except ValueError as error:
+            db.session.rollback()
+            form.profile_image.errors.append(str(error))
         except SQLAlchemyError:
             db.session.rollback()
             flash("Database error. Please try again.", "danger")
 
-    return render_template("faculty/profile_form.html", form=form)
+    return render_template("faculty/profile_form.html", form=form, faculty=faculty)
 
 
 @faculty_bp.get("/subjects")

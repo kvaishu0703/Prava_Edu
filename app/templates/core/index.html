@@ -1,73 +1,217 @@
 {% extends "base.html" %}
 
-{% block title %}Welcome{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-<section class="welcome-section">
+<section id="home" class="college-hero">
     <div class="container py-5">
         <div class="row align-items-center g-4">
-            <div class="col-lg-7">
-                <p class="section-label">College Academic Management System</p>
-                <h1 class="display-5 fw-bold">PRAVA</h1>
-                <p class="lead text-secondary">
-                    A Flask-based system for Admin, Faculty, and Student academic workflows.
+            <div class="col-lg-6">
+                <div class="college-logo mb-3"><i class="bi bi-mortarboard-fill"></i></div>
+                <p class="section-label">Professional College Management System</p>
+                <h1>PRAVA College</h1>
+                <p class="lead">
+                    A clean academic portal for students, faculty, and administrators with attendance,
+                    marks, study material, assignments, notifications, reports, and student tests.
                 </p>
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                    <a class="btn btn-primary" href="{{ url_for('core.health') }}">
-                        <i class="bi bi-activity me-1"></i> Check App Health
+                    <a class="btn btn-primary" href="{{ url_for('auth.login') }}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Login
                     </a>
-                    <a class="btn btn-outline-secondary" href="{{ url_for('core.phase_summary') }}">
-                        <i class="bi bi-list-check me-1"></i> View Phase Summary
+                    <a class="btn btn-outline-light" href="#courses">
+                        <i class="bi bi-journal-bookmark me-1"></i> View Courses
                     </a>
-                    <a class="btn btn-outline-success" href="{{ url_for('core.student_test') }}">
-                        <i class="bi bi-ui-checks-grid me-1"></i> Student Test Form
+                    <a class="btn btn-outline-light" href="{{ url_for('core.student_test') }}">
+                        <i class="bi bi-ui-checks-grid me-1"></i> Student Test
                     </a>
                 </div>
             </div>
-            <div class="col-lg-5">
-                <div class="login-preview shadow-sm">
-                    <div class="text-center mb-4">
-                        <div class="preview-logo"><i class="bi bi-mortarboard-fill"></i></div>
-                        <h2 class="h4 mt-3">Login System</h2>
-                        <p class="text-secondary mb-0">Authentication is ready in Phase 3.</p>
+            <div class="col-lg-6">
+                <div class="campus-banner" role="img" aria-label="PRAVA College campus banner">
+                    <div>
+                        <span>PRAVA Campus</span>
+                        <strong>Learning, discipline, and digital academic management</strong>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Username or Email</label>
-                        <input class="form-control" value="admin" disabled>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input class="form-control" value="Admin@123" type="password" disabled>
-                    </div>
-                    <a class="btn btn-primary w-100" href="{{ url_for('auth.login') }}">Open Login</a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section id="phase-plan" class="container py-5">
-    <div class="row g-3">
-        <div class="col-md-4">
-            <div class="feature-card">
-                <i class="bi bi-folder2-open"></i>
-                <h2>Folder Structure</h2>
-                <p>Modular Flask folders are ready for auth, admin, faculty, student, services, templates, and static files.</p>
+<section class="container py-5">
+    <div class="home-summary-grid">
+        {% for label, value, icon, tone in summary_cards %}
+            <article class="home-summary-card tone-{{ tone }}">
+                <i class="bi {{ icon }}"></i>
+                <strong>{{ value }}</strong>
+                <span>{{ label }}</span>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section id="courses" class="home-section">
+    <div class="container py-5">
+        <div class="section-heading">
+            <p class="section-label">Courses</p>
+            <h2>Academic Programs</h2>
+            <p>Explore the main courses managed through the PRAVA academic system.</p>
+        </div>
+        <div class="course-preview-grid">
+            {% for item in courses %}
+                <article class="course-preview-card">
+                    <span>{{ item.course.code }}</span>
+                    <h3>{{ item.course.name }}</h3>
+                    <p>{{ item.description }}</p>
+                    <dl>
+                        <div>
+                            <dt>Duration</dt>
+                            <dd>{{ item.course.duration }}</dd>
+                        </div>
+                        <div>
+                            <dt>Semesters</dt>
+                            <dd>{{ item.course.total_semesters }}</dd>
+                        </div>
+                    </dl>
+                    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('core.course_detail', course_code=item.course.code) }}">View Details</a>
+                </article>
+            {% else %}
+                <div class="data-panel">
+                    <p class="mb-0 text-secondary">Courses will appear here after Admin adds active courses.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section id="about" class="container py-5">
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-5">
+            <p class="section-label">About</p>
+            <h2 class="home-title">About PRAVA College</h2>
+            <p class="text-secondary">
+                PRAVA College focuses on structured learning, transparent academic tracking, and fast communication.
+                The system brings daily attendance, marks, materials, assignments, notices, and reports into one
+                role-based platform.
+            </p>
+        </div>
+        <div class="col-lg-7">
+            <div class="corner-grid">
+                <article>
+                    <i class="bi bi-mortarboard"></i>
+                    <h3>Student Corner</h3>
+                    <a href="{{ url_for('auth.login') }}">Login</a>
+                    <a href="{{ url_for('student.marks') }}">Results</a>
+                    <a href="{{ url_for('student.attendance') }}">Attendance</a>
+                    <a href="{{ url_for('student.notifications') }}">Notifications</a>
+                    <a href="{{ url_for('core.student_test') }}">Tests / Assignments</a>
+                </article>
+                <article>
+                    <i class="bi bi-person-workspace"></i>
+                    <h3>Faculty Corner</h3>
+                    <a href="{{ url_for('auth.login') }}">Faculty Login</a>
+                    <a href="{{ url_for('faculty.students') }}">Student Management</a>
+                    <a href="{{ url_for('faculty.attendance') }}">Attendance</a>
+                    <a href="{{ url_for('faculty.marks') }}">Marks</a>
+                    <a href="{{ url_for('faculty.assignments') }}">Tests</a>
+                    <a href="{{ url_for('faculty.attendance_report') }}">Reports</a>
+                </article>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="feature-card">
-                <i class="bi bi-database-check"></i>
-                <h2>Database Models</h2>
-                <p>Users, students, faculty, courses, subjects, attendance, marks, assignments, and notifications are modeled.</p>
+    </div>
+</section>
+
+<section class="home-section">
+    <div class="container py-5">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <p class="section-label">Login</p>
+                <h2 class="home-title">Role Based Access</h2>
+                <p class="text-secondary">Students, faculty, and admin users enter through the same secure login system.</p>
+                <div class="role-login-grid">
+                    <a href="{{ url_for('auth.login') }}"><i class="bi bi-mortarboard"></i> Student Login</a>
+                    <a href="{{ url_for('auth.login') }}"><i class="bi bi-person-workspace"></i> Faculty Login</a>
+                    <a href="{{ url_for('auth.login') }}"><i class="bi bi-shield-lock"></i> Admin Login</a>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="latest-notices-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h2>Latest Notifications</h2>
+                            <p>General notices, exam updates, events, holidays, and result alerts.</p>
+                        </div>
+                    </div>
+                    <div class="notification-list">
+                        {% for notice in latest_notices %}
+                            <article>
+                                <i class="bi bi-bell-fill"></i>
+                                <div>
+                                    <strong>{{ notice.title }}</strong>
+                                    <span>{{ notice.notification_type }} · {{ notice.created_at.strftime("%d %b %Y") }}</span>
+                                    <span>{{ notice.message }}</span>
+                                </div>
+                            </article>
+                        {% else %}
+                            <article>
+                                <i class="bi bi-info-circle"></i>
+                                <div>
+                                    <strong>No active notices yet</strong>
+                                    <span>Latest notifications will appear here after Admin or Faculty publishes them.</span>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="feature-card">
-                <i class="bi bi-journal-code"></i>
-                <h2>Learning Docs</h2>
-                <p>Marathi phase notes explain what was built, why it matters, and how to run and test it.</p>
+    </div>
+</section>
+
+<section id="contact" class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <p class="section-label">Contact</p>
+            <h2 class="home-title">Contact Us</h2>
+            <div class="contact-details">
+                <p><i class="bi bi-geo-alt"></i> PRAVA College Campus, Pune, Maharashtra</p>
+                <p><i class="bi bi-telephone"></i> +91 98765 43210</p>
+                <p><i class="bi bi-envelope"></i> office@pravacollege.edu</p>
+                <p><i class="bi bi-clock"></i> Monday to Saturday, 10:00 AM - 5:00 PM</p>
             </div>
+        </div>
+        <div class="col-lg-7">
+            <form class="contact-form" method="post" action="{{ url_for('core.index', _anchor='contact') }}">
+                {{ form.hidden_tag() }}
+                <div class="form-grid">
+                    <div class="mb-3">
+                        {{ form.full_name.label(class="form-label") }}
+                        {{ form.full_name(class="form-control") }}
+                        {% for error in form.full_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control") }}
+                        {% for error in form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.phone.label(class="form-label") }}
+                        {{ form.phone(class="form-control") }}
+                        {% for error in form.phone.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.subject.label(class="form-label") }}
+                        {{ form.subject(class="form-control") }}
+                        {% for error in form.subject.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.message.label(class="form-label") }}
+                    {{ form.message(class="form-control", rows="5") }}
+                    {% for error in form.message.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                </div>
+                <button class="btn btn-primary" type="submit"><i class="bi bi-send me-1"></i> Send Message</button>
+            </form>
         </div>
     </div>
 </section>

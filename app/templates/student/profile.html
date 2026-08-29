@@ -16,20 +16,28 @@
 
 <section class="data-panel">
     {% if student %}
-    <div class="profile-grid student-profile">
+        <div class="profile-grid student-profile">
         <div class="profile-avatar">
-            <i class="bi bi-person-circle"></i>
+            {% if student.profile_image %}
+                <img src="{{ url_for('static', filename=student.profile_image) }}" alt="{{ current_user.full_name }} profile photo">
+            {% else %}
+                <i class="bi bi-person-circle"></i>
+            {% endif %}
             <strong>{{ current_user.full_name }}</strong>
             <span>{{ student.enrollment_number }}</span>
         </div>
         <div class="detail-grid">
             <div><span>Email</span><strong>{{ current_user.email }}</strong></div>
             <div><span>Mobile</span><strong>{{ student.mobile_number or '-' }}</strong></div>
+            <div><span>Student ID</span><strong>{{ student.enrollment_number }}</strong></div>
             <div><span>Course</span><strong>{{ student.course.code }} - {{ student.course.name }}</strong></div>
+            <div><span>Class</span><strong>{{ student.course.code }}</strong></div>
             <div><span>Semester</span><strong>{{ student.semester }}</strong></div>
             <div><span>Admission Year</span><strong>{{ student.admission_year }}</strong></div>
+            <div><span>Academic Year</span><strong>{{ student.admission_year }} - {{ student.admission_year + 1 }}</strong></div>
             <div><span>Gender</span><strong>{{ student.gender or '-' }}</strong></div>
             <div><span>Date of Birth</span><strong>{{ student.date_of_birth.strftime("%d %b %Y") if student.date_of_birth else '-' }}</strong></div>
+            <div><span>Address</span><strong>{{ student.address or '-' }}</strong></div>
             <div><span>Status</span><strong>{{ 'Active' if current_user.is_active else 'Inactive' }}</strong></div>
         </div>
     </div>

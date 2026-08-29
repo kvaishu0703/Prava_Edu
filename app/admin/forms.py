@@ -13,6 +13,21 @@ class EmptyForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class InquiryStatusForm(FlaskForm):
+    """Validate Admin status updates for public contact inquiries."""
+
+    status = SelectField(
+        "Status",
+        choices=[
+            ("New", "New"),
+            ("In Progress", "In Progress"),
+            ("Closed", "Closed"),
+        ],
+        validators=[DataRequired()],
+    )
+    submit = SubmitField("Update")
+
+
 class CourseForm(FlaskForm):
     """Validate course create and edit data."""
 

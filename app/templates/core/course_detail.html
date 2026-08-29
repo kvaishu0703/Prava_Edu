@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.code }} Course{% endblock %}
+
+{% block content %}
+<section class="course-detail-hero">
+    <div class="container py-5">
+        <a class="back-link" href="{{ url_for('core.index', _anchor='courses') }}">
+            <i class="bi bi-arrow-left"></i> Courses
+        </a>
+        <div class="row g-4 align-items-end mt-2">
+            <div class="col-lg-7">
+                <p class="section-label">{{ course.code }}</p>
+                <h1>{{ course.name }}</h1>
+                <p>{{ description }}</p>
+            </div>
+            <div class="col-lg-5">
+                <div class="course-facts">
+                    <div><span>Duration</span><strong>{{ course.duration }}</strong></div>
+                    <div><span>Total Semesters</span><strong>{{ course.total_semesters }}</strong></div>
+                    <div><span>Students</span><strong>{{ student_count }}</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <h2 class="home-title">Course Overview</h2>
+            <p class="text-secondary">
+                This course is managed through PRAVA with subject allocation, attendance,
+                marks, study material, assignments, notifications, and reports.
+            </p>
+            <a class="btn btn-primary" href="{{ url_for('auth.login') }}">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Login for Details
+            </a>
+        </div>
+        <div class="col-lg-8">
+            <div class="semester-grid">
+                {% for semester, subjects in semester_groups.items() %}
+                    <article class="semester-card">
+                        <h3>Semester {{ semester }}</h3>
+                        <ul>
+                            {% for subject in subjects %}
+                                <li>
+                                    <strong>{{ subject.code }}</strong>
+                                    <span>{{ subject.name }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </article>
+                {% else %}
+                    <article class="semester-card">
+                        <h3>Subjects</h3>
+                        <p class="text-secondary mb-0">Subjects will appear here after Admin adds them.</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

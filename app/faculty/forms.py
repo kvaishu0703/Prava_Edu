@@ -13,6 +13,7 @@ EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 class FacultyProfileForm(FlaskForm):
     """Validate faculty profile updates."""
 
+    profile_image = FileField("Profile Photo")
     full_name = StringField("Full Name", validators=[DataRequired(), Length(max=120)])
     email = StringField(
         "Email",

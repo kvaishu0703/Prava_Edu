@@ -16,18 +16,24 @@
 
 <section class="data-panel">
     {% if faculty %}
-    <div class="profile-grid">
+        <div class="profile-grid">
         <div class="profile-avatar">
-            <i class="bi bi-person-workspace"></i>
+            {% if faculty.profile_image %}
+                <img src="{{ url_for('static', filename=faculty.profile_image) }}" alt="{{ current_user.full_name }} profile photo">
+            {% else %}
+                <i class="bi bi-person-workspace"></i>
+            {% endif %}
             <strong>{{ current_user.full_name }}</strong>
             <span>{{ faculty.employee_id }}</span>
         </div>
         <div class="detail-grid">
             <div><span>Email</span><strong>{{ current_user.email }}</strong></div>
             <div><span>Mobile</span><strong>{{ faculty.mobile_number or '-' }}</strong></div>
+            <div><span>Faculty ID</span><strong>{{ faculty.employee_id }}</strong></div>
             <div><span>Department</span><strong>{{ faculty.department }}</strong></div>
             <div><span>Qualification</span><strong>{{ faculty.qualification or '-' }}</strong></div>
             <div><span>Joining Date</span><strong>{{ faculty.joining_date.strftime("%d %b %Y") if faculty.joining_date else '-' }}</strong></div>
+            <div><span>Assigned Subjects</span><strong>{{ faculty.subjects|length }}</strong></div>
             <div><span>Status</span><strong>{{ 'Active' if current_user.is_active else 'Inactive' }}</strong></div>
         </div>
     </div>

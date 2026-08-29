@@ -5,17 +5,44 @@ from flask_login import current_user
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.extensions import db
-from app.models import StudentTestResponse
+from app.core.forms import ContactForm
+from app.models import ContactInquiry, Course, StudentTestResponse
+from app.services.homepage import course_detail_data, public_homepage_data
 from app.services.student_test import TEST_QUESTIONS, grade_answers, response_result_rows, serialize_answers
 from app.student.forms import StudentTestForm
 
 core_bp = Blueprint("core", __name__)
 
 
-@core_bp.get("/")
+@core_bp.route("/", methods=["GET", "POST"])
 def index():
-    """Render the Phase 1 welcome page."""
-    return render_template("core/index.html")
+    """Render the professional public college homepage."""
+    form = ContactForm()
+    if form.validate_on_submit():
+        inquiry = ContactInquiry(
+            full_name=form.full_name.data.strip(),
+            email=form.email.data.strip().lower(),
+            phone=form.phone.data.strip() if form.phone.data else None,
+            subject=form.subject.data.strip(),
+            message=form.message.data.strip(),
+        )
+        try:
+            db.session.add(inquiry)
+            db.session.commit()
+            flash("Thank you. Your message has been submitted successfully.", "success")
+            return redirect(url_for("core.index", _anchor="contact"))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("Your message could not be saved. Please try again.", "danger")
+
+    return render_template("core/index.html", form=form, **public_homepage_data())
+
+
+@core_bp.get("/courses/<string:course_code>")
+def course_detail(course_code: str):
+    """Show public information for one active course."""
+    course = Course.query.filter_by(code=course_code.upper(), is_active=True).first_or_404()
+    return render_template("core/course_detail.html", **course_detail_data(course))
 
 
 @core_bp.route("/student-test", methods=["GET", "POST"])

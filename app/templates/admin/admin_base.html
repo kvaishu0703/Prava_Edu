@@ -18,6 +18,7 @@
             <a href="{{ url_for('admin.subjects') }}"><i class="bi bi-book"></i> Subjects</a>
             <a href="{{ url_for('admin.notifications') }}"><i class="bi bi-bell"></i> Notifications</a>
             <a href="{{ url_for('admin.student_test_responses') }}"><i class="bi bi-ui-checks-grid"></i> Student Tests</a>
+            <a href="{{ url_for('admin.contact_inquiries') }}"><i class="bi bi-envelope-paper"></i> Inquiries</a>
             <a href="{{ url_for('admin.reports') }}"><i class="bi bi-file-earmark-spreadsheet"></i> Reports</a>
             <form method="post" action="{{ url_for('auth.logout') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

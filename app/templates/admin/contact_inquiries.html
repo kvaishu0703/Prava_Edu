@@ -1,0 +1,64 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Contact Inquiries{% endblock %}
+
+{% block admin_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Public Website</p>
+        <h1>Contact Inquiries</h1>
+        <p>Review messages submitted from the public college contact form.</p>
+    </div>
+</div>
+
+<section class="data-panel">
+    <form class="search-row mb-3" method="get">
+        <input class="form-control" type="search" name="q" value="{{ search }}" placeholder="Search name, email, subject, status">
+        <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inquiry in inquiries %}
+                <tr id="inquiry-{{ inquiry.id }}">
+                    <td>{{ inquiry.created_at.strftime("%d %b %Y") }}</td>
+                    <td>{{ inquiry.full_name }}</td>
+                    <td>{{ inquiry.email }}</td>
+                    <td>{{ inquiry.phone or "-" }}</td>
+                    <td>{{ inquiry.subject }}</td>
+                    <td>
+                        <form class="inquiry-status-form" method="post" action="{{ url_for('admin.update_contact_inquiry_status', inquiry_id=inquiry.id) }}">
+                            {{ status_form.hidden_tag() }}
+                            <select class="form-select form-select-sm" name="status" aria-label="Inquiry status">
+                                {% for value, label in status_form.status.choices %}
+                                    <option value="{{ value }}" {% if inquiry.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="icon-btn" type="submit" title="Update status"><i class="bi bi-check2"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                    <tr class="feedback-row">
+                        <td colspan="6">{{ inquiry.message }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-secondary py-4">No contact inquiries found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

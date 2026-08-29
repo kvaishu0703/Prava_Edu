@@ -2,6 +2,7 @@
 
 from app.models.assignment import Assignment
 from app.models.attendance import Attendance
+from app.models.contact import ContactInquiry
 from app.models.course import Course
 from app.models.faculty import Faculty
 from app.models.marks import Marks
@@ -17,6 +18,7 @@ __all__ = [
     "ActivityLog",
     "Assignment",
     "Attendance",
+    "ContactInquiry",
     "Course",
     "Faculty",
     "Marks",

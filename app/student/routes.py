@@ -17,6 +17,7 @@ from app.services.assignments import (
     uploaded_file_exists,
 )
 from app.services.notifications import mark_notification_read, notification_for_reader, visible_notifications_for_user
+from app.services.profile_images import save_profile_image
 from app.services.student import (
     get_student_for_user,
     student_assignments,
@@ -76,14 +77,20 @@ def edit_profile():
         student.gender = form.gender.data or None
         student.address = form.address.data
         try:
+            profile_image = save_profile_image(request.files.get("profile_image"))
+            if profile_image:
+                student.profile_image = profile_image
             db.session.commit()
             flash("Profile updated successfully.", "success")
             return redirect(url_for("student.profile"))
+        except ValueError as error:
+            db.session.rollback()
+            form.profile_image.errors.append(str(error))
         except SQLAlchemyError:
             db.session.rollback()
             flash("Database error. Please try again.", "danger")
 
-    return render_template("student/profile_form.html", form=form)
+    return render_template("student/profile_form.html", form=form, student=student)
 
 
 @student_bp.get("/subjects")

@@ -5,10 +5,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 
-from app.admin.forms import CourseForm, EmptyForm, FacultyForm, NotificationForm, StudentForm, SubjectForm
+from app.admin.forms import CourseForm, EmptyForm, FacultyForm, InquiryStatusForm, NotificationForm, StudentForm, SubjectForm
 from app.decorators import roles_required
 from app.extensions import db
-from app.models import Course, Faculty, Notification, Student, StudentTestResponse, Subject, User
+from app.models import ContactInquiry, Course, Faculty, Notification, Student, StudentTestResponse, Subject, User
 from app.services.dashboard import get_admin_dashboard_data
 from app.services.notifications import (
     admin_notifications,
@@ -47,6 +47,45 @@ def student_test_responses():
     """List scored responses submitted through the public student test."""
     responses = StudentTestResponse.query.order_by(StudentTestResponse.created_at.desc()).all()
     return render_template("admin/student_test_responses.html", responses=responses)
+
+
+@admin_bp.get("/contact-inquiries")
+@roles_required("admin")
+def contact_inquiries():
+    """List messages submitted from the public college website."""
+    search = request.args.get("q", "").strip()
+    query = ContactInquiry.query
+    if search:
+        like = f"%{search}%"
+        query = query.filter(
+            or_(
+                ContactInquiry.full_name.ilike(like),
+                ContactInquiry.email.ilike(like),
+                ContactInquiry.subject.ilike(like),
+                ContactInquiry.status.ilike(like),
+            )
+        )
+    inquiries = query.order_by(ContactInquiry.created_at.desc()).all()
+    return render_template("admin/contact_inquiries.html", inquiries=inquiries, search=search, status_form=InquiryStatusForm())
+
+
+@admin_bp.post("/contact-inquiries/<int:inquiry_id>/status")
+@roles_required("admin")
+def update_contact_inquiry_status(inquiry_id: int):
+    """Update the workflow status for a public contact inquiry."""
+    form = InquiryStatusForm()
+    inquiry = ContactInquiry.query.get_or_404(inquiry_id)
+    if form.validate_on_submit():
+        inquiry.status = form.status.data
+        try:
+            db.session.commit()
+            flash("Inquiry status updated successfully.", "success")
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("Database error while updating inquiry status.", "danger")
+    else:
+        flash("Invalid inquiry status update.", "danger")
+    return redirect(url_for("admin.contact_inquiries", _anchor=f"inquiry-{inquiry.id}"))
 
 
 @admin_bp.get("/students")
