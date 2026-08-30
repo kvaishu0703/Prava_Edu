@@ -76,7 +76,13 @@ def seed_database(reset: bool = False) -> None:
         create_user("faculty_py", "Prof. Meera Kulkarni", "meera@example.com", "faculty", "Faculty@123"),
     ]
 
-    course = Course(name="Bachelor of Computer Applications", code="BCA", duration="3 Years", total_semesters=6)
+    course = Course(
+        name="Bachelor of Computer Applications",
+        code="BCA",
+        description="Computer applications, programming, databases, web technology, and practical software development.",
+        duration="3 Years",
+        total_semesters=6,
+    )
     db.session.add(course)
     db.session.flush()
 

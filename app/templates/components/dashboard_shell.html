@@ -15,7 +15,7 @@
             {% elif role_name == "Student" %}
             <a href="{{ url_for('student.profile') }}"><i class="bi bi-person"></i> Profile</a>
             {% else %}
-            <a href="#"><i class="bi bi-person"></i> Profile</a>
+            <a href="{{ url_for('admin.profile') }}"><i class="bi bi-person"></i> Profile</a>
             {% endif %}
             {% if role_name == "Admin" %}
             <a href="{{ url_for('admin.students') }}"><i class="bi bi-people"></i> Students</a>

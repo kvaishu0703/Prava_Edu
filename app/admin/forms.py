@@ -28,11 +28,23 @@ class InquiryStatusForm(FlaskForm):
     submit = SubmitField("Update")
 
 
+class AdminProfileForm(FlaskForm):
+    """Validate Admin's own profile updates."""
+
+    full_name = StringField("Full Name", validators=[DataRequired(), Length(max=120)])
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Length(max=120), Regexp(EMAIL_PATTERN, message="Enter a valid email address.")],
+    )
+    submit = SubmitField("Save Profile")
+
+
 class CourseForm(FlaskForm):
     """Validate course create and edit data."""
 
     name = StringField("Course Name", validators=[DataRequired(), Length(max=120)])
     code = StringField("Course Code", validators=[DataRequired(), Length(max=30)])
+    description = TextAreaField("Course Description", validators=[Optional(), Length(max=1000)])
     duration = StringField("Duration", validators=[DataRequired(), Length(max=50)])
     total_semesters = IntegerField(
         "Total Semesters",

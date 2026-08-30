@@ -9,7 +9,7 @@ services:
     buildCommand: pip install -r requirements.txt
     # Free web services do not support preDeployCommand. Both Flask commands
     # are idempotent, so running them before Gunicorn is safe on every start.
-    startCommand: flask --app wsgi:app init-db && flask --app wsgi:app bootstrap-admin && gunicorn --workers 2 --threads 4 --bind 0.0.0.0:$PORT --access-logfile - wsgi:app
+    startCommand: flask --app wsgi:app upgrade-db && flask --app wsgi:app bootstrap-admin && gunicorn --workers 2 --threads 4 --bind 0.0.0.0:$PORT --access-logfile - wsgi:app
     healthCheckPath: /health
     autoDeployTrigger: checksPass
     envVars:

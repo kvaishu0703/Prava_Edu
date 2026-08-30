@@ -25,6 +25,13 @@
             {{ render_field(form.total_semesters) }}
             {{ render_check(form.is_active, "form-check form-switch align-self-end mb-3") }}
         </div>
+        <div class="mb-3">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control", rows="4") }}
+            {% for error in form.description.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
         <div class="form-actions">
             <a class="btn btn-outline-secondary" href="{{ url_for('admin.courses') }}">Cancel</a>
             {{ form.submit(class="btn btn-primary") }}

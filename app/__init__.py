@@ -7,6 +7,7 @@ import click
 from flask import Flask, render_template, request
 from flask_login import current_user
 from flask_wtf.csrf import CSRFError
+from sqlalchemy import inspect, text
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -53,6 +54,20 @@ def register_commands(app: Flask) -> None:
 
         db.create_all()
         print("Database tables created successfully.")
+
+    @app.cli.command("upgrade-db")
+    def upgrade_db_command():
+        """Create new tables and apply small backward-compatible schema upgrades."""
+        from app import models  # noqa: F401
+
+        db.create_all()
+        inspector = inspect(db.engine)
+        course_columns = {column["name"] for column in inspector.get_columns("courses")}
+        if "description" not in course_columns:
+            db.session.execute(text("ALTER TABLE courses ADD COLUMN description TEXT"))
+            db.session.commit()
+            click.echo("Added courses.description column.")
+        click.echo("Database schema upgraded successfully.")
 
     @app.cli.command("bootstrap-admin")
     def bootstrap_admin_command():

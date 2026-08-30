@@ -22,7 +22,13 @@ class PublicHomepageTestCase(TestCase):
             admin = self._user("admin", "admin@example.com", "admin")
             faculty_user = self._user("faculty", "faculty@example.com", "faculty")
             student_user = self._user("student", "student@example.com", "student")
-            course = Course(name="Bachelor of Computer Applications", code="BCA", duration="3 Years", total_semesters=6)
+            course = Course(
+                name="Bachelor of Computer Applications",
+                code="BCA",
+                description="Computer applications and web technology program.",
+                duration="3 Years",
+                total_semesters=6,
+            )
             db.session.add(course)
             db.session.flush()
             db.session.add(Faculty(user=faculty_user, employee_id="FAC100", department="Computer Applications"))
@@ -67,6 +73,7 @@ class PublicHomepageTestCase(TestCase):
         self.assertIn(b"PRAVA College", response.data)
         self.assertIn(b"Total Students", response.data)
         self.assertIn(b"Bachelor of Computer Applications", response.data)
+        self.assertIn(b"Computer applications and web technology program.", response.data)
         self.assertIn(b"Exam Notice", response.data)
         self.assertIn(b"Student Login", response.data)
         self.assertIn(b"Contact Us", response.data)
@@ -76,6 +83,7 @@ class PublicHomepageTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Bachelor of Computer Applications", response.data)
+        self.assertIn(b"Computer applications and web technology program.", response.data)
         self.assertIn(b"Semester 5", response.data)
         self.assertIn(b"Web Technology", response.data)
         self.assertIn(b"Course Academic Workflow", response.data)
@@ -150,6 +158,24 @@ class PublicHomepageTestCase(TestCase):
         with self.app.app_context():
             inquiry = db.session.get(ContactInquiry, inquiry_id)
             self.assertEqual(inquiry.status, "Closed")
+
+    def test_admin_can_view_and_edit_own_profile(self):
+        self.client.post("/auth/login", data={"username_or_email": "admin", "password": "Password@123"})
+
+        profile = self.client.get("/admin/profile")
+        self.assertEqual(profile.status_code, 200)
+        self.assertIn(b"Admin Module", profile.data)
+
+        response = self.client.post(
+            "/admin/profile/edit",
+            data={"full_name": "Principal Admin", "email": "principal@example.com"},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        with self.app.app_context():
+            admin = User.query.filter_by(username="admin").one()
+            self.assertEqual(admin.full_name, "Principal Admin")
+            self.assertEqual(admin.email, "principal@example.com")
 
     def test_student_can_upload_profile_photo(self):
         self.client.post("/auth/login", data={"username_or_email": "student", "password": "Password@123"})

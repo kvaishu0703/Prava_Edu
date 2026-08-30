@@ -1,0 +1,31 @@
+{% extends "admin/admin_base.html" %}
+{% from "admin/_field.html" import render_field %}
+
+{% block title %}Edit Admin Profile{% endblock %}
+
+{% block admin_content %}
+<div class="panel-heading page-heading">
+    <div>
+        <p class="section-label mb-1">Admin Module</p>
+        <h1>Edit Profile</h1>
+        <p>Update your basic administrator account details.</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.profile') }}">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<section class="data-panel">
+    <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+            {{ render_field(form.full_name) }}
+            {{ render_field(form.email) }}
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('admin.profile') }}">Cancel</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</section>
+{% endblock %}

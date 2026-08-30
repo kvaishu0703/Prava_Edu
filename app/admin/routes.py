@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 
-from app.admin.forms import CourseForm, EmptyForm, FacultyForm, InquiryStatusForm, NotificationForm, StudentForm, SubjectForm
+from app.admin.forms import AdminProfileForm, CourseForm, EmptyForm, FacultyForm, InquiryStatusForm, NotificationForm, StudentForm, SubjectForm
 from app.decorators import roles_required
 from app.extensions import db
 from app.models import ContactInquiry, Course, Faculty, Notification, Student, StudentTestResponse, Subject, User
@@ -39,6 +39,42 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 def dashboard():
     """Show the protected Admin dashboard."""
     return render_template("admin/dashboard.html", **get_admin_dashboard_data())
+
+
+@admin_bp.get("/profile")
+@roles_required("admin")
+def profile():
+    """Show the current Admin account profile."""
+    return render_template("admin/profile.html")
+
+
+@admin_bp.route("/profile/edit", methods=["GET", "POST"])
+@roles_required("admin")
+def edit_profile():
+    """Allow Admin to update basic account profile details."""
+    form = AdminProfileForm()
+    if request.method == "GET":
+        form.full_name.data = current_user.full_name
+        form.email.data = current_user.email
+
+    if form.validate_on_submit():
+        email = form.email.data.strip().lower()
+        existing = User.query.filter(User.email == email, User.id != current_user.id).first()
+        if existing:
+            form.email.errors.append("Email already exists.")
+            return render_template("admin/profile_form.html", form=form)
+
+        current_user.full_name = form.full_name.data.strip()
+        current_user.email = email
+        try:
+            db.session.commit()
+            flash("Admin profile updated successfully.", "success")
+            return redirect(url_for("admin.profile"))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("Database error. Please try again.", "danger")
+
+    return render_template("admin/profile_form.html", form=form)
 
 
 @admin_bp.get("/student-test-responses")
@@ -300,6 +336,7 @@ def new_course():
         course = Course(
             name=form.name.data.strip(),
             code=form.code.data.strip().upper(),
+            description=form.description.data.strip() if form.description.data else None,
             duration=form.duration.data.strip(),
             total_semesters=form.total_semesters.data,
             is_active=form.is_active.data,
@@ -317,6 +354,7 @@ def edit_course(course_id: int):
     if form.validate_on_submit() and validate_course_form(form, course):
         course.name = form.name.data.strip()
         course.code = form.code.data.strip().upper()
+        course.description = form.description.data.strip() if form.description.data else None
         course.duration = form.duration.data.strip()
         course.total_semesters = form.total_semesters.data
         course.is_active = form.is_active.data

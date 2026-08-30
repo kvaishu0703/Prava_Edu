@@ -3,13 +3,6 @@
 from app.models import Course, Faculty, Notification, Student, Subject
 
 
-COURSE_DESCRIPTIONS = {
-    "BCA": "Computer applications, programming, databases, and web technology.",
-    "MCA": "Advanced software development, systems, cloud, and research-oriented computing.",
-    "HOME-SCI": "Applied home science, nutrition, family resource management, and community studies.",
-}
-
-
 def public_homepage_data() -> dict:
     """Return database-backed values for the professional public homepage."""
     courses = Course.query.filter_by(is_active=True).order_by(Course.name.asc()).limit(6).all()
@@ -29,7 +22,7 @@ def public_homepage_data() -> dict:
         "courses": [
             {
                 "course": course,
-                "description": COURSE_DESCRIPTIONS.get(course.code.upper(), "Career-focused academic program with practical learning."),
+                "description": course.description or "Course description will be updated by Admin.",
             }
             for course in courses
         ],
@@ -50,7 +43,7 @@ def course_detail_data(course: Course) -> dict:
 
     return {
         "course": course,
-        "description": COURSE_DESCRIPTIONS.get(course.code.upper(), "Career-focused academic program with practical learning."),
+        "description": course.description or "Course description will be updated by Admin.",
         "semester_groups": semester_groups,
         "student_count": Student.query.filter_by(course_id=course.id).count(),
     }
