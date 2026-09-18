@@ -80,7 +80,7 @@ def edit_profile():
 @admin_bp.get("/student-test-responses")
 @roles_required("admin")
 def student_test_responses():
-    """List scored responses submitted through the public student test."""
+    """List scored responses submitted through the student test."""
     responses = StudentTestResponse.query.order_by(StudentTestResponse.created_at.desc()).all()
     return render_template("admin/student_test_responses.html", responses=responses)
 

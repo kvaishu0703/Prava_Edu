@@ -4,6 +4,7 @@ from flask import Blueprint, current_app, flash, redirect, render_template, requ
 from flask_login import current_user
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.decorators import roles_required
 from app.extensions import db
 from app.core.forms import ContactForm
 from app.models import ContactInquiry, Course, StudentTestResponse
@@ -46,8 +47,9 @@ def course_detail(course_code: str):
 
 
 @core_bp.route("/student-test", methods=["GET", "POST"])
+@roles_required("student")
 def student_test():
-    """Show and process the public PRAVA student website test."""
+    """Show and process the PRAVA student-only test form."""
     form = StudentTestForm()
     if request.method == "GET" and current_user.is_authenticated:
         form.full_name.data = current_user.full_name
@@ -81,13 +83,15 @@ def student_test():
 
 
 @core_bp.get("/student-test/response/<uuid:token>")
+@roles_required("student", "admin")
 def student_test_confirmation(token):
-    """Show a Google Forms-style response confirmation page."""
+    """Show a student test response confirmation page."""
     response = StudentTestResponse.query.filter_by(public_token=str(token)).first_or_404()
     return render_template("core/student_test_confirmation.html", response=response)
 
 
 @core_bp.get("/student-test/response/<uuid:token>/score")
+@roles_required("student", "admin")
 def student_test_score(token):
     """Show the student's score and question-wise review."""
     response = StudentTestResponse.query.filter_by(public_token=str(token)).first_or_404()
@@ -319,15 +323,15 @@ def phase_summary():
         },
         {
             "name": "Enhancement",
-            "title": "Public Student Test Form",
+            "title": "Student Test Form",
             "status": "Completed",
             "tasks": [
-                "Shareable form that works without login",
+                "Student-only form available after login",
                 "Student details and eight PRAVA website MCQs",
                 "Server-side scoring and response storage",
                 "Google Forms-style confirmation screen",
                 "Question-wise score and answer review",
-                "Website rating and student feedback",
+                "Student experience rating and feedback",
                 "Admin-only response list",
                 "Responsive desktop and mobile layout",
             ],
@@ -353,7 +357,7 @@ def system_overview():
                 "Subject list, search, add, edit, deactivate",
                 "Notification create, target, list, and deactivate",
                 "CSV reports for student, faculty, attendance, marks, assignments, notifications",
-                "Student website test scores and feedback review",
+                "Student test scores and feedback review",
                 "Duplicate validation for important fields",
             ],
         },
@@ -385,7 +389,7 @@ def system_overview():
                 "Assignment list, submit, marks, and feedback",
                 "Targeted notifications with read tracking",
                 "Printable student-facing report pages",
-                "Public website test with instant score review",
+                "Student test with instant score review",
             ],
         },
         {
@@ -414,7 +418,7 @@ def system_overview():
                 "Users, students, faculty, courses, subjects",
                 "Attendance, marks, materials, assignments",
                 "Submissions, notifications, notification reads, activity logs",
-                "Student website test responses and feedback",
+                "Student test responses and feedback",
                 "Sample seed data",
                 "Foreign keys and duplicate prevention constraints",
             ],
@@ -429,7 +433,7 @@ def system_overview():
                 "Final report and role-wise user guide",
                 "Production deployment configuration",
                 "Viva questions and demonstration flow",
-                "Public Student Test Form with Admin response review",
+                "Student Test Form with Admin response review",
             ],
         },
     ]

@@ -1,4 +1,4 @@
-"""Public student website test response model."""
+"""Student test response model."""
 
 import uuid
 
@@ -7,7 +7,7 @@ from app.models.base import TimestampMixin
 
 
 class StudentTestResponse(TimestampMixin, db.Model):
-    """Store one scored response from the public student test form."""
+    """Store one scored response from the student test form."""
 
     __tablename__ = "student_test_responses"
 

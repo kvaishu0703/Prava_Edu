@@ -1,4 +1,4 @@
-"""Question bank and grading helpers for the public student test."""
+"""Question bank and grading helpers for the student test."""
 
 import json
 

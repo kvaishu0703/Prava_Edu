@@ -7,9 +7,9 @@
     <div class="container test-form-container">
         <header class="test-form-header">
             <span class="test-form-icon"><i class="bi bi-ui-checks-grid"></i></span>
-            <p class="section-label mb-2">PRAVA Website Test</p>
+            <p class="section-label mb-2">Student Module</p>
             <h1>Student Test Form</h1>
-            <p>College Academic Management System</p>
+            <p>For logged-in students only</p>
         </header>
 
         <form method="post" novalidate>
@@ -58,7 +58,7 @@
             {% endfor %}
 
             <section class="test-section" aria-labelledby="feedback-heading">
-                <h2 id="feedback-heading">Website Feedback</h2>
+                <h2 id="feedback-heading">Student Feedback</h2>
                 <div class="mb-3 mt-3">
                     {{ form.website_rating.label(class="form-label") }}
                     {{ form.website_rating(class="form-select") }}

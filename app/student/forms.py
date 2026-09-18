@@ -44,7 +44,7 @@ class NotificationActionForm(FlaskForm):
 
 
 class StudentTestForm(FlaskForm):
-    """Validate the public student website test and feedback form."""
+    """Validate the student-only test and feedback form."""
 
     full_name = StringField("Full Name", validators=[DataRequired(), Length(max=120)])
     email = StringField(
@@ -64,10 +64,10 @@ class StudentTestForm(FlaskForm):
     q8 = RadioField(choices=TEST_QUESTIONS[7]["choices"], validators=[InputRequired()])
 
     website_rating = SelectField(
-        "Website Experience",
+        "Student Experience",
         coerce=int,
         choices=[(0, "Select rating"), (5, "Excellent"), (4, "Very Good"), (3, "Good"), (2, "Average"), (1, "Needs Improvement")],
-        validators=[NumberRange(min=1, max=5, message="Please select a website rating.")],
+        validators=[NumberRange(min=1, max=5, message="Please select an experience rating.")],
     )
     feedback = TextAreaField("Feedback or Suggestion", validators=[Optional(), Length(max=1000)])
     submit = SubmitField("Submit Test")
