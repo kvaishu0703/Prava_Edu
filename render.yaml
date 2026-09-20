@@ -7,9 +7,9 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    # Free web services do not support preDeployCommand. Both Flask commands
+    # Free web services do not support preDeployCommand. The Flask commands
     # are idempotent, so running them before Gunicorn is safe on every start.
-    startCommand: flask --app wsgi:app upgrade-db && flask --app wsgi:app bootstrap-admin && gunicorn --workers 2 --threads 4 --bind 0.0.0.0:$PORT --access-logfile - wsgi:app
+    startCommand: flask --app wsgi:app upgrade-db && flask --app wsgi:app sync-college && flask --app wsgi:app bootstrap-admin && gunicorn --workers 2 --threads 4 --bind 0.0.0.0:$PORT --access-logfile - wsgi:app
     healthCheckPath: /health
     autoDeployTrigger: checksPass
     envVars:
@@ -21,6 +21,10 @@ services:
         fromDatabase:
           name: prava-edu-db
           property: connectionString
+      - key: PRAVA_DEMO_MODE
+        value: "false"
+      - key: STUDENT_SIGNUP_ENABLED
+        value: "true"
       - key: SUPABASE_AUTH_ENABLED
         value: "false"
       - key: BOOTSTRAP_ADMIN_USERNAME

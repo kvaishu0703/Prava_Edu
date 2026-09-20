@@ -4,8 +4,9 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
-instance/*.sqlite3
-instance/*.db
+instance/*
+!instance/.gitkeep
+*.log
 app/static/uploads/*
 !app/static/uploads/.gitkeep
 venv/
