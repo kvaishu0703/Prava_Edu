@@ -2,13 +2,14 @@
 
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 
 from app.admin.forms import AdminProfileForm, CourseForm, EmptyForm, FacultyForm, InquiryStatusForm, NotificationForm, StudentForm, SubjectForm
 from app.decorators import roles_required
 from app.extensions import db
 from app.models import ContactInquiry, Course, Faculty, Notification, Student, StudentTestResponse, Subject, User
+from app.models import Curriculum, CurriculumSubject, SyllabusDocument
 from app.services.dashboard import get_admin_dashboard_data
 from app.services.notifications import (
     admin_notifications,
@@ -32,6 +33,16 @@ from app.services.reports import (
 from app.services.supabase_auth import SupabaseAuthError, upsert_auth_user
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+
+
+@admin_bp.before_request
+def principal_permissions():
+    if current_user.is_authenticated and current_user.role == 'admin' and current_user.admin_scope == 'principal':
+        allowed = {'admin.dashboard', 'admin.profile', 'admin.edit_profile', 'admin.reports', 'admin.export_report',
+                   'admin.students', 'admin.faculty', 'admin.courses', 'admin.subjects', 'admin.notifications',
+                   'admin.student_test_responses', 'admin.contact_inquiries'}
+        if request.endpoint not in allowed or (request.method != 'GET' and request.endpoint != 'admin.edit_profile'):
+            abort(403)
 
 
 @admin_bp.get("/dashboard")
@@ -140,6 +151,12 @@ def students():
                 Course.code.ilike(like),
             )
         )
+    department = request.args.get('department')
+    if department:
+        from app.services.college import PROGRAMMES, DEPARTMENTS
+        if department not in DEPARTMENTS:
+            abort(400)
+        query = query.filter(Course.code.in_([code for code, _, slug, _ in PROGRAMMES if slug == department]))
     students_list = query.order_by(Student.created_at.desc()).all()
     return render_template("admin/students.html", students=students_list, search=search, action_form=EmptyForm())
 
@@ -171,6 +188,7 @@ def new_student():
             course_id=form.course_id.data,
             semester=form.semester.data,
             admission_year=form.admission_year.data,
+            curriculum_id=form.curriculum_id.data or None,
         )
         return save_and_redirect([user, student], "Student created successfully.", "admin.students")
     return render_template("admin/student_form.html", form=form, mode="Create")
@@ -205,6 +223,7 @@ def edit_student(student_id: int):
         student.course_id = form.course_id.data
         student.semester = form.semester.data
         student.admission_year = form.admission_year.data
+        student.curriculum_id = form.curriculum_id.data or None
         return save_and_redirect([], "Student updated successfully.", "admin.students")
 
     return render_template("admin/student_form.html", form=form, mode="Edit", student=student)
@@ -480,6 +499,16 @@ def new_subject():
     """Create a subject."""
     form = SubjectForm()
     populate_subject_form_choices(form)
+    if request.method == 'GET' and request.args.get('catalogue', type=int):
+        item = CurriculumSubject.query.filter_by(id=request.args.get('catalogue', type=int), is_verified=True).first_or_404()
+        form.curriculum_subject_id.data = item.id
+        form.curriculum_id.data = item.curriculum_id
+        form.course_id.data = item.curriculum.course_id
+        form.semester.data = item.semester
+        form.code.data = item.code
+        form.name.data = item.name
+        if item.internal_max is not None and item.external_max is not None:
+            form.maximum_marks.data = item.internal_max + item.external_max
     if form.validate_on_submit() and validate_subject_form(form):
         subject = Subject(
             name=form.name.data.strip(),
@@ -487,6 +516,8 @@ def new_subject():
             course_id=form.course_id.data,
             semester=form.semester.data,
             faculty_id=form.faculty_id.data or None,
+            curriculum_id=form.curriculum_id.data or None,
+            curriculum_subject_id=form.curriculum_subject_id.data or None,
             maximum_marks=form.maximum_marks.data,
             passing_marks=form.passing_marks.data,
             is_active=form.is_active.data,
@@ -504,12 +535,16 @@ def edit_subject(subject_id: int):
     populate_subject_form_choices(form)
     if request.method == "GET":
         form.faculty_id.data = subject.faculty_id or 0
+        form.curriculum_id.data = subject.curriculum_id or 0
+        form.curriculum_subject_id.data = subject.curriculum_subject_id or 0
     if form.validate_on_submit() and validate_subject_form(form, subject):
         subject.name = form.name.data.strip()
         subject.code = form.code.data.strip().upper()
         subject.course_id = form.course_id.data
         subject.semester = form.semester.data
         subject.faculty_id = form.faculty_id.data or None
+        subject.curriculum_id = form.curriculum_id.data or None
+        subject.curriculum_subject_id = form.curriculum_subject_id.data or None
         subject.maximum_marks = form.maximum_marks.data
         subject.passing_marks = form.passing_marks.data
         subject.is_active = form.is_active.data
@@ -533,11 +568,14 @@ def deactivate_subject(subject_id: int):
 def populate_student_form_choices(form: StudentForm) -> None:
     """Load course choices into a student form."""
     form.course_id.choices = [(course.id, f"{course.code} - {course.name}") for course in Course.query.filter_by(is_active=True).order_by(Course.name)]
+    form.curriculum_id.choices = [(0, 'Unassigned / legacy records')] + [(c.id, f'{c.course.code} · {c.pattern}') for c in Curriculum.query.all()]
 
 
 def populate_subject_form_choices(form: SubjectForm) -> None:
     """Load course and faculty choices into a subject form."""
     form.course_id.choices = [(course.id, f"{course.code} - {course.name}") for course in Course.query.filter_by(is_active=True).order_by(Course.name)]
+    form.curriculum_id.choices = [(0, 'Unassigned / legacy records')] + [(c.id, f'{c.course.code} · {c.pattern}') for c in Curriculum.query.all()]
+    form.curriculum_subject_id.choices = [(0, 'Select a verified syllabus subject')] + [(s.id, f'{s.curriculum.course.code} · Sem {s.semester} · {s.code} · {s.name}') for s in CurriculumSubject.query.filter_by(is_verified=True).order_by(CurriculumSubject.curriculum_id, CurriculumSubject.semester, CurriculumSubject.code).all()]
     form.faculty_id.choices = [(0, "Not assigned")] + [
         (faculty.id, f"{faculty.employee_id} - {faculty.user.full_name}")
         for faculty in Faculty.query.join(Faculty.user).filter(User.is_active.is_(True)).order_by(User.full_name)
@@ -564,6 +602,7 @@ def fill_student_form(form: StudentForm, student: Student) -> None:
     form.course_id.data = student.course_id
     form.semester.data = student.semester
     form.admission_year.data = student.admission_year
+    form.curriculum_id.data = student.curriculum_id or 0
     form.is_active.data = student.user.is_active
 
 
@@ -617,7 +656,7 @@ def save_supabase_auth_account(form, role: str, previous_email: str | None = Non
 def validate_student_form(form: StudentForm, student: Student | None = None) -> bool:
     """Check student-specific duplicate records."""
     existing_user = student.user if student else None
-    is_valid = validate_user_unique(form, existing_user)
+    is_valid = validate_user_unique(form, existing_user) and validate_curriculum_selection(form)
     student_id = student.id if student else None
     enrollment = form.enrollment_number.data.strip().upper()
     enrollment_exists = Student.query.filter(Student.enrollment_number == enrollment, Student.id != student_id).first()
@@ -659,7 +698,30 @@ def validate_course_form(form: CourseForm, course: Course | None = None) -> bool
 
 def validate_subject_form(form: SubjectForm, subject: Subject | None = None) -> bool:
     """Check subject marks and duplicate subject code for a course semester."""
-    is_valid = True
+    is_valid = validate_curriculum_selection(form)
+    item = db.session.get(CurriculumSubject, form.curriculum_subject_id.data) if form.curriculum_subject_id.data else None
+    if form.curriculum_id.data:
+        if not item or not item.is_verified or (item.curriculum_id, item.semester, item.curriculum.course_id) != (form.curriculum_id.data, form.semester.data, form.course_id.data):
+            form.curriculum_subject_id.errors.append('Choose a verified subject from this programme, pattern and semester.')
+            is_valid = False
+        else:
+            document = SyllabusDocument.query.filter_by(curriculum_id=item.curriculum_id, year=(item.semester+1)//2).first()
+            if not document or document.status != 'verified' or item.internal_max is None or item.external_max is None:
+                form.curriculum_subject_id.errors.append('Verify the detailed syllabus and assessment components before teaching allocation.')
+                is_valid = False
+            elif form.maximum_marks.data != item.internal_max + item.external_max:
+                form.maximum_marks.errors.append('Maximum must match the verified internal and external components.')
+                is_valid = False
+            if form.code.data.strip().upper() != item.code:
+                form.code.errors.append('Use the code from the selected official subject.')
+                is_valid = False
+    elif item:
+        form.curriculum_subject_id.errors.append('Select the matching curriculum pattern.')
+        is_valid = False
+    if subject and (subject.marks_records or subject.attendance_records or subject.assignments or subject.materials):
+        if (subject.course_id, subject.curriculum_id or 0, subject.semester, subject.curriculum_subject_id or 0, subject.maximum_marks) != (form.course_id.data, form.curriculum_id.data or 0, form.semester.data, form.curriculum_subject_id.data or 0, form.maximum_marks.data):
+            form.curriculum_subject_id.errors.append('This subject has academic records. Preserve its programme, pattern, semester, syllabus link and maximum marks.')
+            is_valid = False
     subject_id = subject.id if subject else None
     if form.passing_marks.data > form.maximum_marks.data:
         form.passing_marks.errors.append("Passing marks cannot be greater than maximum marks.")
@@ -676,6 +738,22 @@ def validate_subject_form(form: SubjectForm, subject: Subject | None = None) -> 
         form.code.errors.append("Subject code already exists for this course and semester.")
         is_valid = False
     return is_valid
+
+
+def validate_curriculum_selection(form):
+    course = db.session.get(Course, form.course_id.data)
+    if not course or form.semester.data > course.total_semesters:
+        form.semester.errors.append('Semester must belong to the selected course.')
+        return False
+    if form.curriculum_id.data:
+        curriculum = db.session.get(Curriculum, form.curriculum_id.data)
+        if not curriculum or curriculum.course_id != course.id:
+            form.curriculum_id.errors.append('Select the curriculum for this course.')
+            return False
+    elif course.curricula:
+        form.curriculum_id.errors.append('Select a curriculum pattern for this programme.')
+        return False
+    return True
 
 
 def save_and_redirect(objects: list, success_message: str, endpoint: str):

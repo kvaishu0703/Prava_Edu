@@ -45,6 +45,7 @@ def visible_notifications_for_user(user, profile=None):
     """Return notifications visible to a user with read/unread status."""
     now = utc_now()
     query = Notification.query.filter(Notification.is_active.is_(True)).filter(
+        or_(Notification.target_user_id.is_(None), Notification.target_user_id == user.id),
         or_(Notification.expires_at.is_(None), Notification.expires_at > now)
     ).filter(
         or_(
@@ -67,6 +68,19 @@ def visible_notifications_for_user(user, profile=None):
                 Notification.target_semester == profile.semester,
             )
         )
+
+    if user.role == 'student' and profile is None:
+        query = query.filter(Notification.target_course_id.is_(None), Notification.target_semester.is_(None))
+    if user.role == 'faculty':
+        assignment = Subject.query.filter(
+            Subject.faculty_id == (profile.id if profile else -1), Subject.is_active.is_(True),
+            or_(Notification.target_course_id.is_(None), Subject.course_id == Notification.target_course_id),
+            or_(Notification.target_semester.is_(None), Subject.semester == Notification.target_semester),
+        ).exists()
+        query = query.filter(or_(
+            (Notification.target_course_id.is_(None) & Notification.target_semester.is_(None)),
+            assignment,
+        ))
 
     notifications = query.order_by(Notification.created_at.desc()).all()
     read_ids = {

@@ -19,6 +19,7 @@ def student_subjects(student: Student):
         Subject.query.filter_by(
             course_id=student.course_id,
             semester=student.semester,
+            curriculum_id=student.curriculum_id,
             is_active=True,
         )
         .order_by(Subject.name)

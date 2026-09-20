@@ -22,6 +22,8 @@ class BaseConfig:
     """Shared settings used by all environments."""
 
     PROJECT_NAME = "PRAVA College Academic Management System"
+    COLLEGE_NAME = "Women's College of Home Science and BCA"
+    COLLEGE_ADDRESS = "PKVM Campus, Babhaleshwar Road, Loni-413713, Dist-Ahmednagar (Maharashtra) India."
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-change-this-secret-key")
     SQLALCHEMY_DATABASE_URI = database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -55,6 +57,9 @@ class BaseConfig:
     REMEMBER_COOKIE_SAMESITE = "Lax"
     PERMANENT_SESSION_LIFETIME = timedelta(hours=8)
     IS_PRODUCTION = False
+    LOCAL_INSTANCE = os.environ.get('PRAVA_LOCAL_INSTANCE', '')
+    DEMO_MODE = os.environ.get("PRAVA_DEMO_MODE", "false").lower() in {"1", "true", "yes"}
+    STUDENT_SIGNUP_ENABLED = os.environ.get("STUDENT_SIGNUP_ENABLED", "true").lower() in {"1", "true", "yes"}
     SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
     SUPABASE_PUBLISHABLE_KEY = os.environ.get(
         "SUPABASE_PUBLISHABLE_KEY",

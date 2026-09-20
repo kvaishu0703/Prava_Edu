@@ -24,15 +24,14 @@ def assigned_subjects(faculty: Faculty):
 
 def assigned_students(faculty: Faculty, search: str = ""):
     """Return students from the courses and semesters taught by a faculty member."""
-    subjects = assigned_subjects(faculty)
-    course_ids = {subject.course_id for subject in subjects}
-    semesters = {subject.semester for subject in subjects}
-    if not course_ids or not semesters:
-        return []
-
     query = Student.query.join(Student.user).join(Student.course).filter(
-        Student.course_id.in_(course_ids),
-        Student.semester.in_(semesters),
+        Subject.query.filter(
+            Subject.faculty_id == faculty.id,
+            Subject.is_active.is_(True),
+            Subject.course_id == Student.course_id,
+            Subject.semester == Student.semester,
+            Subject.curriculum_id.is_not_distinct_from(Student.curriculum_id),
+        ).exists(),
         User.is_active.is_(True),
     )
 

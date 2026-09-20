@@ -20,6 +20,8 @@ class Student(TimestampMixin, db.Model):
     semester = db.Column(db.Integer, nullable=False)
     admission_year = db.Column(db.Integer, nullable=False)
     profile_image = db.Column(db.String(255))
+    curriculum_id = db.Column(db.Integer, db.ForeignKey("curricula.id"))
+    curriculum = db.relationship("Curriculum")
 
     user = db.relationship("User", back_populates="student_profile")
     course = db.relationship("Course", back_populates="students")

@@ -92,6 +92,7 @@ def students_for_assignment(assignment: Assignment):
         .filter(
             Student.course_id == assignment.subject.course_id,
             Student.semester == assignment.subject.semester,
+            Student.curriculum_id == assignment.subject.curriculum_id,
             User.is_active.is_(True),
         )
         .order_by(User.full_name)

@@ -13,9 +13,16 @@ from app.models.student_test import StudentTestResponse
 from app.models.subject import Subject
 from app.models.submission import Submission
 from app.models.user import User
+from app.models.curriculum import Curriculum, CurriculumSubject, SyllabusDocument
+from app.models.campus_activity import CampusActivity, ActivityParticipation
+from app.models.record_import import RecordImport
+from app.models.registration import StudentRegistration
 
 __all__ = [
     "ActivityLog",
+    "StudentRegistration",
+    "Curriculum", "CurriculumSubject", "SyllabusDocument",
+    "CampusActivity", "ActivityParticipation", "RecordImport",
     "Assignment",
     "Attendance",
     "ContactInquiry",

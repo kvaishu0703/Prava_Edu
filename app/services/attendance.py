@@ -35,6 +35,7 @@ def students_for_subject(subject: Subject):
         .filter(
             Student.course_id == subject.course_id,
             Student.semester == subject.semester,
+            Student.curriculum_id == subject.curriculum_id,
             User.is_active.is_(True),
         )
         .order_by(User.full_name)

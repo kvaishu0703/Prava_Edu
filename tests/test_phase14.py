@@ -97,7 +97,7 @@ class Phase14TestCase(TestCase):
     def test_protected_routes_and_role_redirect(self):
         anonymous = self.client.get("/admin/students")
         self.assertEqual(anonymous.status_code, 302)
-        self.assertIn("/auth/login", anonymous.location)
+        self.assertIn("/login/administration", anonymous.location)
 
         self.login("student", "Student@123")
         denied = self.client.get("/admin/students")
@@ -122,7 +122,7 @@ class Phase14TestCase(TestCase):
         response = self.client.post("/auth/logout")
         self.assertEqual(response.status_code, 302)
         protected = self.client.get("/admin/dashboard")
-        self.assertIn("/auth/login", protected.location)
+        self.assertIn("/login/administration", protected.location)
 
     def test_global_csrf_rejects_unverified_post(self):
         self.app.config["WTF_CSRF_ENABLED"] = True
@@ -133,7 +133,7 @@ class Phase14TestCase(TestCase):
         self.assertEqual(rejected.status_code, 400)
         self.assertIn(b"request could not be verified", rejected.data)
 
-        login_page = self.client.get("/auth/login")
+        login_page = self.client.get("/login/administration")
         login_token = re.search(rb'name="csrf_token"[^>]*value="([^"]+)"', login_page.data)
         self.assertIsNotNone(login_token)
         logged_in = self.client.post(
@@ -181,7 +181,7 @@ class Phase14TestCase(TestCase):
             session["_fresh"] = True
         response = self.client.get("/admin/dashboard")
         self.assertEqual(response.status_code, 302)
-        self.assertIn("/auth/login", response.location)
+        self.assertIn("/login/administration", response.location)
 
     def test_upload_extensions_and_grade_bounds(self):
         with self.app.app_context():

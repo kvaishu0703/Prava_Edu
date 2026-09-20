@@ -18,7 +18,9 @@ class User(UserMixin, TimestampMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False, index=True)
+    admin_scope = db.Column(db.String(30), nullable=False, default="office", server_default="office")
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_demo = db.Column(db.Boolean, default=False, server_default="false", nullable=False)
     last_login = db.Column(db.DateTime(timezone=True))
 
     student_profile = db.relationship(

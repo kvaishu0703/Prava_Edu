@@ -32,6 +32,14 @@ def validate_marks(internal_marks: int, external_marks: int, subject: Subject) -
     """Validate marks before saving."""
     if internal_marks < 0 or external_marks < 0:
         return False, "Marks cannot be negative."
+    if subject.curriculum_id:
+        item = subject.curriculum_subject
+        if not item or not item.is_verified or item.internal_max is None or item.external_max is None:
+            return False, 'The office must link a verified assessment scheme before entering NEP marks.'
+        if subject.maximum_marks != item.internal_max + item.external_max:
+            return False, 'The linked assessment scheme changed. Ask the office to review the subject maximum.'
+        if internal_marks > item.internal_max or external_marks > item.external_max:
+            return False, f'Internal marks must be at most {item.internal_max}; external marks at most {item.external_max}.'
     total = internal_marks + external_marks
     if total > subject.maximum_marks:
         return False, f"Total marks cannot be greater than {subject.maximum_marks}."
@@ -50,9 +58,15 @@ def save_bulk_marks(faculty, subject: Subject, exam_type: str, rows: list[dict])
     created = 0
     updated = 0
     errors = []
+    if subject.curriculum_id and exam_type != 'Semester Exam':
+        return 0, 0, ['NEP assessment uses the verified semester internal and external totals.']
+    eligible_ids = {student.id for student in students_for_subject(subject)}
 
     for row in rows:
         student_id = row["student_id"]
+        if subject.faculty_id != faculty.id or student_id not in eligible_ids:
+            errors.append(f'Student ID {student_id}: not assigned to this subject.')
+            continue
         internal_marks = row["internal_marks"]
         external_marks = row["external_marks"]
         remarks = row.get("remarks")
@@ -62,7 +76,9 @@ def save_bulk_marks(faculty, subject: Subject, exam_type: str, rows: list[dict])
             continue
 
         total = internal_marks + external_marks
-        grade = calculate_grade(total, subject.maximum_marks)
+        # NEP grades require the verified course's component/grade rules.
+        # Preserve actual scores while those rules are being configured.
+        grade = None if subject.curriculum_id else calculate_grade(total, subject.maximum_marks)
         record = existing.get(student_id)
         if record:
             record.internal_marks = internal_marks

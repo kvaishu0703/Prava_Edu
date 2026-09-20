@@ -4,7 +4,7 @@ import os
 
 import click
 
-from flask import Flask, render_template, request
+from flask import Flask, current_app, render_template, request
 from flask_login import current_user
 from flask_wtf.csrf import CSRFError
 from sqlalchemy import inspect, text
@@ -38,6 +38,18 @@ def create_app(config_name: str | None = None) -> Flask:
     app.register_blueprint(admin_bp)
     app.register_blueprint(faculty_bp)
     app.register_blueprint(student_bp)
+    from app.academics.routes import academics_bp
+    from app.activities.routes import activities_bp
+    from app.services.college import register_college_context
+    app.register_blueprint(academics_bp)
+    app.register_blueprint(activities_bp)
+    from app.office.routes import office_bp
+    app.register_blueprint(office_bp)
+    register_college_context(app)
+    from app.registration.routes import registration_bp
+    from app.services.navigation import register_navigation
+    app.register_blueprint(registration_bp)
+    register_navigation(app)
     register_commands(app)
     register_error_handlers(app)
     register_security_headers(app)
@@ -47,6 +59,21 @@ def create_app(config_name: str | None = None) -> Flask:
 
 def register_commands(app: Flask) -> None:
     """Register database helper commands for development."""
+
+    @app.cli.command('setup-demo')
+    def setup_demo_command():
+        from app.services.demo import setup_demo
+        try:
+            setup_demo()
+        except ValueError as error:
+            raise click.ClickException(str(error)) from error
+        click.echo('Four local demo accounts are ready. See README.md for credentials.')
+
+    @app.cli.command('sync-college')
+    def sync_college_command():
+        from app.services.college_setup import sync_college
+        sync_college()
+        click.echo('College programmes and 2024 NEP source references are configured.')
 
     @app.cli.command("init-db")
     def init_db_command():
@@ -67,6 +94,18 @@ def register_commands(app: Flask) -> None:
             db.session.execute(text("ALTER TABLE courses ADD COLUMN description TEXT"))
             db.session.commit()
             click.echo("Added courses.description column.")
+        additions = {
+            "students": {"curriculum_id": "INTEGER REFERENCES curricula(id)"},
+            "subjects": {"curriculum_id": "INTEGER REFERENCES curricula(id)", "curriculum_subject_id": "INTEGER REFERENCES curriculum_subjects(id)"},
+            "users": {"admin_scope": "VARCHAR(30) NOT NULL DEFAULT 'office'", "is_demo": "BOOLEAN NOT NULL DEFAULT false"},
+        }
+        for table, columns in additions.items():
+            existing = {column["name"] for column in inspect(db.engine).get_columns(table)}
+            for name, definition in columns.items():
+                if name not in existing:
+                    db.session.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {definition}"))
+                    db.session.commit()
+                    click.echo(f"Added {table}.{name}.")
         click.echo("Database schema upgraded successfully.")
 
     @app.cli.command("bootstrap-admin")
@@ -95,6 +134,7 @@ def register_commands(app: Flask) -> None:
             full_name=full_name,
             email=email,
             role="admin",
+            admin_scope="administrator",
             is_active=True,
         )
         user.set_password(password)
@@ -119,7 +159,10 @@ def load_user(user_id: str):
     from app.models import User
 
     try:
-        return db.session.get(User, int(user_id))
+        user = db.session.get(User, int(user_id))
+        if user and user.is_demo and (not current_app.config.get('DEMO_MODE') or current_app.config.get('IS_PRODUCTION')):
+            return None
+        return user
     except (TypeError, ValueError):
         return None
 
@@ -128,6 +171,9 @@ def validate_runtime_config(app: Flask) -> None:
     """Fail early when production starts with unsafe or incomplete secrets."""
     if not app.config.get("IS_PRODUCTION"):
         return
+
+    if app.config.get('DEMO_MODE'):
+        raise RuntimeError('Public demo credentials are for local use. Set PRAVA_DEMO_MODE=false in production.')
 
     secret_key = app.config.get("SECRET_KEY", "")
     if secret_key == "dev-change-this-secret-key" or len(secret_key) < 32:
@@ -187,7 +233,7 @@ def register_security_headers(app: Flask) -> None:
             "img-src 'self' data:; "
             "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
         )
-        if current_user.is_authenticated or request.path.startswith(("/auth/", "/admin/", "/faculty/", "/student/")):
+        if current_user.is_authenticated or request.path.startswith(("/auth/", "/login", "/signup", "/admin/", "/faculty/", "/student/")):
             response.headers.setdefault("Cache-Control", "no-store, private")
         if app.config.get("IS_PRODUCTION"):
             response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")

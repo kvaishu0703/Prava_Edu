@@ -71,7 +71,7 @@ class StudentTestFormTestCase(TestCase):
     def test_form_requires_student_login(self):
         response = self.client.get("/student-test")
         self.assertEqual(response.status_code, 302)
-        self.assertIn("/auth/login", response.location)
+        self.assertIn("/login/student", response.location)
 
     def test_student_form_is_available_after_login(self):
         self.login_student()
@@ -119,7 +119,7 @@ class StudentTestFormTestCase(TestCase):
         self.client.post("/auth/logout")
         anonymous = self.client.get("/admin/student-test-responses")
         self.assertEqual(anonymous.status_code, 302)
-        self.assertIn("/auth/login", anonymous.location)
+        self.assertIn("/login/administration", anonymous.location)
 
         self.client.post(
             "/auth/login",

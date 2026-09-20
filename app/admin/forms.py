@@ -74,6 +74,7 @@ class FacultyForm(FlaskForm):
 
 
 class StudentForm(FlaskForm):
+    curriculum_id = SelectField("Curriculum pattern", coerce=int, validators=[Optional()], default=0)
     """Validate student user and profile data."""
 
     full_name = StringField("Full Name", validators=[DataRequired(), Length(max=120)])
@@ -100,6 +101,8 @@ class StudentForm(FlaskForm):
 
 
 class SubjectForm(FlaskForm):
+    curriculum_id = SelectField("Curriculum pattern", coerce=int, validators=[Optional()], default=0)
+    curriculum_subject_id = SelectField("Official curriculum subject", coerce=int, validators=[Optional()], default=0)
     """Validate subject create and edit data."""
 
     name = StringField("Subject Name", validators=[DataRequired(), Length(max=120)])

@@ -1,13 +1,17 @@
 """Public homepage data helpers."""
 
 from app.models import Course, Faculty, Notification, Student, Subject
+from app.models.base import utc_now
+from sqlalchemy import or_
 
 
 def public_homepage_data() -> dict:
     """Return database-backed values for the professional public homepage."""
     courses = Course.query.filter_by(is_active=True).order_by(Course.name.asc()).limit(6).all()
     latest_notices = (
-        Notification.query.filter_by(is_active=True)
+        Notification.query.filter_by(is_active=True, target_role="all")
+        .filter(Notification.target_user_id.is_(None), Notification.target_course_id.is_(None),
+                Notification.target_semester.is_(None), or_(Notification.expires_at.is_(None), Notification.expires_at > utc_now()))
         .order_by(Notification.created_at.desc())
         .limit(5)
         .all()

@@ -2,7 +2,7 @@
 
 from functools import wraps
 
-from flask import flash, redirect, request, session, url_for
+from flask import current_app, flash, redirect, request, session, url_for
 from flask_login import current_user, logout_user
 
 from app.services.supabase_auth import SupabaseAuthError, auth_enabled, validate_session
@@ -31,12 +31,32 @@ def roles_required(*allowed_roles: str):
     def decorator(view_func):
         @wraps(view_func)
         def wrapped_view(*args, **kwargs):
+            def login_redirect():
+                role_slugs = {"student": "student", "faculty": "staff", "admin": "administration"}
+                slug = role_slugs.get(allowed_roles[0]) if len(allowed_roles) == 1 else None
+                target = request.full_path.rstrip("?")
+                if slug:
+                    return redirect(url_for("auth.role_login", role_slug=slug, next=target))
+                return redirect(url_for("auth.portal", next=target))
+
+            if current_user.get_id() and not current_user.is_active:
+                logout_user()
+                clear_supabase_session()
+                flash('This account is inactive. Please contact the college office.', 'warning')
+                return login_redirect()
+
             if not current_user.is_authenticated:
-                return redirect(url_for("auth.login", next=request.url))
+                return login_redirect()
+
+            if current_user.is_demo and (not current_app.config.get('DEMO_MODE') or current_app.config.get('IS_PRODUCTION')):
+                logout_user()
+                clear_supabase_session()
+                flash('Local demo access is disabled.', 'info')
+                return login_redirect()
 
             if not has_valid_supabase_session():
                 flash("Your session has expired. Please log in again.", "warning")
-                return redirect(url_for("auth.login", next=request.url))
+                return login_redirect()
 
             if current_user.role not in allowed_roles:
                 flash("You are not allowed to open that page.", "danger")

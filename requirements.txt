@@ -8,3 +8,4 @@ supabase==2.31.0
 Werkzeug==3.0.3
 gunicorn==26.0.0
 psycopg[binary]==3.3.4
+tzdata==2026.4

@@ -21,6 +21,10 @@ class Subject(TimestampMixin, db.Model):
     maximum_marks = db.Column(db.Integer, default=100, nullable=False)
     passing_marks = db.Column(db.Integer, default=40, nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    curriculum_id = db.Column(db.Integer, db.ForeignKey("curricula.id"))
+    curriculum = db.relationship("Curriculum")
+    curriculum_subject_id = db.Column(db.Integer, db.ForeignKey('curriculum_subjects.id'))
+    curriculum_subject = db.relationship('CurriculumSubject')
 
     course = db.relationship("Course", back_populates="subjects")
     faculty = db.relationship("Faculty", back_populates="subjects")

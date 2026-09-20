@@ -15,9 +15,26 @@ from app.student.forms import StudentTestForm
 core_bp = Blueprint("core", __name__)
 
 
-@core_bp.route("/", methods=["GET", "POST"])
+@core_bp.get("/")
 def index():
-    """Render the professional public college homepage."""
+    """Keep the public homepage accessible, including after sign-in."""
+    return render_template("core/index.html", **public_homepage_data())
+
+
+@core_bp.get("/about")
+def about():
+    return render_template("core/about.html")
+
+
+@core_bp.get("/courses")
+@core_bp.get("/academics")
+def courses():
+    return render_template("core/courses.html", **public_homepage_data())
+
+
+@core_bp.route("/contact", methods=["GET", "POST"])
+def contact():
+    """Save public inquiries for review in the administration portal."""
     form = ContactForm()
     if form.validate_on_submit():
         inquiry = ContactInquiry(
@@ -31,18 +48,22 @@ def index():
             db.session.add(inquiry)
             db.session.commit()
             flash("Thank you. Your message has been submitted successfully.", "success")
-            return redirect(url_for("core.index", _anchor="contact"))
+            return redirect(url_for("core.contact"))
         except SQLAlchemyError:
             db.session.rollback()
             flash("Your message could not be saved. Please try again.", "danger")
 
-    return render_template("core/index.html", form=form, **public_homepage_data())
+    return render_template("core/contact.html", form=form)
 
 
 @core_bp.get("/courses/<string:course_code>")
 def course_detail(course_code: str):
     """Show public information for one active course."""
     course = Course.query.filter_by(code=course_code.upper(), is_active=True).first_or_404()
+    from app.services.college import department_for_course
+    department = department_for_course(course)
+    if department and course.curricula:
+        return redirect(url_for('academics.department', department=department, programme=course.code))
     return render_template("core/course_detail.html", **course_detail_data(course))
 
 
@@ -447,4 +468,5 @@ def health():
         "app": current_app.config["PROJECT_NAME"],
         "phase": "Phase 15",
         "status": "ok",
+        **({'local_instance': current_app.config.get('LOCAL_INSTANCE'), 'demo_mode': bool(current_app.config.get('DEMO_MODE'))} if not current_app.config.get('IS_PRODUCTION') else {}),
     }

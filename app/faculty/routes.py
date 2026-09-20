@@ -314,6 +314,12 @@ def marks():
         form.subject_id.data = request.args.get("subject_id", type=int) or form.subject_id.choices[0][0]
         form.exam_type.data = request.args.get("exam_type") or form.exam_type.choices[0][0]
 
+    selected_subject, _ = students_for_marks_subject(faculty, form.subject_id.data)
+    if selected_subject and selected_subject.curriculum_id:
+        form.exam_type.choices = [('Semester Exam', 'Semester result · Internal + External')]
+        if request.method == 'GET':
+            form.exam_type.data = 'Semester Exam'
+
     if form.validate_on_submit():
         subject, students_list = students_for_marks_subject(faculty, form.subject_id.data)
         if subject is None:
@@ -322,8 +328,10 @@ def marks():
 
         rows = []
         for student in students_list:
-            internal_raw = request.form.get(f"internal_{student.id}", "0").strip() or "0"
-            external_raw = request.form.get(f"external_{student.id}", "0").strip() or "0"
+            internal_raw = request.form.get(f"internal_{student.id}", "").strip()
+            external_raw = request.form.get(f"external_{student.id}", "").strip()
+            if not internal_raw and not external_raw:
+                continue
             remarks = request.form.get(f"remarks_{student.id}", "").strip() or None
             try:
                 rows.append(
