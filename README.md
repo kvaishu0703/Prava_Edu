@@ -125,7 +125,7 @@ Staff आणि Office खात्यांना सार्वजनिक S
 | Staff | `/faculty/dashboard`, `/faculty/subjects`, `/faculty/students`, `/faculty/attendance`, `/faculty/marks`, `/faculty/materials`, `/faculty/assignments` |
 | Office | `/admin/dashboard`, `/admin/students`, `/admin/faculty`, `/admin/subjects`, `/admin/curriculum`, `/admin/records/import`, `/admin/registrations`, `/admin/access`, `/admin/reports` |
 
-Header मध्ये ठळक PRAVA wordmark, वाचायला स्पष्ट Academic Portal subtitle, active navigation आणि Day/Night toggle आहेत. Home मधील campus चित्र हे PRAVA साठीचे illustration आहे. कॉलेजची प्रकाशित माहिती आणि स्थानिक academic account records वेगळे ठेवले आहेत.
+Header मध्ये ठळक PRAVA wordmark, वाचायला स्पष्ट Academic Portal subtitle, active navigation आणि Day/Night toggle आहेत. पहिल्या भेटीत **Night mode हा default** आहे; वापरकर्त्याने Day/Night बदलल्यास ती निवड जतन राहते. Home मधील campus चित्र हे PRAVA साठीचे illustration आहे. कॉलेजची प्रकाशित माहिती आणि स्थानिक academic account records वेगळे ठेवले आहेत.
 
 ## 8. 2024 NEP अभ्यासक्रम — उपलब्धता
 

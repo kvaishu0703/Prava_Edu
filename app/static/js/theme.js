@@ -1,10 +1,10 @@
 /* Runs before styles are painted; works without storage access as well. */
 (() => {
     const root = document.documentElement;
-    const preference = window.matchMedia('(prefers-color-scheme: dark)');
+    const defaultTheme = 'dark';
     let saved;
     try { saved = localStorage.getItem('prava-theme'); } catch (_) {}
-    let explicit = saved === 'dark' || saved === 'light';
+    const explicit = saved === 'dark' || saved === 'light';
     function apply(theme) {
         root.dataset.theme = theme;
         root.dataset.bsTheme = theme;
@@ -18,21 +18,18 @@
             button.querySelector('i').className = dark ? 'bi bi-moon-stars' : 'bi bi-sun';
         });
     }
-    apply(explicit ? saved : preference.matches ? 'dark' : 'light');
+    apply(explicit ? saved : defaultTheme);
     document.addEventListener('DOMContentLoaded', () => {
         apply(root.dataset.theme);
         document.querySelectorAll('[data-theme-toggle]').forEach(button => button.addEventListener('click', () => {
             const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-            explicit = true;
             try { localStorage.setItem('prava-theme', theme); } catch (_) {}
             apply(theme);
         }));
     });
-    preference.addEventListener('change', event => { if (!explicit) apply(event.matches ? 'dark' : 'light'); });
     window.addEventListener('storage', event => {
         if (event.key === 'prava-theme') {
-            explicit = ['dark', 'light'].includes(event.newValue);
-            apply(explicit ? event.newValue : preference.matches ? 'dark' : 'light');
+            apply(['dark', 'light'].includes(event.newValue) ? event.newValue : defaultTheme);
         }
     });
 })();
