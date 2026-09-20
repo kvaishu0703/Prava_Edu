@@ -38,7 +38,7 @@
                     <td>{{ inquiry.phone or "-" }}</td>
                     <td>{{ inquiry.subject }}</td>
                     <td>
-                        <form class="inquiry-status-form" method="post" action="{{ url_for('admin.update_contact_inquiry_status', inquiry_id=inquiry.id) }}">
+                        {% if current_user.admin_scope != 'principal' %}<form class="inquiry-status-form" method="post" action="{{ url_for('admin.update_contact_inquiry_status', inquiry_id=inquiry.id) }}">
                             {{ status_form.hidden_tag() }}
                             <select class="form-select form-select-sm" name="status" aria-label="Inquiry status">
                                 {% for value, label in status_form.status.choices %}
@@ -46,7 +46,7 @@
                                 {% endfor %}
                             </select>
                             <button class="icon-btn" type="submit" title="Update status"><i class="bi bi-check2"></i></button>
-                        </form>
+                        </form>{% else %}{{ inquiry.status }}{% endif %}
                     </td>
                 </tr>
                     <tr class="feedback-row">

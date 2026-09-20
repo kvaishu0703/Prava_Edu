@@ -5,12 +5,12 @@
 
 {% block content %}
 {% call dashboard_shell("Student", "accent-student", stats) %}
-<div class="dashboard-grid mt-4">
+{% if student is defined and student and student.curriculum %}<div class="academic-source mt-4"><div><strong>{{ student.course.name }}</strong><p>{{ student.curriculum.pattern }} · Semester {{ student.semester }}</p></div><a class="btn btn-outline-primary" href="{{ url_for('academics.student_syllabus') }}">View my syllabus</a></div>{% endif %}<div class="dashboard-grid mt-4">
     <section class="data-panel">
         <div class="panel-heading">
             <div>
                 <h2>My Subjects</h2>
-                <p>{{ student.course.code }} | Semester {{ student.semester }}</p>
+                <p>{{ student.course.code ~ ' | Semester ' ~ student.semester if student is defined and student else 'Your course and semester subjects' }}</p>
             </div>
         </div>
         <div class="compact-list">

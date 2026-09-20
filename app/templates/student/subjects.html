@@ -1,42 +1,8 @@
 {% extends "student/student_base.html" %}
-
-{% block title %}My Subjects{% endblock %}
-
+{% block title %}Subjects & Syllabus{% endblock %}
 {% block student_content %}
-<div class="panel-heading page-heading">
-    <div>
-        <p class="section-label mb-1">Student Module</p>
-        <h1>My Subjects</h1>
-        <p>{{ student.course.code if student else '' }} semester subjects assigned by Admin.</p>
-    </div>
-</div>
-
-<section class="data-panel">
-    <div class="table-responsive">
-        <table class="table align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Subject</th>
-                    <th>Faculty</th>
-                    <th>Maximum Marks</th>
-                    <th>Passing Marks</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for subject in subjects %}
-                <tr>
-                    <td>{{ subject.code }}</td>
-                    <td>{{ subject.name }}</td>
-                    <td>{{ subject.faculty.user.full_name if subject.faculty else '-' }}</td>
-                    <td>{{ subject.maximum_marks }}</td>
-                    <td>{{ subject.passing_marks }}</td>
-                </tr>
-                {% else %}
-                <tr><td colspan="5" class="text-secondary">No subjects found.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</section>
+<div class="panel-heading page-heading"><div><p class="section-label">STUDENT WORKSPACE / ACADEMICS</p><h1>Subjects & syllabus</h1><p>Your semester curriculum, teaching staff, and assessment requirements.</p></div><a class="btn btn-outline-primary" href="{{ url_for('student.materials') }}"><i class="bi bi-folder2-open"></i> Study materials</a></div>
+{% if student %}<div class="academic-context"><span class="context-icon"><i class="bi bi-journals"></i></span><div><strong>{{ student.course.name }}</strong><span>{{ student.course.code }} · Semester {{ student.semester }}</span></div><span class="context-count">{{ subjects|length }} subjects</span></div>{% endif %}
+<div class="subject-card-grid">{% for subject in subjects %}<article class="subject-card"><span class="program-code">{{ subject.code }}</span><h2>{{ subject.name }}</h2><div class="subject-faculty"><i class="bi bi-person-circle"></i><div><span>Teaching faculty</span><strong>{{ subject.faculty.user.full_name if subject.faculty else 'Faculty to be assigned' }}</strong></div></div><div class="subject-metrics"><div><span>Maximum marks</span><strong>{{ subject.maximum_marks }}</strong></div><div><span>Passing marks</span><strong>{{ subject.passing_marks }}</strong></div></div></article>{% else %}<section class="data-panel empty-state"><i class="bi bi-book"></i><h2>Your subjects will appear here.</h2><p>The office can help confirm your course and semester allocation.</p></section>{% endfor %}</div>
+{% if student %}<div class="academic-footnote"><i class="bi bi-info-circle"></i><span>For learning resources and detailed course notes, open Study materials. <a href="{{ url_for('core.course_detail', course_code=student.course.code) }}">View the program curriculum <i class="bi bi-arrow-up-right"></i></a></span></div>{% endif %}
 {% endblock %}

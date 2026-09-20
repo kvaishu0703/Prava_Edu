@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Student login · Choose programme{% endblock %}
+{% block content %}
+<section class="page-container page-intro centered"><p class="eyebrow">STUDENT PORTAL</p><h1>Your programme.<br><em>Your learning space.</em></h1><p>Select your department to open its login form. Your college account connects you to your enrolled programme and semester.</p></section>
+<section class="page-container section-bottom"><div class="program-catalog">{% for slug, info in departments.items() %}<article class="portal-card"><span class="portal-icon mb-4"><i class="bi {{ info.icon }}"></i></span><p class="eyebrow">2024 NEP PATTERN</p><h2>{{ info.name }}</h2><p>{{ info.description }}</p><ul><li><i class="bi bi-check2"></i> FY, SY and TY academic journey</li><li><i class="bi bi-check2"></i> Your marks, attendance and resources</li></ul><a class="btn btn-primary" href="{{ url_for('auth.student_login', department=slug, next=next_page) }}">{{ info.name }} Student Login <i class="bi bi-arrow-up-right"></i></a>{% if config.STUDENT_SIGNUP_ENABLED %}<p class="signup-card-link">New student? <a href="{{ url_for('registration.signup', department=slug) }}">Sign up for {{ info.name }}</a></p>{% endif %}</article>{% endfor %}</div><p class="portal-support"><a href="{{ url_for('auth.portal') }}">← All login options</a></p></section>
+{% endblock %}

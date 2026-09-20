@@ -9,9 +9,9 @@
         <h1>Notifications</h1>
         <p>Create announcements and manage active system notifications.</p>
     </div>
-    <a class="btn btn-primary" href="{{ url_for('admin.new_notification') }}">
+    {% if current_user.admin_scope != 'principal' %}<a class="btn btn-primary" href="{{ url_for('admin.new_notification') }}">
         <i class="bi bi-send"></i> Send Notification
-    </a>
+    </a>{% endif %}
 </div>
 
 <section class="data-panel">
@@ -49,7 +49,7 @@
                     <td>{{ notification.creator.full_name }}</td>
                     <td>{{ notification.created_at.strftime("%d %b %Y") }}</td>
                     <td><span class="badge {{ 'text-bg-success' if notification.is_active else 'text-bg-secondary' }}">{{ 'Active' if notification.is_active else 'Inactive' }}</span></td>
-                    <td class="action-cell">
+                    <td class="action-cell">{% if current_user.admin_scope != 'principal' %}
                         {% if notification.is_active %}
                         <form method="post" action="{{ url_for('admin.deactivate_notification', notification_id=notification.id) }}">
                             {{ action_form.hidden_tag() }}
@@ -58,7 +58,7 @@
                         {% else %}
                         <span class="text-secondary small">Done</span>
                         {% endif %}
-                    </td>
+                    {% else %}<span class="text-secondary">View only</span>{% endif %}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="7" class="text-secondary">No notifications found.</td></tr>

@@ -1,51 +1,18 @@
 {% extends "base.html" %}
-
-{% block title %}Login{% endblock %}
-
+{% block title %}{{ portal.name if portal else 'Account' }} Login{% endblock %}
 {% block content %}
-<section class="login-page">
-    <div class="login-card shadow-sm">
-        <div class="text-center mb-4">
-            <div class="preview-logo"><i class="bi bi-mortarboard-fill"></i></div>
-            <h1 class="h4 fw-bold mt-3 mb-1">PRAVA Login</h1>
-            <p class="text-secondary mb-0">Sign in with your role account.</p>
-        </div>
-
-        <form method="post" novalidate>
-            {{ form.hidden_tag() }}
-            <div class="mb-3">
-                {{ form.username_or_email.label(class="form-label") }}
-                {{ form.username_or_email(class="form-control", placeholder="Username or email") }}
-                {% for error in form.username_or_email.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control", placeholder="Password") }}
-                {% for error in form.password.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="form-check">
-                    {{ form.remember_me(class="form-check-input") }}
-                    {{ form.remember_me.label(class="form-check-label") }}
-                </div>
-                <span class="small text-secondary">Forgot password soon</span>
-            </div>
-
-            {{ form.submit(class="btn btn-primary w-100") }}
-        </form>
-
-        <div class="demo-box mt-4">
-            <h2 class="h6 fw-bold">Demo Accounts</h2>
-            <p class="mb-1"><strong>Admin:</strong> admin / Admin@123</p>
-            <p class="mb-1"><strong>Faculty:</strong> faculty / Faculty@123</p>
-            <p class="mb-0"><strong>Student:</strong> student / Student@123</p>
-        </div>
-    </div>
-</section>
+<section class="page-container auth-layout">
+<aside class="auth-story"><p class="eyebrow">YOUR PRAVA WORKSPACE</p><span class="auth-story-icon"><i class="bi {{ portal.icon if portal else 'bi-person' }}"></i></span><h1>{{ portal.tagline if portal else 'Welcome to your academic space.' }}</h1><p>{{ portal.description if portal else 'Sign in with the account provided by your college.' }}</p><div class="auth-story-bottom"><img src="{{ url_for('static', filename='img/prava-mark.svg') }}" width="48" height="48" alt=""><span>Learn. Connect.<br><em>Progress.</em></span></div></aside>
+<div class="auth-form-panel"><a class="text-link auth-back" href="{{ url_for('auth.portal', next=request.args.get('next')) }}"><i class="bi bi-arrow-left"></i> All portals</a><p class="eyebrow">{{ portal.name if portal else 'PRAVA' }} PORTAL</p><h2>Welcome back.</h2><p class="text-secondary mb-4">Sign in to continue your academic day.</p>
+{% if current_user.is_authenticated %}<div class="login-session-note"><i class="bi bi-arrow-left-right" aria-hidden="true"></i><p>Currently signed in as <strong>{{ current_user.full_name }}</strong> ({{ account_role_label }}). Enter the account for this portal below to switch.</p></div>{% endif %}
+<form method="post" novalidate>{{ form.hidden_tag() }}
+<div class="mb-4">{{ form.username_or_email.label(class='form-label') }}{{ form.username_or_email(class='form-control', placeholder='Enter your username or email', autocomplete='username', aria_describedby='username-errors') }}<div id="username-errors">{% for error in form.username_or_email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div></div>
+<div class="mb-3">{{ form.password.label(class='form-label') }}<div class="password-field">{{ form.password(class='form-control', placeholder='Enter your password', autocomplete='current-password', aria_describedby='password-errors') }}<button type="button" data-password-toggle aria-label="Show password" aria-pressed="false"><i class="bi bi-eye" aria-hidden="true"></i></button></div><div id="password-errors">{% for error in form.password.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div></div>
+<div class="login-options"><div class="form-check">{{ form.remember_me(class='form-check-input') }}{{ form.remember_me.label(class='form-check-label') }}</div><a href="{{ url_for('core.contact') }}">Need help?</a></div>
+<button class="btn btn-primary w-100" type="submit">Sign in{{ ' as ' + ('Administration' if role_slug == 'administration' else portal.name) if portal }} <i class="bi bi-arrow-right"></i></button>
+</form>
+{% if role_slug == 'student' and config.STUDENT_SIGNUP_ENABLED %}<div class="signup-prompt"><span>New to PRAVA?</span><a href="{{ url_for('registration.signup', department=department) if department else url_for('registration.signup') }}">Create your student account <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></div>{% endif %}
+<p class="auth-note"><i class="bi bi-shield-check"></i> Access is linked to your college account, programme and role.</p>
+{% if department %}<p class="auth-note">{{ departments[department].name }} · 2024 NEP<br><a href="{{ url_for('auth.role_login', role_slug='student', next=request.args.get('next')) }}">Choose a different programme</a></p>{% endif %}
+</div></section>
 {% endblock %}

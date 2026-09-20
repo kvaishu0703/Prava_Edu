@@ -81,7 +81,7 @@
                     <td>{{ mark.internal_marks }}</td>
                     <td>{{ mark.external_marks }}</td>
                     <td>{{ mark.total_marks }}</td>
-                    <td><span class="badge text-bg-primary">{{ mark.grade }}</span></td>
+                    <td><span class="badge text-bg-primary">{{ mark.grade or 'Pending' }}</span></td>
                     <td>
                         {% if mark.total_marks >= mark.subject.passing_marks %}
                         <span class="badge text-bg-success">Pass</span>

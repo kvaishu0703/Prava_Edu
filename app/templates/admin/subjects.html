@@ -9,9 +9,9 @@
         <h1>Subjects</h1>
         <p>Manage semester subjects and faculty assignments.</p>
     </div>
-    <a class="btn btn-primary" href="{{ url_for('admin.new_subject') }}">
+    {% if current_user.admin_scope != 'principal' %}<a class="btn btn-primary" href="{{ url_for('admin.new_subject') }}">
         <i class="bi bi-plus-lg"></i> Add Subject
-    </a>
+    </a>{% endif %}
 </div>
 
 <section class="data-panel">
@@ -43,13 +43,13 @@
                     <td>{{ subject.faculty.user.full_name if subject.faculty else '-' }}</td>
                     <td>{{ subject.passing_marks }}/{{ subject.maximum_marks }}</td>
                     <td><span class="badge {{ 'text-bg-success' if subject.is_active else 'text-bg-secondary' }}">{{ 'Active' if subject.is_active else 'Inactive' }}</span></td>
-                    <td class="action-cell">
+                    <td class="action-cell">{% if current_user.admin_scope != 'principal' %}
                         <a class="icon-btn" title="Edit subject" href="{{ url_for('admin.edit_subject', subject_id=subject.id) }}"><i class="bi bi-pencil"></i></a>
                         <form method="post" action="{{ url_for('admin.deactivate_subject', subject_id=subject.id) }}">
                             {{ action_form.hidden_tag() }}
                             <button class="icon-btn danger" title="Deactivate subject" type="submit"><i class="bi bi-trash"></i></button>
                         </form>
-                    </td>
+                    {% else %}<span class="text-secondary">View only</span>{% endif %}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="8" class="text-secondary">No subjects found.</td></tr>

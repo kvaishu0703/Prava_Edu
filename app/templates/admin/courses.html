@@ -9,9 +9,9 @@
         <h1>Courses</h1>
         <p>Manage course master records.</p>
     </div>
-    <a class="btn btn-primary" href="{{ url_for('admin.new_course') }}">
+    {% if current_user.admin_scope != 'principal' %}<a class="btn btn-primary" href="{{ url_for('admin.new_course') }}">
         <i class="bi bi-plus-lg"></i> Add Course
-    </a>
+    </a>{% endif %}
 </div>
 
 <section class="data-panel">
@@ -39,13 +39,13 @@
                     <td>{{ course.duration }}</td>
                     <td>{{ course.total_semesters }}</td>
                     <td><span class="badge {{ 'text-bg-success' if course.is_active else 'text-bg-secondary' }}">{{ 'Active' if course.is_active else 'Inactive' }}</span></td>
-                    <td class="action-cell">
+                    <td class="action-cell">{% if current_user.admin_scope != 'principal' %}
                         <a class="icon-btn" title="Edit course" href="{{ url_for('admin.edit_course', course_id=course.id) }}"><i class="bi bi-pencil"></i></a>
                         <form method="post" action="{{ url_for('admin.deactivate_course', course_id=course.id) }}">
                             {{ action_form.hidden_tag() }}
                             <button class="icon-btn danger" title="Deactivate course" type="submit"><i class="bi bi-trash"></i></button>
                         </form>
-                    </td>
+                    {% else %}<span class="text-secondary">View only</span>{% endif %}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="6" class="text-secondary">No courses found.</td></tr>

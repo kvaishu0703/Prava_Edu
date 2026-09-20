@@ -9,13 +9,14 @@
         <h1>Students</h1>
         <p>Manage student login accounts and academic profiles.</p>
     </div>
-    <a class="btn btn-primary" href="{{ url_for('admin.new_student') }}">
+    {% if current_user.admin_scope != 'principal' %}<a class="btn btn-primary" href="{{ url_for('admin.new_student') }}">
         <i class="bi bi-plus-lg"></i> Add Student
-    </a>
+    </a>{% endif %}
 </div>
 
 <section class="data-panel">
     <form class="search-row" method="get">
+        <select class="form-select" name="department" aria-label="Department"><option value="">Both departments</option>{% for slug, info in departments.items() %}<option value="{{ slug }}" {{ 'selected' if request.args.get('department') == slug }}>{{ info.name }}</option>{% endfor %}</select>
         <input class="form-control" name="q" value="{{ search }}" placeholder="Search students...">
         <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
     </form>
@@ -41,13 +42,13 @@
                     <td>{{ student.course.code }}</td>
                     <td>{{ student.semester }}</td>
                     <td><span class="badge {{ 'text-bg-success' if student.user.is_active else 'text-bg-secondary' }}">{{ 'Active' if student.user.is_active else 'Inactive' }}</span></td>
-                    <td class="action-cell">
+                    <td class="action-cell">{% if current_user.admin_scope != 'principal' %}
                         <a class="icon-btn" title="Edit student" href="{{ url_for('admin.edit_student', student_id=student.id) }}"><i class="bi bi-pencil"></i></a>
                         <form method="post" action="{{ url_for('admin.deactivate_student', student_id=student.id) }}">
                             {{ action_form.hidden_tag() }}
                             <button class="icon-btn danger" title="Deactivate student" type="submit"><i class="bi bi-trash"></i></button>
                         </form>
-                    </td>
+                    {% else %}<span class="text-secondary">View only</span>{% endif %}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="7" class="text-secondary">No students found.</td></tr>

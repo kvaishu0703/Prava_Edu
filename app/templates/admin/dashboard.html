@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 {% from "components/dashboard_shell.html" import dashboard_shell with context %}
 
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}{{ current_user.admin_scope|title }} Dashboard{% endblock %}
 
 {% block content %}
-{% call dashboard_shell("Admin", "accent-admin", stats) %}
+{% call dashboard_shell("Principal" if current_user.admin_scope == "principal" else "Office" if current_user.admin_scope == "office" else "Admin", "accent-admin", stats) %}
+<div class="department-overview mt-4">{% for department in departments_overview %}<section class="data-panel"><p class="eyebrow">{{ department.name }}</p><h2>{{ department.students }} {{ 'student' if department.students == 1 else 'students' }}</h2><p>{{ department.programmes }} {{ 'programme' if department.programmes == 1 else 'programmes' }} · {{ department.subjects }} teaching subjects</p><a class="text-link" href="{{ url_for('admin.students', department=department.slug) }}">View department records →</a></section>{% endfor %}</div>
 <div class="dashboard-grid mt-4">
     <section class="data-panel panel-wide">
         <div class="panel-heading">
             <div>
                 <h2>Recent Students</h2>
-                <p>Latest student profiles from the sample database.</p>
+                <p>Recently added students in your academic community.</p>
             </div>
-            <span class="status-pill">{{ attendance_percentage }}% Avg Attendance</span>
+            <span class="status-pill">{{ (attendance_percentage|string) + '% Avg Attendance' if has_attendance else 'Attendance pending' }}</span>
         </div>
         <div class="table-responsive">
             <table class="table align-middle mb-0">

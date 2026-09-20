@@ -34,7 +34,7 @@
 
 <section class="data-panel mt-3">
     {% if subject %}
-    <form method="post" novalidate>
+    {% if subject.curriculum_id %}<p class="source-note">Enter the verified semester assessment. Empty rows stay pending. Grade and SGPA calculations await the college-approved grading rules.</p>{% endif %}<form method="post" novalidate>
         {{ form.hidden_tag() }}
         <input type="hidden" name="subject_id" value="{{ form.subject_id.data }}">
         <input type="hidden" name="exam_type" value="{{ form.exam_type.data }}">
@@ -65,18 +65,18 @@
                 <tbody>
                     {% for student in students %}
                     {% set record = existing.get(student.id) %}
-                    {% set internal = record.internal_marks if record else 0 %}
-                    {% set external = record.external_marks if record else 0 %}
+                    {% set internal = record.internal_marks if record else '' %}
+                    {% set external = record.external_marks if record else '' %}
                     <tr>
                         <td>{{ student.enrollment_number }}</td>
                         <td>
                             <strong>{{ student.user.full_name }}</strong><br>
                             <span class="text-secondary small">{{ student.user.email }}</span>
                         </td>
-                        <td><input class="form-control marks-input" type="number" min="0" name="internal_{{ student.id }}" value="{{ internal }}"></td>
-                        <td><input class="form-control marks-input" type="number" min="0" name="external_{{ student.id }}" value="{{ external }}"></td>
-                        <td>{{ record.total_marks if record else internal + external }}</td>
-                        <td><span class="badge text-bg-primary">{{ record.grade if record else '-' }}</span></td>
+                        <td><input class="form-control marks-input" type="number" min="0" max="{{ subject.curriculum_subject.internal_max if subject.curriculum_subject else subject.maximum_marks }}" placeholder="Pending" name="internal_{{ student.id }}" value="{{ internal }}"></td>
+                        <td><input class="form-control marks-input" type="number" min="0" max="{{ subject.curriculum_subject.external_max if subject.curriculum_subject else subject.maximum_marks }}" placeholder="Pending" name="external_{{ student.id }}" value="{{ external }}"></td>
+                        <td>{{ record.total_marks if record else 'Pending' }}</td>
+                        <td><span class="badge text-bg-primary">{{ record.grade or 'Pending' if record else 'Pending' }}</span></td>
                         <td><input class="form-control" name="remarks_{{ student.id }}" value="{{ record.remarks if record else '' }}" placeholder="Optional remarks"></td>
                     </tr>
                     {% else %}
