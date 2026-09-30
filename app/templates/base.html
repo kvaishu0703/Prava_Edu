@@ -18,14 +18,21 @@
 <body class="{{ 'workspace-page' if in_workspace else 'public-page' }}">
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="app-navbar"><nav class="site-nav {{ 'workspace-nav' if in_workspace }}" aria-label="Main navigation">
-<a class="brand" href="{{ url_for('core.index') }}" aria-label="PRAVA home"><img src="{{ url_for('static', filename='img/prava-mark.svg') }}" width="44" height="44" alt=""><span><strong class="brand-wordmark">PRAVA<span class="brand-dot">.</span></strong><small class="brand-subtitle">Academic Portal</small></span></a>
+<a class="brand" href="{{ url_for('core.index') }}" aria-label="PRAVA home"><img src="{{ url_for('static', filename='img/prava-mark.svg') }}" width="44" height="44" alt=""><span><strong class="brand-wordmark">PRAVA</strong><small class="brand-subtitle">Academic Portal</small></span></a>
 <button class="mobile-menu" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-links" aria-label="Main menu"><i class="bi bi-list" aria-hidden="true"></i><span>Menu</span></button>
 <div class="site-links" id="site-links">
-{% for endpoint, label in [('core.index', 'Home'), ('core.about', 'About Us'), ('core.courses', 'Academics'), ('core.contact', 'Contact')] %}
+{% for endpoint, label in [('core.index', 'Home'), ('core.courses', 'Academics'), ('core.contact', 'Contact')] %}
 <a href="{{ url_for(endpoint) }}" {% if request.endpoint == endpoint %}aria-current="page"{% endif %}>{{ label }}</a>
 {% endfor %}
-<a class="nav-login" href="{{ url_for('auth.portal') }}" {% if request.blueprint == 'auth' %}aria-current="page"{% endif %}>Login <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-{% if config.STUDENT_SIGNUP_ENABLED %}<a class="nav-signup" href="{{ url_for('registration.signup') }}" {% if request.endpoint and request.endpoint.startswith('registration.signup') %}aria-current="page"{% endif %}>Sign up</a>{% endif %}</div><div class="nav-tools"><button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to day mode" aria-pressed="true"><i class="bi bi-moon-stars" aria-hidden="true"></i><span data-theme-label>Night</span></button></div>
+<details class="nav-login-dropdown" data-login-dropdown>
+<summary class="nav-login" {% if request.blueprint == 'auth' %}aria-current="page"{% endif %}>Login <i class="bi bi-chevron-down" aria-hidden="true"></i></summary>
+<div class="login-dropdown-panel">
+{% for slug, label, icon in [('student', 'Student', 'bi-mortarboard'), ('staff', 'Staff', 'bi-person-workspace'), ('administration', 'Office / Administration', 'bi-buildings')] %}
+<a href="{{ url_for('auth.role_login', role_slug=slug, next=request.args.get('next')) }}"><i class="bi {{ icon }}" aria-hidden="true"></i><span>{{ label }}</span></a>
+{% endfor %}
+</div>
+</details>
+</div><div class="nav-tools"><button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to day mode" aria-pressed="true"><i class="bi bi-moon-stars" aria-hidden="true"></i><span data-theme-label>Night</span></button></div>
 
 </nav></header>
 <main id="main-content">
@@ -38,7 +45,7 @@
 </main>
 {% if not in_workspace %}
 <footer class="site-footer"><div class="page-container footer-top">
-<a class="brand" href="{{ url_for('core.index') }}"><img src="{{ url_for('static', filename='img/prava-mark.svg') }}" width="40" height="40" alt=""><span><strong>PRAVA.</strong><small>LEARN. CONNECT. PROGRESS.</small></span></a>
+<a class="brand" href="{{ url_for('core.index') }}"><img src="{{ url_for('static', filename='img/prava-mark.svg') }}" width="40" height="40" alt=""><span><strong>PRAVA</strong><small>Academic Portal</small></span></a>
 <div class="footer-college"><strong>{{ config.COLLEGE_NAME }}</strong><br>{{ config.COLLEGE_ADDRESS }}<br><a href="mailto:{{ college.email }}">{{ college.email }}</a></div>
 <nav aria-label="Footer navigation"><a href="{{ url_for('core.about') }}">About the college</a><a href="{{ url_for('academics.faculty') }}">Faculty directory</a><a href="{{ url_for('activities.index') }}">Activities & student life</a><a href="{{ url_for('core.contact') }}">Contact Us</a><a href="{{ url_for('auth.portal') }}">Access your portal <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></nav>
 </div><div class="page-container footer-bottom"><span>PRAVA · {{ config.COLLEGE_NAME }}</span><span>Designed around your academic journey.</span></div></footer>

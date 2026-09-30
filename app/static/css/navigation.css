@@ -30,3 +30,29 @@
 @media(max-width:520px) { .account-toolbar { flex-basis:100%; justify-content:space-between; }.account-identity { flex:1; }.account-identity strong { font-size:12px; }.account-identity small { font-size:10px; } }
 @media(max-width:700px) { .dashboard-wrap { grid-template-rows:auto 1fr; } }
 @media print { .journey-toolbar { display:none; } }
+
+/* Native disclosure keeps the login choices usable with keyboard, touch or no JS. */
+.nav-login-dropdown { position:relative; }
+.site-nav .nav-login-dropdown>.nav-login { list-style:none; cursor:pointer; align-items:center; border-radius:10px; font:600 14px/1.5 "Segoe UI",system-ui,sans-serif; }
+.nav-login-dropdown>summary::-webkit-details-marker { display:none; }
+.nav-login-dropdown>summary>i { font-size:12px; transition:transform .18s; }
+.nav-login-dropdown[open]>summary>i { transform:rotate(180deg); }
+.site-nav .nav-login-dropdown>.nav-login:hover,
+.site-nav .nav-login-dropdown>.nav-login[aria-current],
+.site-nav .nav-login-dropdown[open]>.nav-login { background:var(--glow); color:var(--ink); border-color:var(--accent); }
+.login-dropdown-panel { position:absolute; top:calc(100% + 10px); left:5px; z-index:30; width:280px; max-width:calc(100vw - 44px); padding:8px; border:1px solid var(--edge-emphasis); border-radius:14px; background:var(--surface); box-shadow:inset 0 1px var(--sheen),0 15px 35px rgba(0,0,0,.18); }
+.login-dropdown-panel>a { display:flex; align-items:center; gap:12px; min-height:48px; padding:12px; border-radius:9px; text-decoration:none; color:var(--ink); font:600 14px/1.5 "Segoe UI",system-ui,sans-serif; }
+.login-dropdown-panel>a>i { color:var(--accent); font-size:19px; flex-shrink:0; }
+.login-dropdown-panel>a:hover,.login-dropdown-panel>a:focus-visible { background:var(--glow); color:var(--ink); }
+.public-page .page-intro.login-intro { padding-block:38px 30px; }
+.public-page .page-intro.login-intro h1 { font-size:42px; letter-spacing:-1px; margin-bottom:14px; }
+@media(max-width:900px) {
+ .site-nav .site-links { max-height:calc(100dvh - 100px); overflow-y:auto; }
+ .site-nav .nav-login-dropdown>.nav-login { justify-content:space-between; font-size:14px; }
+ .login-dropdown-panel { position:static; width:100%; max-width:none; margin-top:8px; box-shadow:inset 0 1px var(--sheen); }
+}
+@media(max-width:700px) {
+ .public-page .page-intro.login-intro { padding-block:28px 24px; }
+ .public-page .page-intro.login-intro h1 { font-size:32px; }
+}
+@media(prefers-reduced-motion:reduce) { .nav-login-dropdown>summary>i { transition:none; } }

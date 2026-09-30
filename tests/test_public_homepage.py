@@ -74,7 +74,7 @@ class PublicHomepageTestCase(TestCase):
         response = self.client.get("/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Your college life.", response.data)
+        self.assertIn(b"College Academic", response.data)
         self.assertNotIn(b"Total Students", response.data)
         self.assertIn(b"BCA", response.data)
         self.assertIn(b"Exam Notice", response.data)
@@ -102,7 +102,7 @@ class PublicHomepageTestCase(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn(content, response.data)
         self.client.post("/login/administration", data={"username_or_email": "admin", "password": "Password@123"})
-        self.assertIn(b"Your college life.", self.client.get("/").data)
+        self.assertIn(b"College Academic", self.client.get("/").data)
         logout = self.client.post("/auth/logout")
         self.assertEqual(logout.location, "/")
 

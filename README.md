@@ -66,7 +66,7 @@ Setup पुन्हा केल्यावर आधीची खाती, 
 
 ## 4. विद्यार्थ्यांसाठी Sign up
 
-Public **Sign up** पर्याय header आणि student login pages वर आहे:
+मुख्य header मध्ये **Home, Academics, Contact आणि Login** आहेत. **Login** वर क्लिक केल्यावर त्याखाली **Student, Staff आणि Office / Administration** dropdown दिसतो. Student निवडून BCA किंवा Home Science उघडा; **Sign up** पर्याय programme आणि student login pages वर आहे:
 
 - सर्व programmes: `/signup`
 - BCA: `/signup/bca`

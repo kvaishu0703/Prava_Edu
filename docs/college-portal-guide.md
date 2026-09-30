@@ -24,7 +24,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1
 - Home वर थोडक्यात ओळख, दोन विभाग, महत्त्वाचे दुवे आणि सार्वजनिक सूचना. सविस्तर माहिती स्वतंत्र पानांवर आहे.
 - मोबाईलवर navigation संक्षिप्त होते, cards एकाखाली एक येतात आणि मोठी academic tables त्यांच्या panel मध्ये scroll होतात.
 
-दृश्यरचनेच्या पुढील सुधारणेत Home वर **“Your college life. Beautifully connected.”** हे मोठे शीर्षक, निळ्या रंगाशी जुळवलेले campus illustration, दुहेरी border ची frame, स्वतंत्र programme cards आणि “Come with curiosity. Grow with possibility.” हा PRAVA संदेश जोडला आहे. हे चित्र कलात्मक illustration आहे. Day आणि Night दोन्हींत headings, महत्त्वाची नावे, borders आणि buttons स्पष्ट दिसण्यासाठी सुधारले आहेत; हलके hover effects reduced-motion preference पाळतात.
+Home वर **College Academic Management System** हे स्पष्ट शीर्षक, निळ्या रंगाशी जुळवलेले campus illustration, दुहेरी border ची frame आणि स्वतंत्र programme cards आहेत. Header मध्ये **Home, Academics, Contact आणि Login** आहेत. Login खाली **Student, Staff आणि Office / Administration** dropdown उघडतो. Student निवडल्यानंतर BCA / Home Science निवडता येते; Staff आणि Office मधून संबंधित login form थेट उघडतो. PRAVA नावापुढचा डॉट आणि login cards वरील क्रमांक काढले आहेत. हे campus चित्र कलात्मक illustration आहे. Day आणि Night दोन्हींत headings, महत्त्वाची नावे, borders आणि buttons स्पष्ट दिसतात; हलके hover effects reduced-motion preference पाळतात.
 
 | पान | पत्ता | उपयोग |
 | --- | --- | --- |
