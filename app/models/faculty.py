@@ -25,5 +25,11 @@ class Faculty(TimestampMixin, db.Model):
     materials = db.relationship("StudyMaterial", back_populates="faculty")
     assignments = db.relationship("Assignment", back_populates="faculty")
 
+    @property
+    def display_employee_id(self):
+        if self.user.is_demo and self.employee_id == 'DEMO-STAFF-001':
+            return 'Not recorded'
+        return self.employee_id
+
     def __repr__(self) -> str:
         return f"<Faculty {self.employee_id}>"

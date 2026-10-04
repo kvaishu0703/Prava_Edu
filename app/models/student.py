@@ -41,5 +41,11 @@ class Student(TimestampMixin, db.Model):
         cascade="all, delete-orphan",
     )
 
+    @property
+    def display_enrollment(self):
+        if self.user.is_demo and self.enrollment_number in {'DEMO-BCA-001', 'DEMO-HS-001'}:
+            return 'Not recorded'
+        return self.enrollment_number
+
     def __repr__(self) -> str:
         return f"<Student {self.enrollment_number}>"

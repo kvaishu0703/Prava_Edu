@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b1020"><meta name="description" content="PRAVA academic portal for Women's College of Home Science and BCA, Loni. Programmes, syllabus and student services.">
 <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-<title>{% block title %}PRAVA{% endblock %} · PRAVA Academic Portal</title>
+<title>{% block title %}PRAVA{% endblock %} / PRAVA Academic Portal</title>
 <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/prava-mark.svg') }}">
 <link href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
@@ -13,6 +13,7 @@
 <link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/editorial.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/navigation.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/institutional.css') }}" rel="stylesheet">
 </head>
 {% set in_workspace = current_user.is_authenticated and request.path.startswith(('/admin/', '/faculty/', '/student/', '/campus/')) %}
 <body class="{{ 'workspace-page' if in_workspace else 'public-page' }}">
@@ -37,8 +38,8 @@
 </nav></header>
 <main id="main-content">
 {% if show_back or current_user.is_authenticated %}<div class="journey-toolbar {{ 'workspace-toolbar' if in_workspace else 'page-container' }}" aria-label="Page and account navigation">
-<div class="journey-back">{% if show_back %}<a href="{{ back_url }}"><i class="bi bi-arrow-left" aria-hidden="true"></i>{{ back_label }}</a>{% else %}<span>YOUR ACADEMIC SPACE</span>{% endif %}</div>
-{% if current_user.is_authenticated %}<div class="account-toolbar"><a class="account-identity" href="{{ url_for(current_user.role + '.profile') }}"><span class="account-initial">{{ current_user.full_name[:1]|upper }}</span><span><strong>{{ current_user.full_name }}</strong><small>{{ account_role_label }}{% if current_user.is_demo %} · Demo account{% endif %}</small></span></a><a class="account-switch" href="{{ url_for('auth.portal') }}" aria-label="Switch account"><i class="bi bi-arrow-left-right" aria-hidden="true"></i><span>Switch</span></a><form action="{{ url_for('auth.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="logout-button" type="submit"><i class="bi bi-box-arrow-right" aria-hidden="true"></i>Logout</button></form></div>{% endif %}
+<div class="journey-back">{% if show_back %}<a href="{{ back_url }}"><i class="bi bi-arrow-left" aria-hidden="true"></i>{{ back_label }}</a>{% else %}<span>ACADEMIC PORTAL</span>{% endif %}</div>
+{% if current_user.is_authenticated %}<div class="account-toolbar"><a class="account-identity" href="{{ url_for(current_user.role + '.profile') }}"><span class="account-initial">{{ current_user.display_name[:1]|upper }}</span><span><strong>{{ current_user.display_name }}</strong><small>{{ account_role_label }}</small></span></a><a class="account-switch" href="{{ url_for('auth.portal') }}" aria-label="Switch account"><i class="bi bi-arrow-left-right" aria-hidden="true"></i><span>Switch</span></a><form action="{{ url_for('auth.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="logout-button" type="submit"><i class="bi bi-box-arrow-right" aria-hidden="true"></i>Logout</button></form></div>{% endif %}
 </div>{% endif %}
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="container flash-messages">{% for category, message in messages %}<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>{% endfor %}</div>{% endif %}{% endwith %}
 {% block content %}{% endblock %}
@@ -47,8 +48,8 @@
 <footer class="site-footer"><div class="page-container footer-top">
 <a class="brand" href="{{ url_for('core.index') }}"><img src="{{ url_for('static', filename='img/prava-mark.svg') }}" width="40" height="40" alt=""><span><strong>PRAVA</strong><small>Academic Portal</small></span></a>
 <div class="footer-college"><strong>{{ config.COLLEGE_NAME }}</strong><br>{{ config.COLLEGE_ADDRESS }}<br><a href="mailto:{{ college.email }}">{{ college.email }}</a></div>
-<nav aria-label="Footer navigation"><a href="{{ url_for('core.about') }}">About the college</a><a href="{{ url_for('academics.faculty') }}">Faculty directory</a><a href="{{ url_for('activities.index') }}">Activities & student life</a><a href="{{ url_for('core.contact') }}">Contact Us</a><a href="{{ url_for('auth.portal') }}">Access your portal <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></nav>
-</div><div class="page-container footer-bottom"><span>PRAVA · {{ config.COLLEGE_NAME }}</span><span>Designed around your academic journey.</span></div></footer>
+<nav aria-label="Footer navigation"><a href="{{ url_for('core.about') }}">About the college</a><a href="{{ url_for('academics.faculty') }}">Faculty directory</a><a href="{{ url_for('activities.index') }}">College Activities</a><a href="{{ url_for('core.contact') }}">Contact Us</a><a href="{{ url_for('auth.portal') }}">Access your portal <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></nav>
+</div><div class="page-container footer-bottom"><span>PRAVA / {{ config.COLLEGE_NAME }}</span><span>College Academic Management System</span></div></footer>
 {% endif %}
 <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>

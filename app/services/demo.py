@@ -5,11 +5,16 @@ from app.extensions import db
 from app.models import Course, Curriculum, User, Student, Faculty
 
 DEMO_ACCOUNTS = [
-    ('bca', 'bca123', 'BCA Demo Student', 'student', 'BCA'),
-    ('home', 'home123', 'Home Science Demo Student', 'student', 'BSC-FSN'),
-    ('staff', 'staff123', 'Demo Staff', 'faculty', None),
-    ('office', 'office123', 'Demo Administrator', 'admin', None),
+    ('bca', 'bca123', 'BCA Student', 'student', 'BCA'),
+    ('home', 'home123', 'Home Science Student', 'student', 'BSC-FSN'),
+    ('staff', 'staff123', 'Faculty', 'faculty', None),
+    ('office', 'office123', 'College Administration', 'admin', None),
 ]
+
+LEGACY_NAMES = {
+    'bca': 'BCA Demo Student', 'home': 'Home Science Demo Student',
+    'staff': 'Demo Staff', 'office': 'Demo Administrator',
+}
 
 
 def setup_demo():
@@ -35,6 +40,12 @@ def setup_demo():
     try:
         for username, password, full_name, role, programme in DEMO_ACCOUNTS:
             if existing[username]:
+                # Only migrate untouched setup labels; preserve names entered by the office.
+                user = existing[username]
+                if user.full_name == LEGACY_NAMES[username]:
+                    user.full_name = full_name
+                if user.faculty_profile and user.faculty_profile.qualification == 'Local demonstration account':
+                    user.faculty_profile.qualification = None
                 continue
             user = User(username=username, email=username+'@demo.prava.test', full_name=full_name,
                         role=role, is_demo=True, is_active=True,
@@ -46,7 +57,7 @@ def setup_demo():
                 db.session.add(Student(user=user, enrollment_number='DEMO-BCA-001' if programme == 'BCA' else 'DEMO-HS-001',
                                        course=curriculum.course, curriculum=curriculum, semester=1, admission_year=2026))
             elif role == 'faculty':
-                db.session.add(Faculty(user=user, employee_id='DEMO-STAFF-001', department='BCA / Home Science', qualification='Local demonstration account'))
+                db.session.add(Faculty(user=user, employee_id='DEMO-STAFF-001', department='BCA / Home Science'))
         db.session.commit()
     except Exception:
         db.session.rollback()

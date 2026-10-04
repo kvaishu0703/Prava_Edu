@@ -77,8 +77,8 @@
             <tbody>
                 {% for row in rows %}
                 <tr>
-                    <td>{{ row.student.enrollment_number }}</td>
-                    <td>{{ row.student.user.full_name }}</td>
+                    <td>{{ row.student.display_enrollment }}</td>
+                    <td>{{ row.student.user.display_name }}</td>
                     <td>{{ row.total }}</td>
                     <td>{{ row.present }}</td>
                     <td>{{ row.absent }}</td>

@@ -18,13 +18,13 @@
     <div class="profile-grid">
         <div class="profile-avatar">
             <i class="bi bi-shield-lock"></i>
-            <strong>{{ current_user.full_name }}</strong>
+            <strong>{{ current_user.display_name }}</strong>
             <span>{{ current_user.username }}</span>
         </div>
         <div class="detail-grid">
-            <div><span>Full Name</span><strong>{{ current_user.full_name }}</strong></div>
+            <div><span>Full Name</span><strong>{{ current_user.display_name }}</strong></div>
             <div><span>Username</span><strong>{{ current_user.username }}</strong></div>
-            <div><span>Email</span><strong>{{ current_user.email }}</strong></div>
+            <div><span>Email</span><strong>{{ current_user.display_email }}</strong></div>
             <div><span>Role</span><strong>{{ current_user.role|title }}</strong></div>
             <div><span>Status</span><strong>{{ "Active" if current_user.is_active else "Inactive" }}</strong></div>
             <div><span>Last Login</span><strong>{{ current_user.last_login.strftime("%d %b %Y, %I:%M %p") if current_user.last_login else "-" }}</strong></div>

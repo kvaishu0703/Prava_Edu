@@ -34,20 +34,20 @@ auth_bp = Blueprint("auth", __name__)
 PORTALS = {
     "student": {
         "role": "student", "name": "Student", "icon": "bi-mortarboard",
-        "tagline": "Your next chapter starts here.",
-        "description": "Follow your progress, explore your subjects, and keep every assignment in sight.",
+        "tagline": "Student Academic Records",
+        "description": "View your attendance, marks, subjects and assignments.",
         "features": ["Marks & attendance", "Subjects & study materials", "Assignments & student tests"],
     },
     "staff": {
         "role": "faculty", "name": "Staff", "icon": "bi-person-workspace",
-        "tagline": "More time for what you teach.",
-        "description": "Bring your classes, learning resources, and everyday academic work together.",
+        "tagline": "Staff Academic Workspace",
+        "description": "Manage assigned subjects, attendance, marks and learning resources.",
         "features": ["Class attendance & marks", "Materials & assignments", "Student records & reports"],
     },
     "administration": {
         "role": "admin", "name": "Office / Administration", "icon": "bi-buildings",
-        "tagline": "A clear view of your institution.",
-        "description": "Organize people, programs, and academic records from one connected workspace.",
+        "tagline": "College Administration",
+        "description": "Manage student records, staff accounts, registrations and college reports.",
         "features": ["Student & staff management", "Courses & subject allocation", "Reports, notices & inquiries"],
     },
 }

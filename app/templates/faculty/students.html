@@ -31,9 +31,9 @@
             <tbody>
                 {% for student in students %}
                 <tr>
-                    <td>{{ student.enrollment_number }}</td>
-                    <td>{{ student.user.full_name }}</td>
-                    <td>{{ student.user.email }}</td>
+                    <td>{{ student.display_enrollment }}</td>
+                    <td>{{ student.user.display_name }}</td>
+                    <td>{{ student.user.display_email }}</td>
                     <td>{{ student.course.code }}</td>
                     <td>{{ student.semester }}</td>
                     <td>{{ student.mobile_number or '-' }}</td>

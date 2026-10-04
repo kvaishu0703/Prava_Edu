@@ -50,7 +50,7 @@ class OnboardingTest(TestCase):
         result = self.login('bca', 'bca123', 'student/bca')
         self.assertEqual(result.location, '/student/dashboard')
         page = self.client.get(result.location)
-        self.assertIn(b'BCA Demo Student', page.data)
+        self.assertIn(b'BCA Student', page.data)
         self.assertNotIn(b'System Admin', page.data)
         self.assertIn(b'Logout', page.data)
         self.assertIn(b'Back to Home', page.data)
@@ -77,6 +77,35 @@ class OnboardingTest(TestCase):
             self.assertEqual(Student.query.count(), 2)
             self.assertTrue(student.check_password('NewPrivate@123'))
             self.assertFalse(User.query.filter_by(username='admin').one().is_demo)
+
+    def test_setup_migrates_only_legacy_labels_and_preserves_account_data(self):
+        with self.app.app_context():
+            student = User.query.filter_by(username='bca').one()
+            staff = User.query.filter_by(username='staff').one()
+            student.full_name = 'BCA Demo Student'
+            staff.full_name = 'Verified Faculty Name'
+            staff.faculty_profile.qualification = 'Local demonstration account'
+            original = (student.id, student.password_hash, student.email,
+                        student.student_profile.enrollment_number, student.is_active)
+            db.session.commit()
+            setup_demo()
+            self.assertEqual(student.full_name, 'BCA Student')
+            self.assertEqual(staff.full_name, 'Verified Faculty Name')
+            self.assertIsNone(staff.faculty_profile.qualification)
+            self.assertEqual(original, (student.id, student.password_hash, student.email,
+                                       student.student_profile.enrollment_number, student.is_active))
+            self.assertEqual(student.display_email, 'Not recorded')
+            self.assertEqual(student.student_profile.display_enrollment, 'Not recorded')
+            # Verified profile fields are shown verbatim, even on a local account.
+            student.full_name = 'Vaishnavi Vijay Kale'
+            student.email = 'vaishnavi@example.test'
+            student.student_profile.enrollment_number = 'COL2026-028'
+            self.assertEqual(student.display_name, student.full_name)
+            self.assertEqual(student.display_email, student.email)
+            self.assertEqual(student.student_profile.display_enrollment, 'COL2026-028')
+            student.is_demo = False
+            student.full_name = 'BCA Demo Student'
+            self.assertEqual(student.display_name, student.full_name)
 
     def test_demo_setup_refuses_real_account_collision_and_production(self):
         with self.app.app_context():

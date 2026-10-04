@@ -7,7 +7,7 @@
     <div>
         <p class="section-label mb-1">Assignment Module</p>
         <h1>Submit Assignment</h1>
-        <p>{{ assignment.title }} · {{ assignment.subject.code }} · Due {{ assignment.due_date.strftime("%d %b %Y, %I:%M %p") }}</p>
+        <p>{{ assignment.title }} / {{ assignment.subject.code }} / Due {{ assignment.due_date.strftime("%d %b %Y, %I:%M %p") }}</p>
     </div>
 </div>
 
@@ -22,7 +22,7 @@
     {% if submission %}
     <div class="alert alert-info">
         Current status: <strong>{{ submission.status }}</strong>
-        {% if submission.submitted_at %} · Submitted {{ submission.submitted_at.strftime("%d %b %Y, %I:%M %p") }}{% endif %}
+        {% if submission.submitted_at %} / Submitted {{ submission.submitted_at.strftime("%d %b %Y, %I:%M %p") }}{% endif %}
     </div>
     {% endif %}
 

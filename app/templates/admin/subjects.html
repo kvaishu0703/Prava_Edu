@@ -40,7 +40,7 @@
                     <td>{{ subject.name }}</td>
                     <td>{{ subject.course.code }}</td>
                     <td>{{ subject.semester }}</td>
-                    <td>{{ subject.faculty.user.full_name if subject.faculty else '-' }}</td>
+                    <td>{{ subject.faculty.user.display_name if subject.faculty else '-' }}</td>
                     <td>{{ subject.passing_marks }}/{{ subject.maximum_marks }}</td>
                     <td><span class="badge {{ 'text-bg-success' if subject.is_active else 'text-bg-secondary' }}">{{ 'Active' if subject.is_active else 'Inactive' }}</span></td>
                     <td class="action-cell">{% if current_user.admin_scope != 'principal' %}

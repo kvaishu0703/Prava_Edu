@@ -47,6 +47,23 @@ class User(UserMixin, TimestampMixin, db.Model):
         cascade="all, delete-orphan",
     )
 
+    @property
+    def display_name(self):
+        """Present legacy local account labels without changing real names."""
+        legacy = {
+            'BCA Demo Student': 'BCA Student',
+            'Home Science Demo Student': 'Home Science Student',
+            'Demo Staff': 'Faculty', 'Demo Administrator': 'College Administration',
+        }
+        return legacy.get(self.full_name, self.full_name) if self.is_demo else self.full_name
+
+    @property
+    def display_email(self):
+        """Do not present a reserved local address as a college contact."""
+        if self.is_demo and self.email.endswith('@demo.prava.test'):
+            return 'Not recorded'
+        return self.email
+
     def set_password(self, password: str) -> None:
         """Hash and store a password."""
         self.password_hash = generate_password_hash(password)

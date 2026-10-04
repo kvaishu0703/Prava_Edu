@@ -36,8 +36,8 @@
                 {% for member in faculty_members %}
                 <tr>
                     <td>{{ member.employee_id }}</td>
-                    <td>{{ member.user.full_name }}</td>
-                    <td>{{ member.user.email }}</td>
+                    <td>{{ member.user.display_name }}</td>
+                    <td>{{ member.user.display_email }}</td>
                     <td>{{ member.department }}</td>
                     <td>{{ member.qualification or '-' }}</td>
                     <td><span class="badge {{ 'text-bg-success' if member.user.is_active else 'text-bg-secondary' }}">{{ 'Active' if member.user.is_active else 'Inactive' }}</span></td>

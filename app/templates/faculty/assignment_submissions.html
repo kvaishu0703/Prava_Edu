@@ -7,7 +7,7 @@
     <div>
         <p class="section-label mb-1">Assignment Module</p>
         <h1>{{ assignment.title }}</h1>
-        <p>{{ assignment.subject.code }} · Due {{ assignment.due_date.strftime("%d %b %Y, %I:%M %p") }}</p>
+        <p>{{ assignment.subject.code }} / Due {{ assignment.due_date.strftime("%d %b %Y, %I:%M %p") }}</p>
     </div>
     <a class="btn btn-outline-secondary" href="{{ url_for('faculty.assignments') }}">
         <i class="bi bi-arrow-left"></i> Back
@@ -33,8 +33,8 @@
                 {% set student = row.student %}
                 {% set submission = row.submission %}
                 <tr>
-                    <td>{{ student.user.full_name }}</td>
-                    <td>{{ student.enrollment_number }}</td>
+                    <td>{{ student.user.display_name }}</td>
+                    <td>{{ student.display_enrollment }}</td>
                     <td><span class="badge {{ 'text-bg-success' if submission and submission.status == 'Graded' else ('text-bg-info' if submission else 'text-bg-secondary') }}">{{ submission.status if submission else 'Pending' }}</span></td>
                     <td>{{ submission.submitted_at.strftime("%d %b %Y, %I:%M %p") if submission and submission.submitted_at else '-' }}</td>
                     <td>{{ submission.marks_obtained if submission and submission.marks_obtained is not none else '-' }}</td>

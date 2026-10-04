@@ -1,0 +1,31 @@
+/* Consistent information hierarchy for the college portal. */
+.public-page h1,.public-page h2,.public-page h3,.public-page h1 em,.public-page h2 em { font-family:"Inter","Segoe UI",system-ui,sans-serif; font-style:normal; letter-spacing:-.035em; }
+.public-page .page-intro h1 { font-size:clamp(30px,4vw,46px); line-height:1.18; }
+.public-page .page-intro { padding-top:45px; padding-bottom:30px; }
+.home-hero.institutional-hero { grid-template-columns:1.15fr 1fr; gap:48px; padding-block:56px; }
+.institutional-hero h1 { font-size:clamp(34px,3.5vw,52px); line-height:1.16; letter-spacing:-.04em; }
+.institutional-hero .institution-label { font-size:17px; max-width:580px; line-height:1.65; }
+.institutional-hero .hero-intro { max-width:570px; line-height:1.8; }
+.hero-programmes { margin:24px 0 0; color:var(--muted); font-size:13px; }
+.portal-services { border:1px solid var(--edge-emphasis); border-radius:20px; padding:30px; background:var(--surface); box-shadow:var(--shadow),inset 0 1px var(--sheen); }
+.portal-services h2 { font-size:23px; margin:0 0 22px; }
+.portal-service-list { display:grid; gap:0; margin:0; }
+.portal-service-list>div { display:grid; grid-template-columns:35px 1fr; column-gap:13px; padding:17px 0; border-top:1px solid var(--prava-border); }
+.portal-service-list i { grid-row:span 2; color:var(--accent); font-size:23px; }
+.portal-service-list dt { font-size:15px; font-weight:600; color:var(--ink); }
+.portal-service-list dd { margin:5px 0 0; font-size:13px; color:var(--muted); line-height:1.7; }
+.home-programmes,.home-notices { padding-block:42px; }
+.editorial-heading h2,.discovery-quote h2,.home-finale h2 { font-size:clamp(25px,3vw,34px); line-height:1.25; }
+.editorial-heading { margin-bottom:26px; }
+.programme-feature { padding:28px; min-height:0; }.programme-feature h3 { font-size:27px; }.programme-feature-top { margin-bottom:23px; }.programme-feature-bottom { margin-top:25px; }.programme-story { min-height:0; }
+.programme-feature::after,.discovery-quote::after,.home-finale::after { display:none; }
+.discovery-section { margin-block:15px 35px; }.discovery-quote { padding:32px; background:var(--surface); border:1px solid var(--edge); }.discovery-quote p:last-child { color:var(--muted); margin-bottom:0; }.discovery-link h3 { font-family:inherit; font-size:18px; }
+.home-finale { padding:30px; margin-top:10px; margin-bottom:50px; }.home-finale h2 { margin-bottom:0; }.finale-action { text-align:right; }
+.department-count { display:flex; gap:9px; align-items:baseline; color:var(--muted); margin-top:16px; }.department-count strong { font-size:28px; font-weight:650; color:var(--ink); }
+.overview-card { background:var(--surface); color:var(--ink); border-radius:16px; box-shadow:var(--shadow); }
+.overview-card-head { align-items:flex-start; }.overview-card-head>i { background:var(--surface-alt); color:var(--accent); flex-shrink:0; }
+.overview-card h2 { color:var(--ink); font-weight:650; margin-bottom:7px; }.overview-card-head span { display:block; color:var(--muted); line-height:1.65; }
+.dashboard-topbar h1 { font-size:clamp(24px,2.6vw,34px); line-height:1.3; }.dashboard-topbar h1,.account-identity strong,.profile-avatar strong { overflow-wrap:anywhere; }
+.auth-story h1 { font-size:clamp(30px,3.5vw,44px); }.signup-aside h2,.about-story h2,.about-principles h2 { font-size:28px; }.eyebrow { letter-spacing:1.1px; }
+@media(max-width:850px) { .home-hero.institutional-hero { grid-template-columns:minmax(0,1fr); gap:28px; }.portal-services { padding:24px; }.public-page .page-intro { padding-top:32px; } }
+@media(max-width:600px) { .home-hero.institutional-hero { padding-block:34px; }.institutional-hero h1 { font-size:34px; }.institutional-hero .institution-label { font-size:15px; }.programme-feature { padding:23px; }.home-finale { padding:24px; }.finale-action { text-align:left; } }

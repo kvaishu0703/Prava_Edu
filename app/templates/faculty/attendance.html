@@ -64,10 +64,10 @@
                     {% set record = existing.get(student.id) %}
                     {% set current_status = record.status if record else 'Present' %}
                     <tr>
-                        <td>{{ student.enrollment_number }}</td>
+                        <td>{{ student.display_enrollment }}</td>
                         <td>
-                            <strong>{{ student.user.full_name }}</strong><br>
-                            <span class="text-secondary small">{{ student.user.email }}</span>
+                            <strong>{{ student.user.display_name }}</strong><br>
+                            <span class="text-secondary small">{{ student.user.display_email }}</span>
                         </td>
                         <td>
                             <select class="form-select attendance-status" name="status_{{ student.id }}">

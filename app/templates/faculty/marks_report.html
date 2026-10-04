@@ -76,7 +76,7 @@
                 {% for mark in rows %}
                 <tr>
                     <td>{{ mark.student.enrollment_number }}</td>
-                    <td>{{ mark.student.user.full_name }}</td>
+                    <td>{{ mark.student.user.display_name }}</td>
                     <td>{{ mark.exam_type }}</td>
                     <td>{{ mark.internal_marks }}</td>
                     <td>{{ mark.external_marks }}</td>

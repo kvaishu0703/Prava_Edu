@@ -5,7 +5,7 @@
 
 {% block content %}
 {% call dashboard_shell("Student", "accent-student", stats) %}
-{% if student is defined and student and student.curriculum %}<div class="academic-source mt-4"><div><strong>{{ student.course.name }}</strong><p>{{ student.curriculum.pattern }} · Semester {{ student.semester }}</p></div><a class="btn btn-outline-primary" href="{{ url_for('academics.student_syllabus') }}">View my syllabus</a></div>{% endif %}<div class="dashboard-grid mt-4">
+{% if student is defined and student and student.curriculum %}<div class="academic-source mt-4"><div><strong>{{ student.course.name }}</strong><p>{{ student.curriculum.pattern }} / Semester {{ student.semester }}</p></div><a class="btn btn-outline-primary" href="{{ url_for('academics.student_syllabus') }}">View my syllabus</a></div>{% endif %}<div class="dashboard-grid mt-4">
     <section class="data-panel">
         <div class="panel-heading">
             <div>
@@ -17,7 +17,7 @@
             {% for subject in subjects %}
             <article>
                 <strong>{{ subject.name }}</strong>
-                <span>{{ subject.code }} | {{ subject.faculty.user.full_name if subject.faculty else "Faculty pending" }}</span>
+                <span>{{ subject.code }} | {{ subject.faculty.user.display_name if subject.faculty else "Faculty pending" }}</span>
             </article>
             {% else %}
             <p class="text-secondary mb-0">No subjects found.</p>

@@ -68,10 +68,10 @@
                     {% set internal = record.internal_marks if record else '' %}
                     {% set external = record.external_marks if record else '' %}
                     <tr>
-                        <td>{{ student.enrollment_number }}</td>
+                        <td>{{ student.display_enrollment }}</td>
                         <td>
-                            <strong>{{ student.user.full_name }}</strong><br>
-                            <span class="text-secondary small">{{ student.user.email }}</span>
+                            <strong>{{ student.user.display_name }}</strong><br>
+                            <span class="text-secondary small">{{ student.user.display_email }}</span>
                         </td>
                         <td><input class="form-control marks-input" type="number" min="0" max="{{ subject.curriculum_subject.internal_max if subject.curriculum_subject else subject.maximum_marks }}" placeholder="Pending" name="internal_{{ student.id }}" value="{{ internal }}"></td>
                         <td><input class="form-control marks-input" type="number" min="0" max="{{ subject.curriculum_subject.external_max if subject.curriculum_subject else subject.maximum_marks }}" placeholder="Pending" name="external_{{ student.id }}" value="{{ external }}"></td>

@@ -94,8 +94,8 @@ class PublicHomepageTestCase(TestCase):
     def test_public_pages_are_separate_and_home_stays_public(self):
         home = self.client.get("/")
         self.assertNotIn(b'name="message"', home.data)
-        self.assertNotIn(b"THE IDEA BEHIND THE PROJECT", home.data)
-        for path, content in [("/about", b"THE IDEA BEHIND THE PROJECT"),
+        self.assertNotIn(b"ABOUT PRAVA", home.data)
+        for path, content in [("/about", b"ABOUT PRAVA"),
                               ("/contact", b'name="message"'),
                               ("/courses", b"Bachelor of Computer Applications")]:
             response = self.client.get(path)

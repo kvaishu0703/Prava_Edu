@@ -1,11 +1,11 @@
 {% extends 'admin/admin_base.html' %}
 {% block title %}Student sign-ups{% endblock %}
 {% block admin_content %}
-<div class="page-heading"><p class="eyebrow">OFFICE / STUDENT SIGN-UPS</p><h1>New beginnings, verified.</h1><p>Check enrollment details before activating a student's account.</p></div>
+<div class="page-heading"><p class="eyebrow">OFFICE / STUDENT SIGN-UPS</p><h1>Student Registration Requests</h1><p>Check enrollment details before activating a student's account.</p></div>
 <nav class="page-tabs" aria-label="Registration status">{% for status in ['Pending','Approved','Rejected','All'] %}<a href="{{ url_for('registration.registrations', status=status) }}" {% if selected == status %}aria-current="page"{% endif %}>{{ status }}</a>{% endfor %}</nav>
 {% if registrations %}
 <div class="data-panel table-responsive"><table class="table"><thead><tr><th>Name / username</th><th>Enrollment</th><th>Programme</th><th>Status</th><th></th></tr></thead><tbody>
-{% for item in registrations %}<tr><td><strong class="record-title">{{ item.full_name }}</strong><span class="record-subtitle">{{ item.username }}</span></td><td>{{ item.enrollment_number }}</td><td>{{ item.curriculum.course.code }} · Sem {{ item.semester }}</td><td>{{ item.status }}</td><td><a href="{{ url_for('registration.review', registration_id=item.id) }}">{{ 'Review' if item.status == 'Pending' and current_user.admin_scope != 'principal' else 'View' }}</a></td></tr>{% endfor %}
+{% for item in registrations %}<tr><td><strong class="record-title">{{ item.full_name }}</strong><span class="record-subtitle">{{ item.username }}</span></td><td>{{ item.enrollment_number }}</td><td>{{ item.curriculum.course.code }} / Sem {{ item.semester }}</td><td>{{ item.status }}</td><td><a href="{{ url_for('registration.review', registration_id=item.id) }}">{{ 'Review' if item.status == 'Pending' and current_user.admin_scope != 'principal' else 'View' }}</a></td></tr>{% endfor %}
 </tbody></table></div>
 {% else %}
 <section class="data-panel"><p class="eyebrow">YOUR REGISTRATION DESK</p><h2>{{ 'No sign-up requests yet.' if selected == 'All' else 'No ' ~ selected|lower ~ ' requests.' }}</h2><p class="mb-0">Student requests appear here after a sign-up. Use the status tabs to see completed reviews.</p></section>

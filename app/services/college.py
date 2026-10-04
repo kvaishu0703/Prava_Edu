@@ -14,10 +14,10 @@ COLLEGE = {
 }
 DEPARTMENTS = {
     'bca': {'name': 'BCA', 'title': 'Bachelor of Computer Applications', 'icon': 'bi-code-slash',
-            'description': 'Computer applications, programming and practical learning for a connected world.',
+            'description': 'Computer applications, programming, databases and practical coursework.',
             'source': COLLEGE_SITE + 'BCA.html'},
     'home-science': {'name': 'Home Science', 'title': 'Home Science', 'icon': 'bi-mortarboard',
-                    'description': 'Food Science & Nutrition, and Textile Science and Designing — learning for life, health and enterprise.',
+                    'description': 'Undergraduate study in Food Science & Nutrition, and Textile Science and Designing.',
                     'source': COLLEGE_SITE + 'HomeScience.html'},
 }
 PROGRAMMES = [

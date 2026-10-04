@@ -21,7 +21,7 @@
         <div class="profile-upload-row">
             <div class="profile-avatar">
                 {% if faculty and faculty.profile_image %}
-                    <img src="{{ url_for('static', filename=faculty.profile_image) }}" alt="{{ current_user.full_name }} profile photo">
+                    <img src="{{ url_for('static', filename=faculty.profile_image) }}" alt="{{ current_user.display_name }} profile photo">
                 {% else %}
                     <i class="bi bi-person-workspace"></i>
                 {% endif %}

@@ -19,17 +19,17 @@
         <div class="profile-grid student-profile">
         <div class="profile-avatar">
             {% if student.profile_image %}
-                <img src="{{ url_for('static', filename=student.profile_image) }}" alt="{{ current_user.full_name }} profile photo">
+                <img src="{{ url_for('static', filename=student.profile_image) }}" alt="{{ current_user.display_name }} profile photo">
             {% else %}
                 <i class="bi bi-person-circle"></i>
             {% endif %}
-            <strong>{{ current_user.full_name }}</strong>
-            <span>{{ student.enrollment_number }}</span>
+            <strong>{{ current_user.display_name }}</strong>
+            <span>{{ student.display_enrollment }}</span>
         </div>
         <div class="detail-grid">
-            <div><span>Email</span><strong>{{ current_user.email }}</strong></div>
+            <div><span>Email</span><strong>{{ current_user.display_email }}</strong></div>
             <div><span>Mobile</span><strong>{{ student.mobile_number or '-' }}</strong></div>
-            <div><span>Student ID</span><strong>{{ student.enrollment_number }}</strong></div>
+            <div><span>Student ID</span><strong>{{ student.display_enrollment }}</strong></div>
             <div><span>Course</span><strong>{{ student.course.code }} - {{ student.course.name }}</strong></div>
             <div><span>Class</span><strong>{{ student.course.code }}</strong></div>
             <div><span>Semester</span><strong>{{ student.semester }}</strong></div>
