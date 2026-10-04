@@ -41,10 +41,10 @@ macOS / Linux: Python 3.11–3.13 आणि venv support स्थापित �
 
 | कोणासाठी | Login ID | Password | Login page | Dashboard वरील नाव |
 | --- | --- | --- | --- | --- |
-| BCA विद्यार्थी | `bca` | `bca123` | `/login/student/bca` | BCA Demo Student |
-| Home Science विद्यार्थी | `home` | `home123` | `/login/student/home-science` | Home Science Demo Student |
-| Staff | `staff` | `staff123` | `/login/staff` | Demo Staff |
-| Admin / Office | `office` | `office123` | `/login/administration` | Demo Administrator |
+| BCA विद्यार्थी | `bca` | `bca123` | `/login/student/bca` | BCA Student |
+| Home Science विद्यार्थी | `home` | `home123` | `/login/student/home-science` | Home Science Student |
+| Staff | `staff` | `staff123` | `/login/staff` | Faculty |
+| Admin / Office | `office` | `office123` | `/login/administration` | College Administration |
 
 विद्यार्थ्यांची demo profiles पहिल्या semester च्या **2024 NEP** शी जोडलेली आहेत. Home Science demo Food Science & Nutrition programme मध्ये आहे. Office मधून Textile Science and Designing च्या विद्यार्थिनीही नोंदवता येतात.
 
@@ -125,7 +125,7 @@ Staff आणि Office खात्यांना सार्वजनिक S
 | Staff | `/faculty/dashboard`, `/faculty/subjects`, `/faculty/students`, `/faculty/attendance`, `/faculty/marks`, `/faculty/materials`, `/faculty/assignments` |
 | Office | `/admin/dashboard`, `/admin/students`, `/admin/faculty`, `/admin/subjects`, `/admin/curriculum`, `/admin/records/import`, `/admin/registrations`, `/admin/access`, `/admin/reports` |
 
-Header मध्ये ठळक PRAVA wordmark, वाचायला स्पष्ट Academic Portal subtitle, active navigation आणि Day/Night toggle आहेत. पहिल्या भेटीत **Night mode हा default** आहे; वापरकर्त्याने Day/Night बदलल्यास ती निवड जतन राहते. Home मधील campus चित्र हे PRAVA साठीचे illustration आहे. कॉलेजची प्रकाशित माहिती आणि स्थानिक academic account records वेगळे ठेवले आहेत.
+Header मध्ये ठळक PRAVA wordmark, वाचायला स्पष्ट Academic Portal subtitle, active navigation आणि Day/Night toggle आहेत. पहिल्या भेटीत **Night mode हा default** आहे; वापरकर्त्याने Day/Night बदलल्यास ती निवड जतन राहते. Home वर Academic Information, BCA / Home Science programmes, college resources आणि notices आहेत. सार्वजनिक पाने, dashboard आणि Reports मध्ये स्पष्ट शीर्षके आणि दोन्ही modes मध्ये वाचनीय cards आहेत. स्थानिक presentation खात्यांवर वरील programme / role नावे दिसतात; Office ने भरलेली खरी नावे कायम राहतात.
 
 ## 8. 2024 NEP अभ्यासक्रम — उपलब्धता
 
@@ -184,4 +184,22 @@ Tests (isolated in-memory database):
 | Demo ID conflict | वास्तविक खाते overwrite करू नका; Office सोबत username तपासा किंवा नवीन रिकाम्या project copy मध्ये demo सुरू करा. |
 | Data रिकामा दिसतो | कोणत्या extracted folder चा launcher चालू आहे ते तपासा; प्रत्येक installation चा स्वतःचा `instance/prava.sqlite3` आहे. |
 
-इतर दस्तऐवज: [College guide](docs/college-portal-guide.md), [मूळ redesign आराखडा](docs/college-redesign-plan.md), [मूळ project report](docs/final_project_report.md), [Viva guide](docs/viva_guide.md).
+## 12. अद्ययावत Project Report
+
+**४४ पाने — मुखपृष्ठ, Certificate, Index आणि Appendix सहित; कमाल ४५ पानांच्या मर्यादेत.** ४ ऑक्टोबर २०२६ च्या UI बदलांचे screenshots, database design, login flow, English Google Forms प्रक्रिया आणि ६३ यशस्वी tests यांचा समावेश आहे.
+
+- [वाचण्यासाठी / छपाईसाठी PDF](docs/report/PRAVA_Project_Report_2026-2027_Updated.pdf)
+- [संपादनासाठी Word DOCX](docs/report/PRAVA_Project_Report_2026-2027_Updated.docx)
+
+ZIP extract केल्यावर दोन्ही फाईल्स `docs/report/` मध्ये मिळतील. रिपोर्टमधील screenshot data हा local presentation installation चा आहे; प्रत्यक्ष विद्यार्थ्यांचे records Office ने पडताळून भरायचे आहेत.
+
+## 13. Student आणि Staff माहिती संकलन
+
+विद्यार्थिनी आणि Staff साठी स्वतंत्र **English Google Forms** आहेत:
+
+- Student: https://docs.google.com/forms/d/e/1FAIpQLSdTkcm-zC-qoU6q_wrG1IIvGTcXLF1mDZZgxEkDKGI-D_dQQQ/viewform
+- Staff: https://docs.google.com/forms/d/e/1FAIpQLSdF3HYT-MY2DA7vY7L_zlFs2n-J276xHjpXvAsx73iLQGRktQ/viewform
+
+Responses मालकाच्या linked Google Sheets मध्ये साठतात. Forms मध्ये password विचारलेला नाही. माहिती PRAVA database मध्ये आपोआप येत नाही: Office ने अधिकृत नोंदींशी पडताळून **Import college records** मधील Student / Staff CSV template मध्ये आवश्यक माहिती भरावी, preview तपासावा आणि import करावा. नवीन imported खात्यांचे स्वतंत्र password व activation Office पूर्ण करते.
+
+इतर दस्तऐवज: [College guide](docs/college-portal-guide.md), [मूळ redesign आराखडा](docs/college-redesign-plan.md), [तांत्रिक report outline](docs/final_project_report.md), [Viva guide](docs/viva_guide.md).

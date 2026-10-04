@@ -1,5 +1,13 @@
 # Changelog
 
+## PRAVA interface and report - 2026-10-04
+
+- Replaced promotional slogans with academic service headings and college information.
+- Standardized page typography, programme labels and Day/Night report-card contrast.
+- Updated local presentation account labels while preserving account IDs, passwords, permissions and verified profile data.
+- Verified all four login/dashboard flows and 63 automated tests.
+- Added the updated 44-page PDF/Word report and separate English Student/Staff form links to the README.
+
 ## Phase 1 - 2026-07-29
 
 - Created initial Flask project structure.

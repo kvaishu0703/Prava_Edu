@@ -2,6 +2,8 @@
 
 ## Final Project Report
 
+The updated submission report (4 October 2026) contains **44 pages**, including front matter and appendix: [PDF](report/PRAVA_Project_Report_2026-2027_Updated.pdf) / [editable Word document](report/PRAVA_Project_Report_2026-2027_Updated.docx). It includes the current interface screenshots and verification results. The following text is the earlier technical outline.
+
 ### Abstract
 
 PRAVA is a web-based academic management system for colleges. It combines

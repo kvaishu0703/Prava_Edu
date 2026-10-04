@@ -1,6 +1,6 @@
 # PRAVA — कॉलेज पोर्टल वापर मार्गदर्शक
 
-अद्ययावत: 20 सप्टेंबर 2026. BCA आणि Home Science या दोन्हींसाठी वापरकर्त्याने निश्चित केलेला **2024 NEP Pattern** वापरला आहे.
+अद्ययावत: 4 ऑक्टोबर 2026. BCA आणि Home Science या दोन्हींसाठी वापरकर्त्याने निश्चित केलेला **2024 NEP Pattern** वापरला आहे.
 
 ## 1. प्रोजेक्ट उघडणे
 
@@ -24,7 +24,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1
 - Home वर थोडक्यात ओळख, दोन विभाग, महत्त्वाचे दुवे आणि सार्वजनिक सूचना. सविस्तर माहिती स्वतंत्र पानांवर आहे.
 - मोबाईलवर navigation संक्षिप्त होते, cards एकाखाली एक येतात आणि मोठी academic tables त्यांच्या panel मध्ये scroll होतात.
 
-Home वर **College Academic Management System** हे स्पष्ट शीर्षक, निळ्या रंगाशी जुळवलेले campus illustration, दुहेरी border ची frame आणि स्वतंत्र programme cards आहेत. Header मध्ये **Home, Academics, Contact आणि Login** आहेत. Login खाली **Student, Staff आणि Office / Administration** dropdown उघडतो. Student निवडल्यानंतर BCA / Home Science निवडता येते; Staff आणि Office मधून संबंधित login form थेट उघडतो. PRAVA नावापुढचा डॉट आणि login cards वरील क्रमांक काढले आहेत. हे campus चित्र कलात्मक illustration आहे. Day आणि Night दोन्हींत headings, महत्त्वाची नावे, borders आणि buttons स्पष्ट दिसतात; हलके hover effects reduced-motion preference पाळतात.
+Home वर **College Academic Management System** हे स्पष्ट शीर्षक, Academic Information मधील college services आणि स्वतंत्र BCA / Home Science programme cards आहेत. Header मध्ये **Home, Academics, Contact आणि Login** आहेत. Login खाली **Student, Staff आणि Office / Administration** dropdown उघडतो. Student निवडल्यानंतर BCA / Home Science निवडता येते; Staff आणि Office मधून संबंधित login form थेट उघडतो. पानांवरील सजावटीच्या घोषवाक्यांऐवजी कामाशी संबंधित शीर्षके आहेत. स्थानिक खात्यांवर BCA Student, Home Science Student, Faculty आणि College Administration अशी नावे दिसतात; Office ने भरलेली खरी नावे जतन होतात. Day आणि Night दोन्हींत headings, borders, Reports cards आणि buttons स्पष्ट दिसतात.
 
 | पान | पत्ता | उपयोग |
 | --- | --- | --- |
