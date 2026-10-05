@@ -96,6 +96,7 @@ def edit_profile():
         form.qualification.data = faculty.qualification
         form.department.data = faculty.department
         form.joining_date.data = faculty.joining_date
+        form.gender.data = current_user.gender or ""
 
     if form.validate_on_submit() and validate_profile_form(form):
         if current_app.config["SUPABASE_AUTH_ENABLED"] and form.email.data.strip().lower() != current_user.email:
@@ -108,6 +109,7 @@ def edit_profile():
         faculty.qualification = form.qualification.data
         faculty.department = form.department.data.strip()
         faculty.joining_date = form.joining_date.data
+        current_user.gender = form.gender.data or None
         try:
             profile_image = save_profile_image(request.files.get("profile_image"))
             if profile_image:

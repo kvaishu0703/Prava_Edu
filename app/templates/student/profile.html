@@ -18,13 +18,10 @@
     {% if student %}
         <div class="profile-grid student-profile">
         <div class="profile-avatar">
-            {% if student.profile_image %}
-                <img src="{{ url_for('static', filename=student.profile_image) }}" alt="{{ current_user.display_name }} profile photo">
-            {% else %}
-                <i class="bi bi-person-circle"></i>
-            {% endif %}
+            {% include "components/profile_photo.html" %}
             <strong>{{ current_user.display_name }}</strong>
             <span>{{ student.display_enrollment }}</span>
+            <a class="btn btn-outline-secondary photo-change" href="{{ url_for('student.edit_profile') }}#profile_image">Change photo</a>
         </div>
         <div class="detail-grid">
             <div><span>Email</span><strong>{{ current_user.display_email }}</strong></div>
@@ -34,7 +31,7 @@
             <div><span>Class</span><strong>{{ student.course.code }}</strong></div>
             <div><span>Semester</span><strong>{{ student.semester }}</strong></div>
             <div><span>Admission Year</span><strong>{{ student.admission_year }}</strong></div>
-            <div><span>Academic Year</span><strong>{{ student.admission_year }} - {{ student.admission_year + 1 }}</strong></div>
+            <div><span>Admission Session</span><strong>{{ student.admission_year }} - {{ student.admission_year + 1 }}</strong></div>
             <div><span>Gender</span><strong>{{ student.gender or '-' }}</strong></div>
             <div><span>Date of Birth</span><strong>{{ student.date_of_birth.strftime("%d %b %Y") if student.date_of_birth else '-' }}</strong></div>
             <div><span>Address</span><strong>{{ student.address or '-' }}</strong></div>

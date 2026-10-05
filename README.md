@@ -107,6 +107,8 @@ Staff आणि Office खात्यांना सार्वजनिक S
 
 ### दुसऱ्या laptop वर Pending दिसत असल्यास
 
+Student Test आता पूर्ण इंग्रजीत आहे. My Profile आणि Test/Result पानांवर Day/Night रंग लागू होतात. Student, Staff आणि Admin यांना **My Profile → Edit Profile** मधून फोटो अपलोड करता येतो. फोटो नसल्यास नोंदवलेल्या Male/Female नुसार illustrated avatar दिसतो; gender नोंदलेले नसल्यास PRAVA चिन्ह दिसते. [Avatar assets आणि बदलांची माहिती](docs/profile-avatars.md).
+
 GitHub ZIP मधील नवीन installation मध्ये गुण, हजेरी आणि assignments भरलेले नसतात. त्यामुळे **Attendance / Average Marks: Pending** आणि **Assignments: 0** दिसणे अपेक्षित आहे. आधी भरलेली माहिती दुसऱ्या laptop वर आणण्यासाठी database आणि संबंधित uploads यांची खाजगी प्रत आवश्यक आहे.
 
 मालकाने दिलेली **डेटासह project ZIP** वापरताना जुना server `Ctrl+C` ने बंद करा, ZIP **नवीन वेगळ्या फोल्डरमध्ये** extract करा आणि त्या फोल्डरमधील `START-PRAVA.cmd` चालवा. जुना फोल्डर जतन ठेवा. त्याच पॅकेजसोबत दिलेल्या खाजगी login यादीतील ID/password वापरा. या यादीत सर्व विद्यार्थिनी, Staff आणि Administration खाती असू शकतात; ती सार्वजनिक GitHub repository मध्ये ठेवू नका. नंतर website मधून बदल केले तर या नवीन फोल्डरमधील database चा backup घ्या.

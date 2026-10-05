@@ -14,6 +14,7 @@ class FacultyProfileForm(FlaskForm):
     """Validate faculty profile updates."""
 
     profile_image = FileField("Profile Photo")
+    gender = SelectField("Gender", choices=[("", "Not specified"), ("Female", "Female"), ("Male", "Male"), ("Other", "Other")], validators=[Optional()])
     full_name = StringField("Full Name", validators=[DataRequired(), Length(max=120)])
     email = StringField(
         "Email",

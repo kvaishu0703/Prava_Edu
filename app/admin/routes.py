@@ -11,6 +11,7 @@ from app.extensions import db
 from app.models import ContactInquiry, Course, Faculty, Notification, Student, StudentTestResponse, Subject, User
 from app.models import Curriculum, CurriculumSubject, SyllabusDocument
 from app.services.dashboard import get_admin_dashboard_data
+from app.services.profile_images import save_profile_image
 from app.services.notifications import (
     admin_notifications,
     course_filter_choices,
@@ -67,6 +68,7 @@ def edit_profile():
     if request.method == "GET":
         form.full_name.data = current_user.full_name
         form.email.data = current_user.email
+        form.gender.data = current_user.gender or ""
 
     if form.validate_on_submit():
         email = form.email.data.strip().lower()
@@ -77,10 +79,17 @@ def edit_profile():
 
         current_user.full_name = form.full_name.data.strip()
         current_user.email = email
+        current_user.gender = form.gender.data or None
         try:
+            profile_image = save_profile_image(request.files.get("profile_image"))
+            if profile_image:
+                current_user.profile_image = profile_image
             db.session.commit()
             flash("Admin profile updated successfully.", "success")
             return redirect(url_for("admin.profile"))
+        except ValueError as error:
+            db.session.rollback()
+            form.profile_image.errors.append(str(error))
         except SQLAlchemyError:
             db.session.rollback()
             flash("Database error. Please try again.", "danger")

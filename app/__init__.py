@@ -97,7 +97,7 @@ def register_commands(app: Flask) -> None:
         additions = {
             "students": {"curriculum_id": "INTEGER REFERENCES curricula(id)"},
             "subjects": {"curriculum_id": "INTEGER REFERENCES curricula(id)", "curriculum_subject_id": "INTEGER REFERENCES curriculum_subjects(id)"},
-            "users": {"admin_scope": "VARCHAR(30) NOT NULL DEFAULT 'office'", "is_demo": "BOOLEAN NOT NULL DEFAULT false"},
+            "users": {"admin_scope": "VARCHAR(30) NOT NULL DEFAULT 'office'", "is_demo": "BOOLEAN NOT NULL DEFAULT false", "profile_image": "VARCHAR(255)", "gender": "VARCHAR(20)"},
         }
         for table, columns in additions.items():
             existing = {column["name"] for column in inspect(db.engine).get_columns(table)}

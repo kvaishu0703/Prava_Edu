@@ -1,5 +1,5 @@
 {% extends "admin/admin_base.html" %}
-{% from "admin/_field.html" import render_field %}
+{% from "admin/_field.html" import render_field, render_select %}
 
 {% block title %}Edit Admin Profile{% endblock %}
 
@@ -16,11 +16,21 @@
 </div>
 
 <section class="data-panel">
-    <form method="post" novalidate>
+    <form method="post" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
+        <div class="profile-upload-row">
+            <div class="profile-avatar">{% include "components/profile_photo.html" %}</div>
+            <div>
+                {{ form.profile_image.label(class="form-label") }}
+                {{ form.profile_image(class="form-control", accept=".jpg,.jpeg,.png,.gif,.webp") }}
+                <p class="form-text">Upload your photo in JPG, PNG, GIF or WEBP format.</p>
+                {% for error in form.profile_image.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+        </div>
         <div class="form-grid">
             {{ render_field(form.full_name) }}
             {{ render_field(form.email) }}
+            {{ render_select(form.gender) }}
         </div>
         <div class="form-actions">
             <a class="btn btn-outline-secondary" href="{{ url_for('admin.profile') }}">Cancel</a>

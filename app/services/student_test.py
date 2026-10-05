@@ -6,26 +6,26 @@ import json
 TEST_QUESTIONS = [
     {
         "key": "q1",
-        "prompt": "PRAVA systemमध्ये मुख्य user roles किती आहेत?",
-        "choices": [("a", "दोन"), ("b", "तीन"), ("c", "चार"), ("d", "पाच")],
+        "prompt": "How many main user roles are available in PRAVA?",
+        "choices": [("a", "Two"), ("b", "Three"), ("c", "Four"), ("d", "Five")],
         "correct": "b",
-        "explanation": "PRAVA मध्ये Admin, Faculty आणि Student हे तीन मुख्य roles आहेत.",
+        "explanation": "PRAVA has three main user roles: Admin, Faculty and Student.",
     },
     {
         "key": "q2",
-        "prompt": "Student स्वतःची attendance कुठे पाहू शकतो?",
+        "prompt": "Where can a student view her attendance?",
         "choices": [
-            ("a", "Student Dashboard मधील Attendance page"),
-            ("b", "Admin Reports मध्ये"),
-            ("c", "Faculty Profile मध्ये"),
-            ("d", "Login page वर"),
+            ("a", "The Attendance page in the student workspace"),
+            ("b", "Admin Reports"),
+            ("c", "The Faculty Profile page"),
+            ("d", "The Login page"),
         ],
         "correct": "a",
-        "explanation": "Student sidebarमधील Attendance page वर subject-wise attendance दिसते.",
+        "explanation": "The My attendance page shows attendance records for each subject.",
     },
     {
         "key": "q3",
-        "prompt": "Study Material मिळवण्यासाठी studentने कोणता module वापरावा?",
+        "prompt": "Which module should a student use to access study resources?",
         "choices": [
             ("a", "Notifications"),
             ("b", "Profile"),
@@ -33,11 +33,11 @@ TEST_QUESTIONS = [
             ("d", "Reports"),
         ],
         "correct": "c",
-        "explanation": "Materials moduleमधून notes आणि इतर study files शोधता व download करता येतात.",
+        "explanation": "The Study materials module lets students find and download notes and learning files.",
     },
     {
         "key": "q4",
-        "prompt": "Assignmentचे उत्तर online जमा करण्यासाठी योग्य action कोणती?",
+        "prompt": "Which action allows a student to upload assignment work?",
         "choices": [
             ("a", "Mark Present"),
             ("b", "Submit Assignment"),
@@ -45,11 +45,11 @@ TEST_QUESTIONS = [
             ("d", "Generate Report"),
         ],
         "correct": "b",
-        "explanation": "Assignments pageवरील Submit actionने student स्वतःची file upload करतो.",
+        "explanation": "Submit Assignment lets a student upload her work for an assigned task.",
     },
     {
         "key": "q5",
-        "prompt": "Facultyने पाठवलेली महत्त्वाची सूचना studentला कुठे दिसते?",
+        "prompt": "Where can a student find announcements from her teachers?",
         "choices": [
             ("a", "Courses"),
             ("b", "Marks"),
@@ -57,43 +57,43 @@ TEST_QUESTIONS = [
             ("d", "Admin Users"),
         ],
         "correct": "c",
-        "explanation": "Targeted announcements आणि notices Notifications pageवर दिसतात.",
+        "explanation": "The Notifications page shows announcements and notices intended for the student.",
     },
     {
         "key": "q6",
-        "prompt": "PRAVA loginमध्ये password कसा store केला जातो?",
+        "prompt": "How does PRAVA store a login password?",
         "choices": [
             ("a", "Plain text"),
-            ("b", "Password hash म्हणून"),
-            ("c", "Browser titleमध्ये"),
-            ("d", "CSV reportमध्ये")
+            ("b", "As a password hash"),
+            ("c", "In the browser title"),
+            ("d", "In a CSV report")
         ],
         "correct": "b",
-        "explanation": "Securityसाठी password databaseमध्ये secure hash म्हणून store होतो.",
+        "explanation": "PRAVA stores a secure password hash in the database.",
     },
     {
         "key": "q7",
-        "prompt": "Studentच्या marks आणि faculty feedbackसाठी कोणते page योग्य आहे?",
+        "prompt": "Which pages show a student's marks and assignment feedback?",
         "choices": [
-            ("a", "Marks आणि Assignments"),
+            ("a", "Marks and Assignments"),
             ("b", "Login"),
             ("c", "Admin Courses"),
             ("d", "Health Check"),
         ],
         "correct": "a",
-        "explanation": "Subject marks Marks pageवर आणि graded assignment feedback Assignments pageवर दिसते.",
+        "explanation": "The Marks page shows subject scores. The Assignments page shows feedback on graded work.",
     },
     {
         "key": "q8",
-        "prompt": "PRAVA वेबसाइटचा मुख्य उद्देश कोणता आहे?",
+        "prompt": "What is the main purpose of PRAVA?",
         "choices": [
             ("a", "Online shopping"),
-            ("b", "College academic work manage करणे"),
+            ("b", "Managing college academic work"),
             ("c", "Video editing"),
-            ("d", "Game खेळणे"),
+            ("d", "Playing games"),
         ],
         "correct": "b",
-        "explanation": "PRAVA ही College Academic Management System आहे.",
+        "explanation": "PRAVA is a College Academic Management System.",
     },
 ]
 
@@ -125,7 +125,7 @@ def response_result_rows(response) -> list[dict]:
             {
                 "number": number,
                 "prompt": question["prompt"],
-                "selected_label": choice_map.get(selected, "उत्तर दिलेले नाही"),
+                "selected_label": choice_map.get(selected, "Not answered"),
                 "correct_label": choice_map[question["correct"]],
                 "is_correct": selected == question["correct"],
                 "explanation": question["explanation"],

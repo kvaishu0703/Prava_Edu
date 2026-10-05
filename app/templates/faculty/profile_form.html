@@ -1,5 +1,5 @@
 {% extends "faculty/faculty_base.html" %}
-{% from "admin/_field.html" import render_field %}
+{% from "admin/_field.html" import render_field, render_select %}
 
 {% block title %}Edit Faculty Profile{% endblock %}
 
@@ -20,11 +20,7 @@
         {{ form.hidden_tag() }}
         <div class="profile-upload-row">
             <div class="profile-avatar">
-                {% if faculty and faculty.profile_image %}
-                    <img src="{{ url_for('static', filename=faculty.profile_image) }}" alt="{{ current_user.display_name }} profile photo">
-                {% else %}
-                    <i class="bi bi-person-workspace"></i>
-                {% endif %}
+                {% include "components/profile_photo.html" %}
             </div>
             <div>
                 {{ form.profile_image.label(class="form-label") }}
@@ -38,6 +34,7 @@
             {{ render_field(form.full_name) }}
             {{ render_field(form.email) }}
             {{ render_field(form.mobile_number) }}
+            {{ render_select(form.gender) }}
             {{ render_field(form.qualification) }}
             {{ render_field(form.department) }}
             {{ render_field(form.joining_date) }}

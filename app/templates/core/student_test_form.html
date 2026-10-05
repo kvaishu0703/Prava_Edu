@@ -9,7 +9,7 @@
             <span class="test-form-icon"><i class="bi bi-ui-checks-grid"></i></span>
             <p class="section-label mb-2">Student Module</p>
             <h1>Student Test Form</h1>
-            <p>For logged-in students only</p>
+            <p>Answer all 8 questions, then share your feedback.</p>
         </header>
 
         <form method="post" novalidate>
@@ -53,7 +53,7 @@
                         </label>
                         {% endfor %}
                     </div>
-                    {% for error in field.errors %}<div class="invalid-feedback d-block mt-2">कृपया एक उत्तर निवडा.</div>{% endfor %}
+                    {% for error in field.errors %}<div class="invalid-feedback d-block mt-2">Please select one answer.</div>{% endfor %}
                 </fieldset>
             {% endfor %}
 

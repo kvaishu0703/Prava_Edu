@@ -17,15 +17,17 @@
 <section class="data-panel">
     <div class="profile-grid">
         <div class="profile-avatar">
-            <i class="bi bi-shield-lock"></i>
+            {% include "components/profile_photo.html" %}
             <strong>{{ current_user.display_name }}</strong>
             <span>{{ current_user.username }}</span>
+            <a class="btn btn-outline-secondary photo-change" href="{{ url_for('admin.edit_profile') }}#profile_image">Change photo</a>
         </div>
         <div class="detail-grid">
             <div><span>Full Name</span><strong>{{ current_user.display_name }}</strong></div>
             <div><span>Username</span><strong>{{ current_user.username }}</strong></div>
             <div><span>Email</span><strong>{{ current_user.display_email }}</strong></div>
             <div><span>Role</span><strong>{{ current_user.role|title }}</strong></div>
+            <div><span>Gender</span><strong>{{ current_user.profile_gender or "Not specified" }}</strong></div>
             <div><span>Status</span><strong>{{ "Active" if current_user.is_active else "Inactive" }}</strong></div>
             <div><span>Last Login</span><strong>{{ current_user.last_login.strftime("%d %b %Y, %I:%M %p") if current_user.last_login else "-" }}</strong></div>
         </div>

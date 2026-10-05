@@ -18,13 +18,10 @@
     {% if faculty %}
         <div class="profile-grid">
         <div class="profile-avatar">
-            {% if faculty.profile_image %}
-                <img src="{{ url_for('static', filename=faculty.profile_image) }}" alt="{{ current_user.display_name }} profile photo">
-            {% else %}
-                <i class="bi bi-person-workspace"></i>
-            {% endif %}
+            {% include "components/profile_photo.html" %}
             <strong>{{ current_user.display_name }}</strong>
             <span>{{ faculty.display_employee_id }}</span>
+            <a class="btn btn-outline-secondary photo-change" href="{{ url_for('faculty.edit_profile') }}#profile_image">Change photo</a>
         </div>
         <div class="detail-grid">
             <div><span>Email</span><strong>{{ current_user.display_email }}</strong></div>
@@ -34,6 +31,7 @@
             <div><span>Qualification</span><strong>{{ faculty.qualification or '-' }}</strong></div>
             <div><span>Joining Date</span><strong>{{ faculty.joining_date.strftime("%d %b %Y") if faculty.joining_date else '-' }}</strong></div>
             <div><span>Assigned Subjects</span><strong>{{ faculty.subjects|length }}</strong></div>
+            <div><span>Gender</span><strong>{{ current_user.profile_gender or "Not specified" }}</strong></div>
             <div><span>Status</span><strong>{{ 'Active' if current_user.is_active else 'Inactive' }}</strong></div>
         </div>
     </div>

@@ -1,6 +1,7 @@
 """Forms used by Admin CRUD pages."""
 
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from wtforms import BooleanField, DateField, DateTimeLocalField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, NumberRange, Optional, Regexp
 
@@ -31,6 +32,8 @@ class InquiryStatusForm(FlaskForm):
 class AdminProfileForm(FlaskForm):
     """Validate Admin's own profile updates."""
 
+    profile_image = FileField("Profile Photo")
+    gender = SelectField("Gender", choices=[("", "Not specified"), ("Female", "Female"), ("Male", "Male"), ("Other", "Other")], validators=[Optional()])
     full_name = StringField("Full Name", validators=[DataRequired(), Length(max=120)])
     email = StringField(
         "Email",

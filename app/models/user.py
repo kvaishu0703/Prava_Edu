@@ -22,6 +22,8 @@ class User(UserMixin, TimestampMixin, db.Model):
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     is_demo = db.Column(db.Boolean, default=False, server_default="false", nullable=False)
     last_login = db.Column(db.DateTime(timezone=True))
+    profile_image = db.Column(db.String(255))
+    gender = db.Column(db.String(20))
 
     student_profile = db.relationship(
         "Student",
@@ -46,6 +48,31 @@ class User(UserMixin, TimestampMixin, db.Model):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+
+    @property
+    def profile_gender(self):
+        """Use the recorded gender, never a guess based on a person's name."""
+        if self.role == "student" and self.student_profile:
+            return self.student_profile.gender
+        return self.gender
+
+    @property
+    def profile_photo_path(self):
+        """Keep uploaded photos ahead of the gender-specific illustrated avatar."""
+        profile = self.student_profile if self.role == "student" else self.faculty_profile if self.role == "faculty" else self
+        photo = profile.profile_image if profile else None
+        if photo:
+            return photo
+        return {
+            "Female": "img/profile-female.png",
+            "Male": "img/profile-male.png",
+        }.get(self.profile_gender, "img/prava-mark.svg")
+
+    @property
+    def profile_photo_alt(self):
+        if self.profile_photo_path.startswith("uploads/"):
+            return f"{self.display_name} profile photo"
+        return "Profile avatar"
 
     @property
     def display_name(self):

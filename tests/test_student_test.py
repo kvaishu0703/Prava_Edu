@@ -81,6 +81,7 @@ class StudentTestFormTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Student Test Form", response.data)
         self.assertIn(b"Submit Test", response.data)
+        self.assertNotRegex(response.get_data(as_text=True), r"[\u0900-\u097f]")
 
     def test_incomplete_form_is_not_saved(self):
         self.login_student()
@@ -112,6 +113,7 @@ class StudentTestFormTestCase(TestCase):
         self.assertEqual(score_page.status_code, 200)
         self.assertIn(b"8/8", score_page.data)
         self.assertIn(b"100%", score_page.data)
+        self.assertNotRegex(score_page.get_data(as_text=True), r"[\u0900-\u097f]")
 
     def test_admin_can_view_responses(self):
         self.login_student()

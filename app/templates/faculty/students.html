@@ -32,7 +32,7 @@
                 {% for student in students %}
                 <tr>
                     <td>{{ student.display_enrollment }}</td>
-                    <td>{{ student.user.display_name }}</td>
+                    <td><span class="person-cell"><img src="{{ url_for('static', filename=student.user.profile_photo_path) }}" alt="" width="40" height="40"><span>{{ student.user.display_name }}</span></span></td>
                     <td>{{ student.user.display_email }}</td>
                     <td>{{ student.course.code }}</td>
                     <td>{{ student.semester }}</td>
