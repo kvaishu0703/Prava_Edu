@@ -2,7 +2,15 @@
 
 ## Final Project Report
 
-The updated submission report (4 October 2026) contains **44 pages**, including front matter and appendix: [PDF](report/PRAVA_Project_Report_2026-2027_Updated.pdf) / [editable Word document](report/PRAVA_Project_Report_2026-2027_Updated.docx). It includes the current interface screenshots and verification results. The following text is the earlier technical outline.
+The final submission reports (5 October 2026) contain **45 pages each**, including six framed front pages, a five-page Data Dictionary, 19 current website screenshots, 29 figures, and verification of 63 passing automated tests.
+
+| Print version | PDF | Editable Word |
+| --- | --- | --- |
+| Vaishnavi Vijay Kale, Roll No. 28 | [PDF](report/PRAVA_Report_Vaishnavi_Kale.pdf) | [DOCX](report/PRAVA_Report_Vaishnavi_Kale.docx) |
+| Rutuja Ashok Khobare, Roll No. 30 | [PDF](report/PRAVA_Report_Rutuja_Khobare.pdf) | [DOCX](report/PRAVA_Report_Rutuja_Khobare.docx) |
+| Both group members | [PDF](report/PRAVA_Report_Group.pdf) | [DOCX](report/PRAVA_Report_Group.docx) |
+
+The first four pages use the named member or both members. The Declaration, Acknowledgement and technical report describe the shared group project in all versions. See [printing instructions](report/README.md). The following text is the earlier technical outline; use the dated final reports above for the current implementation.
 
 ### Abstract
 

@@ -125,7 +125,7 @@ Staff आणि Office खात्यांना सार्वजनिक S
 | Staff | `/faculty/dashboard`, `/faculty/subjects`, `/faculty/students`, `/faculty/attendance`, `/faculty/marks`, `/faculty/materials`, `/faculty/assignments` |
 | Office | `/admin/dashboard`, `/admin/students`, `/admin/faculty`, `/admin/subjects`, `/admin/curriculum`, `/admin/records/import`, `/admin/registrations`, `/admin/access`, `/admin/reports` |
 
-Header मध्ये ठळक PRAVA wordmark, वाचायला स्पष्ट Academic Portal subtitle, active navigation आणि Day/Night toggle आहेत. पहिल्या भेटीत **Night mode हा default** आहे; वापरकर्त्याने Day/Night बदलल्यास ती निवड जतन राहते. Home वर Academic Information, BCA / Home Science programmes, college resources आणि notices आहेत. सार्वजनिक पाने, dashboard आणि Reports मध्ये स्पष्ट शीर्षके आणि दोन्ही modes मध्ये वाचनीय cards आहेत. स्थानिक presentation खात्यांवर वरील programme / role नावे दिसतात; Office ने भरलेली खरी नावे कायम राहतात.
+Header मध्ये ठळक PRAVA wordmark, वाचायला स्पष्ट Academic Portal subtitle, active navigation आणि Day/Night toggle आहेत. पहिल्या भेटीत **Night mode हा default** आहे; वापरकर्त्याने Day/Night बदलल्यास ती निवड जतन राहते. Home वर Academic Information, BCA / Home Science programmes, college resources आणि notices आहेत. सार्वजनिक पाने, dashboard आणि Reports मध्ये स्पष्ट शीर्षके आणि दोन्ही modes मध्ये वाचनीय cards आहेत. मुख्य मजकूर, navigation आणि form controls साधारण 16px, तर table records 15px आहेत; मोबाइलवर मोठे tables त्यांच्या panelमध्ये आडवे scroll होतात. अपडेटनंतर जुना font size दिसल्यास `Ctrl+F5` वापरा. स्थानिक presentation खात्यांवर वरील programme / role नावे दिसतात; Office ने भरलेली खरी नावे कायम राहतात.
 
 ## 8. 2024 NEP अभ्यासक्रम — उपलब्धता
 
@@ -186,12 +186,19 @@ Tests (isolated in-memory database):
 
 ## 12. अद्ययावत Project Report
 
-**४४ पाने — मुखपृष्ठ, Certificate, Index आणि Appendix सहित; कमाल ४५ पानांच्या मर्यादेत.** ४ ऑक्टोबर २०२६ च्या UI बदलांचे screenshots, database design, login flow, English Google Forms प्रक्रिया आणि ६३ यशस्वी tests यांचा समावेश आहे.
+**५ ऑक्टोबर २०२६ — तीन स्वतंत्र आवृत्त्या, प्रत्येकी ४५ पाने.** पहिली चार पाने संबंधित विद्यार्थिनीच्या नावाने आहेत. प्रत्येक आवृत्तीत नमुन्याप्रमाणे cover, title page, Project Submission आणि Certificate आहेत; पहिल्या सहा पानांना बॉर्डर, काळ्या Bold headings आणि योग्य signature spaces आहेत. Declaration, Acknowledgement आणि पुढील group-project report तिन्ही आवृत्त्यांत समान आहेत.
 
-- [वाचण्यासाठी / छपाईसाठी PDF](docs/report/PRAVA_Project_Report_2026-2027_Updated.pdf)
-- [संपादनासाठी Word DOCX](docs/report/PRAVA_Project_Report_2026-2027_Updated.docx)
+| प्रिंट कोणासाठी | PDF — वाचन / छपाई | Word — संपादन |
+| --- | --- | --- |
+| वैष्णवी विजय काळे — Roll No. 28 | [Vaishnavi PDF](docs/report/PRAVA_Report_Vaishnavi_Kale.pdf) | [Vaishnavi DOCX](docs/report/PRAVA_Report_Vaishnavi_Kale.docx) |
+| ऋतुजा अशोक खोबरे — Roll No. 30 | [Rutuja PDF](docs/report/PRAVA_Report_Rutuja_Khobare.pdf) | [Rutuja DOCX](docs/report/PRAVA_Report_Rutuja_Khobare.docx) |
+| दोघींची एकत्र प्रत | [Group PDF](docs/report/PRAVA_Report_Group.pdf) | [Group DOCX](docs/report/PRAVA_Report_Group.docx) |
 
-ZIP extract केल्यावर दोन्ही फाईल्स `docs/report/` मध्ये मिळतील. रिपोर्टमधील screenshot data हा local presentation installation चा आहे; प्रत्यक्ष विद्यार्थ्यांचे records Office ने पडताळून भरायचे आहेत.
+Data Dictionary ५ पानांत संक्षिप्त केली आहे. Use Case Diagram, validation examples, १९ अद्ययावत website screenshots आणि ६३ यशस्वी automated tests यांच्या तपशीलांचा समावेश आहे. PDF मधील fonts embedded असून मजकूर selectable आहे.
+
+ZIP extract केल्यावर सर्व सहा फाईल्स `docs/report/` मध्ये मिळतील. प्रिंटसाठी **A4 → Actual Size / 100%** निवडा. फक्त सुरुवातीची चार पाने प्रिंट करायची असल्यास **Pages: 1–4** द्या. [रिपोर्ट आणि प्रिंट सूचना](docs/report/README.md).
+
+रिपोर्टमधील screenshot data हा local presentation installation चा आहे; नवीन ZIP मध्ये तुमच्या जुन्या installationचा database आपोआप येत नाही. तो जतन करण्याची पद्धत वरच्या **डेटा कुठे साठतो?** विभागात दिली आहे; प्रत्यक्ष विद्यार्थ्यांचे records Office ने पडताळून भरायचे आहेत.
 
 ## 13. Student आणि Staff माहिती संकलन
 
