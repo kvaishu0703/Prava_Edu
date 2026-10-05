@@ -186,7 +186,7 @@ Tests (isolated in-memory database):
 
 ## 12. अद्ययावत Project Report
 
-**५ ऑक्टोबर २०२६ — तीन स्वतंत्र आवृत्त्या, प्रत्येकी ४५ पाने.** पहिली चार पाने संबंधित विद्यार्थिनीच्या नावाने आहेत. प्रत्येक आवृत्तीत नमुन्याप्रमाणे cover, title page, Project Submission आणि Certificate आहेत; पहिल्या सहा पानांना बॉर्डर, काळ्या Bold headings आणि योग्य signature spaces आहेत. Declaration, Acknowledgement आणि पुढील group-project report तिन्ही आवृत्त्यांत समान आहेत.
+**५ ऑक्टोबर २०२६ — तीन स्वतंत्र आवृत्त्या, प्रत्येकी ४५ पाने.** पहिली सहा पाने संबंधित विद्यार्थिनीच्या नावाने आहेत; एकत्र प्रतीत दोघींची नावे आहेत. पहिल्या चार पानांवरील project title, कॉलेज/विद्यापीठ, विद्यार्थिनींची नावे आणि Certificate heading नमुन्याप्रमाणे रंगीत आहेत. पान ५–६ वरील Declaration आणि Acknowledgement वैयक्तिक प्रतीत त्या विद्यार्थिनीच्या नावाने व एकवचनी मजकुरात आहेत. सर्व सहा पानांना बॉर्डर असून Place, Date, सही आणि College Seal साठी स्वतंत्र मोकळी जागा आहे. पान ७–४५ वरील technical report तिन्ही आवृत्त्यांत समान आहे.
 
 | प्रिंट कोणासाठी | PDF — वाचन / छपाई | Word — संपादन |
 | --- | --- | --- |
@@ -196,7 +196,7 @@ Tests (isolated in-memory database):
 
 Data Dictionary ५ पानांत संक्षिप्त केली आहे. Use Case Diagram, validation examples, १९ अद्ययावत website screenshots आणि ६३ यशस्वी automated tests यांच्या तपशीलांचा समावेश आहे. PDF मधील fonts embedded असून मजकूर selectable आहे.
 
-ZIP extract केल्यावर सर्व सहा फाईल्स `docs/report/` मध्ये मिळतील. प्रिंटसाठी **A4 → Actual Size / 100%** निवडा. फक्त सुरुवातीची चार पाने प्रिंट करायची असल्यास **Pages: 1–4** द्या. [रिपोर्ट आणि प्रिंट सूचना](docs/report/README.md).
+ZIP extract केल्यावर सर्व सहा फाईल्स `docs/report/` मध्ये मिळतील. प्रिंटसाठी **A4 → Actual Size / 100%** निवडा. सर्व वैयक्तिक सुरुवातीची पाने प्रिंट करण्यासाठी **Pages: 1–6**, किंवा फक्त cover ते Certificate साठी **Pages: 1–4** द्या. [रिपोर्ट आणि प्रिंट सूचना](docs/report/README.md).
 
 रिपोर्टमधील screenshot data हा local presentation installation चा आहे; नवीन ZIP मध्ये तुमच्या जुन्या installationचा database आपोआप येत नाही. तो जतन करण्याची पद्धत वरच्या **डेटा कुठे साठतो?** विभागात दिली आहे; प्रत्यक्ष विद्यार्थ्यांचे records Office ने पडताळून भरायचे आहेत.
 

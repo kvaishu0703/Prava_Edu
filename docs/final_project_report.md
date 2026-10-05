@@ -10,7 +10,7 @@ The final submission reports (5 October 2026) contain **45 pages each**, includi
 | Rutuja Ashok Khobare, Roll No. 30 | [PDF](report/PRAVA_Report_Rutuja_Khobare.pdf) | [DOCX](report/PRAVA_Report_Rutuja_Khobare.docx) |
 | Both group members | [PDF](report/PRAVA_Report_Group.pdf) | [DOCX](report/PRAVA_Report_Group.docx) |
 
-The first four pages use the named member or both members. The Declaration, Acknowledgement and technical report describe the shared group project in all versions. See [printing instructions](report/README.md). The following text is the earlier technical outline; use the dated final reports above for the current implementation.
+The first six pages use the named member or both members, including personalised Declaration and Acknowledgement pages. The first four pages use the supplied reference colours; Place, Date, signatures and College Seal have dedicated blank space. All copies document the group project, and the technical report on pages 7–45 is shared. See [printing instructions](report/README.md). The following text is the earlier technical outline; use the dated final reports above for the current implementation.
 
 ### Abstract
 
