@@ -2,6 +2,8 @@
 
 Finalised on **5 October 2026**. Each report has **45 pages**, including the cover and appendix.
 
+The Index on page 9 follows the supplied two-column **SR. NO / TITLE** table, with bold underlined chapter titles and grouped subsection entries. Every page has the same black outer border as the cover.
+
 | Copy | PDF for printing | Word for editing |
 | --- | --- | --- |
 | Vaishnavi Vijay Kale — Roll No. 28 | [Vaishnavi PDF](PRAVA_Report_Vaishnavi_Kale.pdf) | [Vaishnavi DOCX](PRAVA_Report_Vaishnavi_Kale.docx) |

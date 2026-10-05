@@ -2,7 +2,7 @@
 
 ## Final Project Report
 
-The final submission reports (5 October 2026) contain **45 pages each**, including six framed front pages, a five-page Data Dictionary, 19 current website screenshots, 29 figures, and verification of 63 passing automated tests.
+The final submission reports (5 October 2026) contain **45 pages each**, including six personalised front pages, a five-page Data Dictionary, 19 current website screenshots, 29 figures, and verification of 63 passing automated tests. Every page has the cover's black outer border. The Index on page 9 uses a two-column SR. NO / TITLE table with grouped chapter and subsection entries.
 
 | Print version | PDF | Editable Word |
 | --- | --- | --- |
