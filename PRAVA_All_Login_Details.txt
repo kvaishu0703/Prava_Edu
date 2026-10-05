@@ -1,0 +1,160 @@
+﻿PRAVA - PROJECT LOGIN DETAILS
+05 October 2026 | 35 active accounts
+Included with the GitHub project ZIP. Start with START-PRAVA.cmd.
+These published credentials are for the local college project presentation.
+
+BCA STUDENTS
+Login > Student > BCA
+-----------------------------------------------------------------
+Aditi Sandeep Shinde | BCA / FY
+Login ID: bca
+Password: bca123
+
+Sarita Borude | BCA / SY
+Login ID: saritaborude27
+Password: Prava@4952
+
+Sonal Sandip Tidake | BCA / TY
+Login ID: sonaltidake60
+Password: Prava@6693
+
+Maya Wakale | BCA / TY
+Login ID: mayawakale09
+Password: Prava@2483
+
+Shrushti wakachaure | BCA / TY
+Login ID: wakchauresrushti2007
+Password: Prava@5269
+
+Ghorpade Sanika | BCA / TY
+Login ID: sanikaghorpade65
+Password: Prava@5799
+
+Sable Diksha Kiran | BCA / TY
+Login ID: dikshasable186
+Password: Prava@3628
+
+Pornima Sharad More | BCA / TY
+Login ID: pornimamore96
+Password: Prava@8362
+
+Vaishnavi pankaj nagare | BCA / TY
+Login ID: vaishnavinagare93
+Password: Prava@9436
+
+Anagha Pravin Shinde | BCA / FY
+Login ID: anagha.shinde
+Password: Prava@6845
+
+Prajakta Sunil Lokhande | BCA / FY
+Login ID: prajakta.lokhande
+Password: Prava@5342
+
+Sanika Milind Jagtap | BCA / SY
+Login ID: sanika.jagtap
+Password: Prava@2268
+
+Sakshi Dattatray Thorat | BCA / SY
+Login ID: sakshi.thorat
+Password: Prava@9858
+
+Vaishnavi Vijay Kale | BCA / TY
+Login ID: vaishnavi
+Password: Prava@3298
+
+Rutuja Ashok Khobare | BCA / TY
+Login ID: rutuja
+Password: Prava@3487
+
+HOME SCIENCE STUDENTS
+Login > Student > Home Science
+-----------------------------------------------------------------
+Anushka Prakash Deshmukh | FSN / SY
+Login ID: home
+Password: home123
+
+Sai Vaibhav Patil | FSN / FY
+Login ID: sai.patil
+Password: Prava@2573
+
+Gauri Santosh Jadhav | Textile / FY
+Login ID: gauri.jadhav
+Password: Prava@6372
+
+Mrunal Rajendra Pawar | Textile / SY
+Login ID: mrunal.pawar
+Password: Prava@9666
+
+Sayali Ashok Kadam | FSN / TY
+Login ID: sayali.kadam
+Password: Prava@8677
+
+Madhura Vinayak Shinde | Textile / TY
+Login ID: madhura.shinde
+Password: Prava@9275
+
+STAFF
+Login > Staff
+-----------------------------------------------------------------
+Ms. Surekha K. Kale | BCA / Home Science
+Login ID: staff
+Password: staff123
+
+Ms. Rajshri M. Nehe | BCA
+Login ID: rajshri.nehe
+Password: Prava@6668
+
+Mr. Sanjay T. Wani | BCA
+Login ID: sanjay.wani
+Password: Prava@7667
+
+Ms. Archana S. Ghogare | BCA
+Login ID: archana.ghogare
+Password: Prava@5978
+
+Mr. Nitin E. Kakade | BCA
+Login ID: nitin.kakade
+Password: Prava@3374
+
+Mr. Mahesh S. Gaikwad | BCA
+Login ID: mahesh.gaikwad
+Password: Prava@4668
+
+Ms. Jaya B. Dabarase | Home Science
+Login ID: jaya.dabarase
+Password: Prava@5464
+
+Mrs. Kanchan S. Deshmukh | Home Science
+Login ID: kanchan.deshmukh
+Password: Prava@6944
+
+Mrs. Rupali M. Navale | Home Science
+Login ID: rupali.navale
+Password: Prava@6382
+
+Mrs. Gayatri A. Gahire | Home Science
+Login ID: gayatri.gahire
+Password: Prava@8345
+
+Mrs. Anju R. Wighane | Home Science
+Login ID: anju.wighane
+Password: Prava@8478
+
+ADMINISTRATION
+Login > Office / Administration
+-----------------------------------------------------------------
+System Admin | Administrator
+Login ID: admin
+Password: Prava@2932
+
+Dr. Anushree Rajendra Khaire | Administrator
+Login ID: office
+Password: office123
+
+Dr. Anushree Rajendra Khaire | Principal (view only)
+Login ID: principal
+Password: Prava@8795
+
+All 21 students have academic presentation data. Generated records are not official results.
+Principal access is view-only. Passwords are case-sensitive.
+Use these credentials on a fresh project installation. Locally changed passwords are preserved on restart.

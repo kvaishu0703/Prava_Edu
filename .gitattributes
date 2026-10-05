@@ -1,0 +1,3 @@
+# Preserve exact snapshot bytes so integrity checks also pass after Download ZIP.
+project-data/prava.sqlite3 binary
+project-data/uploads/** -text whitespace=cr-at-eol

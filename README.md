@@ -7,7 +7,7 @@ Women's College of Home Science and BCA, Loni साठी Flask आधारि
 1. GitHub वर **Code → Download ZIP** निवडा आणि ZIP **Extract All** करा. ZIP च्या आतून launcher चालवू नका.
 2. पहिल्या वेळी **Python 3.12 (64-bit)** स्थापित करा: [Python for Windows](https://www.python.org/downloads/windows/). Installer मध्ये **Add Python to PATH** निवडा. Python 3.11 आणि 3.13 देखील समर्थित आहेत.
 3. ज्या फोल्डरमध्ये हे `README.md` आहे, त्यातील **`START-PRAVA.cmd` वर double-click करा**.
-4. पहिल्या run मध्ये dependencies डाउनलोड होतील, database आणि चार demo खाती तयार होतील. यासाठी internet आवश्यक आहे.
+4. पहिल्या run मध्ये dependencies डाउनलोड होतील आणि **भरलेला database, ३५ खाती व संबंधित files** आपोआप तयार होतील. पहिल्या setup साठी internet आवश्यक आहे.
 5. Setup पूर्ण झाल्यावर browser मध्ये **http://127.0.0.1:5000/** आपोआप उघडेल. Home वरून Login निवडा.
 
 **सर्व्हरची window उघडी ठेवा.** बंद करण्यासाठी `Ctrl+C` दाबा. पुढच्या वेळी त्याच launcher वर double-click केल्यावर तुमचा जतन केलेला data वापरला जातो.
@@ -35,24 +35,35 @@ Demo setting बदलताना आधी चालू server ची window `
 
 macOS / Linux: Python 3.11–3.13 आणि venv support स्थापित असताना `python3 launch.py` चालवा.
 
-## 2. चार demo Login IDs आणि Passwords
+## 2. सर्व Login IDs आणि Passwords
 
-**ही सार्वजनिक, फक्त local demo साठीची खाती आहेत.** `START-PRAVA.cmd` ती तयार करतो. खरे खाते, खरे passwords किंवा database GitHub वर upload करायचे नाहीत.
+**GitHub ZIP मध्ये संपूर्ण भरलेला project आणि सर्व ३५ खात्यांची login यादी आहे:** [PRAVA_All_Login_Details.txt](PRAVA_All_Login_Details.txt). ZIP extract केल्यावर ही फाईल `START-PRAVA.cmd` च्याच फोल्डरमध्ये मिळेल.
 
-| कोणासाठी | Login ID | Password | Login page | Dashboard वरील नाव |
-| --- | --- | --- | --- | --- |
-| BCA विद्यार्थी | `bca` | `bca123` | `/login/student/bca` | BCA Student |
-| Home Science विद्यार्थी | `home` | `home123` | `/login/student/home-science` | Home Science Student |
-| Staff | `staff` | `staff123` | `/login/staff` | Faculty |
-| Admin / Office | `office` | `office123` | `/login/administration` | College Administration |
+| विभाग | खाती |
+| --- | --- |
+| BCA विद्यार्थिनी | १५ — वैष्णवी आणि ऋतुजासह |
+| Home Science विद्यार्थिनी | ६ |
+| Staff | ११ |
+| Admin / Office / Principal | ३ |
 
-विद्यार्थ्यांची demo profiles पहिल्या semester च्या **2024 NEP** शी जोडलेली आहेत. Home Science demo Food Science & Nutrition programme मध्ये आहे. Office मधून Textile Science and Designing च्या विद्यार्थिनीही नोंदवता येतात.
+लगेच तपासण्यासाठी:
 
-Launcher कोणतीही काल्पनिक attendance, marks किंवा notifications भरत नाही. हे records संबंधित Office / Staff forms मधून भरायचे आहेत. पहिल्या run मध्ये Staff चे teaching assignments रिकामे असणे अपेक्षित आहे; Office ने verified catalogue मधून विषय आणि शिक्षक नेमल्यानंतर Staff ला तो वर्ग दिसतो.
+| कोणासाठी | Login ID | Password | Login page |
+| --- | --- | --- | --- |
+| BCA — Aditi Sandeep Shinde | `bca` | `bca123` | `/login/student/bca` |
+| Home Science — Anushka Prakash Deshmukh | `home` | `home123` | `/login/student/home-science` |
+| Staff — Ms. Surekha K. Kale | `staff` | `staff123` | `/login/staff` |
+| Office — Dr. Anushree Rajendra Khaire | `office` | `office123` | `/login/administration` |
+| TY BCA — Vaishnavi Vijay Kale | `vaishnavi` | `Prava@3298` | `/login/student/bca` |
+| TY BCA — Rutuja Ashok Khobare | `rutuja` | `Prava@3487` | `/login/student/bca` |
 
-Setup पुन्हा केल्यावर आधीची खाती, passwords, enrollment किंवा शैक्षणिक records reset होत नाहीत. Demo password स्वतः बदलला असल्यास नवीन password वापरा. वरील username आधीपासून एखाद्या वास्तविक खात्याचा असेल तर setup conflict दाखवतो आणि त्या खात्यावर लिहीत नाही. या संगणकावरील मूळ administrator खाते जतन केले आहे; चार demo accounts वेगळे आहेत.
+सर्व २१ विद्यार्थिनींच्या विषयांसाठी गुण, हजेरी, materials आणि assignments उपलब्ध आहेत. सर्व ११ Staff ना विषय आणि संबंधित विद्यार्थी नेमलेले आहेत. Admin / Office / Principal ला दोन्ही विभागांतील विद्यार्थी व Staff दिसतात; Principal चे अधिकार view-only आहेत.
 
-Office ने स्थानिक खात्याचे नाव किंवा email बदलले असल्यासही launcher ते जतन करतो. एखाद्या दुसऱ्या खात्याचा email किंवा चुकीचा role आढळल्यास setup बदल न करता थांबतो.
+ही प्रकाशित passwords कॉलेज project च्या स्थानिक सादरीकरणासाठी आहेत. Default launcher स्थानिक project mode सुरू करतो. `-WithoutDemo` दिल्यास bundled खात्यांचा login बंद असतो आणि नवीन रिकाम्या installation मध्ये हा snapshot भरला जात नाही.
+
+या प्रतीत वापरकर्त्याने दिलेले profiles आणि सादरीकरणासाठी तयार केलेल्या नोंदी आहेत. तयार केलेले marks/attendance/submissions हे अधिकृत कॉलेज निकाल नाहीत. **NEP grading rules अजून निश्चित नसल्याने Grade: Pending दिसू शकतो; भरलेले गुण आणि हजेरी मात्र उपलब्ध आहेत.**
+
+Setup पुन्हा केल्यावर आधीची खाती, passwords, enrollment किंवा शैक्षणिक records reset होत नाहीत. स्थानिक password बदलला असल्यास तोच वापरा. [समाविष्ट डेटाची माहिती](project-data/README.md).
 
 ## 3. Login, Back आणि Logout flow
 
@@ -101,19 +112,26 @@ Staff आणि Office खात्यांना सार्वजनिक S
 | `.venv/` | Project च्या स्वतंत्र Python dependencies |
 | `app/data/nep_2024.json` | स्रोत तपासून भरलेला curriculum catalogue |
 
-सर्व्हर बंद केला किंवा संगणक restart केला तरी त्याच project folder मधील database टिकतो. नवीन ZIP वेगळ्या फोल्डरमध्ये extract केल्यास तो **नवीन installation** असतो: त्यात चार demo खाती आणि catalogue पुन्हा तयार होतात. जुना data हवा असल्यास server बंद करून जुनी `instance` आणि `uploads` folders सुरक्षितपणे जतन करा आणि नवीन installation मध्ये migrate करा. जुना database overwrite करण्यापूर्वी backup ठेवा.
+सर्व्हर बंद केला किंवा संगणक restart केला तरी त्याच project folder मधील database टिकतो. GitHub ZIP मध्ये `project-data/` येथे **५ ऑक्टोबर २०२६ चा भरलेला snapshot** आणि संबंधित uploads आहेत. नवीन फोल्डरमध्ये launcher चालवताना तो एकदाच copy होतो. त्यानंतरचे बदल `instance/prava.sqlite3` मध्ये साठतात.
 
-`.gitignore` मध्ये database, local secret, backups, uploads, `.env`, logs आणि `.venv` वगळले आहेत. GitHub मध्ये **code + reproducible setup** जाईल; तुमचे खाजगी records जाणार नाहीत.
+आधीचा database असलेल्या फोल्डरमध्ये launcher त्यावर नवीन snapshot लिहीत नाही. नवीन GitHub data पाहण्यासाठी जुना server `Ctrl+C` ने बंद करा आणि ZIP **नवीन स्वतंत्र फोल्डरमध्ये** extract करून तिथला launcher चालवा. जुना folder जतन ठेवा. दोन्ही installation मधील बदल आपोआप merge किंवा sync होत नाहीत.
 
-### दुसऱ्या laptop वर Pending दिसत असल्यास
+`.gitignore` मुळे चालू local database, `.local-secret`, backups, `.env`, logs आणि `.venv` स्थानिक राहतात. GitHub मध्ये जाणारी भरलेली प्रत `project-data/` मध्ये स्वतंत्र ठेवली आहे; त्यामुळे laptop वर काम करताना मूळ snapshot बदलत नाही. Backup साठी `instance/prava.sqlite3` आणि `app/static/uploads/` दोन्ही जतन करा.
 
-Student Test आता पूर्ण इंग्रजीत आहे. My Profile आणि Test/Result पानांवर Day/Night रंग लागू होतात. Student, Staff आणि Admin यांना **My Profile → Edit Profile** मधून फोटो अपलोड करता येतो. फोटो नसल्यास नोंदवलेल्या Male/Female नुसार illustrated avatar दिसतो; gender नोंदलेले नसल्यास PRAVA चिन्ह दिसते. [Avatar assets आणि बदलांची माहिती](docs/profile-avatars.md).
+### दुसऱ्या laptop वर संपूर्ण data पाहण्यासाठी
 
-GitHub ZIP मधील नवीन installation मध्ये गुण, हजेरी आणि assignments भरलेले नसतात. त्यामुळे **Attendance / Average Marks: Pending** आणि **Assignments: 0** दिसणे अपेक्षित आहे. आधी भरलेली माहिती दुसऱ्या laptop वर आणण्यासाठी database आणि संबंधित uploads यांची खाजगी प्रत आवश्यक आहे.
+1. [Latest project ZIP डाउनलोड करा](https://github.com/kvaishu0703/Prava_Edu/archive/refs/heads/main.zip).
+2. जुन्या server च्या window मध्ये `Ctrl+C` द्या.
+3. ZIP वर right-click → **Extract All** → नवीन folder निवडा.
+4. आत `START-PRAVA.cmd` दिसेपर्यंत folder उघडा आणि त्यावर double-click करा.
+5. Browser मध्ये **http://127.0.0.1:5000/** उघडेल. Server window सुरू ठेवा.
+6. `PRAVA_All_Login_Details.txt` मधील ID/password वापरा. Office मध्ये **२१ विद्यार्थिनी / ११ Staff** आणि विद्यार्थी खात्यात गुण व हजेरी तपासा.
 
-मालकाने दिलेली **डेटासह project ZIP** वापरताना जुना server `Ctrl+C` ने बंद करा, ZIP **नवीन वेगळ्या फोल्डरमध्ये** extract करा आणि त्या फोल्डरमधील `START-PRAVA.cmd` चालवा. जुना फोल्डर जतन ठेवा. त्याच पॅकेजसोबत दिलेल्या खाजगी login यादीतील ID/password वापरा. या यादीत सर्व विद्यार्थिनी, Staff आणि Administration खाती असू शकतात; ती सार्वजनिक GitHub repository मध्ये ठेवू नका. नंतर website मधून बदल केले तर या नवीन फोल्डरमधील database चा backup घ्या.
+Port 5000 व्यस्त असल्यास त्या folder मध्ये **Open in Terminal** करून `./START-PRAVA.cmd -Port 5001` चालवा; मग **http://127.0.0.1:5001/** उघडा.
 
-प्रोफाइल नोंदवणे आणि त्या विद्यार्थिनीचे गुण/हजेरी भरणे या वेगळ्या गोष्टी आहेत. ज्या खात्यासाठी शैक्षणिक नोंदी भरलेल्या नाहीत, तिथे Pending दिसत राहील; संबंधित Staff ने त्या नोंदी भरायच्या आहेत.
+**Attendance / Average Marks: Pending** दिसल्यास जुना रिकामा project folder चालू आहे का तपासा. या snapshot मधील सर्व विद्यार्थिनींसाठी गुण आणि हजेरी आहेत. **Grade: Pending** ही अधिकृत NEP grading rules जोडणे बाकी असल्याची स्वतंत्र स्थिती आहे.
+
+Student Test पूर्ण इंग्रजीत आहे. My Profile आणि Test/Result पानांवर Day/Night रंग लागू होतात. Student, Staff आणि Admin यांना **My Profile → Edit Profile** मधून फोटो अपलोड करता येतो. फोटो नसल्यास नोंदवलेल्या Male/Female नुसार illustrated avatar दिसतो; gender नोंदलेले नसल्यास PRAVA चिन्ह दिसते. [Avatar assets आणि बदलांची माहिती](docs/profile-avatars.md).
 
 ## 6. पहिल्या presentation साठी वापराचा क्रम
 
@@ -180,7 +198,7 @@ Tests (isolated in-memory database):
 - First real administrator साठी private `BOOTSTRAP_ADMIN_EMAIL` आणि `BOOTSTRAP_ADMIN_PASSWORD` environment मध्ये सेट करून `flask --app wsgi:app bootstrap-admin` वापरा. ही खरी credentials README मध्ये लिहू नका.
 - Startup मध्ये `upgrade-db`, `sync-college`, `bootstrap-admin`, मग Gunicorn वापरा. `render.yaml` मध्ये ही क्रमवारी आहे.
 - Staff accounts वास्तविक administrator तयार करेल. Student Sign up Office approval नंतर सक्रिय होईल.
-- Database आणि uploads साठी persistent storage आणि backup ठेवा. Repository download मध्ये live data समाविष्ट नसतो.
+- Database आणि uploads साठी persistent storage आणि backup ठेवा. Repository मध्ये सादरीकरणाचा निश्चित snapshot आहे; deployed website वर नंतर झालेल्या बदलांचा backup स्वतंत्र ठेवावा.
 - प्रकाशित college service वर admission verification, account recovery आणि approval email प्रक्रिया कॉलेजच्या नियमांप्रमाणे पूर्ण करा.
 
 ## 11. अडचणी आल्यास
@@ -210,7 +228,7 @@ Data Dictionary ५ पानांत संक्षिप्त केली 
 
 ZIP extract केल्यावर सर्व सहा फाईल्स `docs/report/` मध्ये मिळतील. प्रिंटसाठी **A4 → Actual Size / 100%** निवडा. सर्व वैयक्तिक सुरुवातीची पाने प्रिंट करण्यासाठी **Pages: 1–6**, किंवा फक्त cover ते Certificate साठी **Pages: 1–4** द्या. [रिपोर्ट आणि प्रिंट सूचना](docs/report/README.md).
 
-रिपोर्टमधील screenshot data हा local presentation installation चा आहे; नवीन ZIP मध्ये तुमच्या जुन्या installationचा database आपोआप येत नाही. तो जतन करण्याची पद्धत वरच्या **डेटा कुठे साठतो?** विभागात दिली आहे; प्रत्यक्ष विद्यार्थ्यांचे records Office ने पडताळून भरायचे आहेत.
+रिपोर्टमधील screenshots स्थानिक presentation installation चे आहेत. GitHub ZIP मध्ये भरलेला project snapshot समाविष्ट आहे; त्यानंतर laptop वर केलेले बदल जतन करण्याची पद्धत वरच्या **डेटा कुठे साठतो?** विभागात दिली आहे.
 
 ## 13. Student आणि Staff माहिती संकलन
 

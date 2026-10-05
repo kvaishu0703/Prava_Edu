@@ -81,6 +81,10 @@ def main():
                       DATABASE_URL='sqlite:///'+(instance/'prava.sqlite3').as_posix(),
                       PRAVA_LOCAL_INSTANCE=instance_id)
     database = instance / 'prava.sqlite3'
+    if not args.without_demo:
+        from project_data import restore_project_data
+        if restore_project_data(ROOT):
+            print('Loaded the complete project data and uploaded files. Login details: PRAVA_All_Login_Details.txt', flush=True)
     schema_files = [ROOT/'app/__init__.py', *sorted((ROOT/'app/models').glob('*.py'))]
     schema_stamp = hashlib.sha256(b''.join(p.read_bytes() for p in schema_files)).hexdigest()
     schema_marker = instance / '.schema-ready'
@@ -106,7 +110,7 @@ def main():
         return 0
     from werkzeug.serving import make_server
     server = make_server('127.0.0.1', args.port, app, threaded=True)
-    print(f'\nPRAVA is ready: {url}\nKeep this window open. Press Ctrl+C to stop.\nDemo passwords and usage instructions: README.md', flush=True)
+    print(f'\nPRAVA is ready: {url}\nKeep this window open. Press Ctrl+C to stop.\nLogin IDs/passwords: PRAVA_All_Login_Details.txt | Instructions: README.md', flush=True)
     if not args.no_browser:
         webbrowser.open(url)
     try:
