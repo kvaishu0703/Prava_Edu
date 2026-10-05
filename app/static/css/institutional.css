@@ -29,3 +29,72 @@
 .auth-story h1 { font-size:clamp(30px,3.5vw,44px); }.signup-aside h2,.about-story h2,.about-principles h2 { font-size:28px; }.eyebrow { letter-spacing:1.1px; }
 @media(max-width:850px) { .home-hero.institutional-hero { grid-template-columns:minmax(0,1fr); gap:28px; }.portal-services { padding:24px; }.public-page .page-intro { padding-top:32px; } }
 @media(max-width:600px) { .home-hero.institutional-hero { padding-block:34px; }.institutional-hero h1 { font-size:34px; }.institutional-hero .institution-label { font-size:15px; }.programme-feature { padding:23px; }.home-finale { padding:24px; }.finale-action { text-align:left; } }
+
+/* Readable type scale shared by public pages and academic workspaces.
+   Keep controls at 16px on phones; tables scroll inside their own container. */
+body { font-size:1rem; line-height:1.6; }
+.site-nav .brand-subtitle,.workspace-nav .brand-subtitle,.site-footer .brand small { font-size:.75rem; line-height:1.4; letter-spacing:1.1px; }
+.site-nav .site-links>a,.workspace-nav .site-links>a,.nav-login-dropdown>summary { font-size:1rem; }
+.login-dropdown-panel a,.theme-toggle,.mobile-menu { font-size:.9375rem; }
+.journey-back a,.journey-back>span,.account-switch,.logout-button { font-size:.875rem; }
+.account-identity strong { font-size:.9375rem; line-height:1.4; }
+.account-identity small { font-size:.8125rem; }
+.account-identity { min-width:0; }
+.hero-intro,.public-page .page-intro>p:last-child,.institutional-hero .hero-intro { font-size:1.0625rem; line-height:1.75; }
+.institutional-hero .institution-label { font-size:1.125rem; line-height:1.6; }
+.hero-programmes,.portal-service-list dd,.editorial-heading p:last-child:not(.eyebrow),
+.programme-feature p,.programme-story,.discovery-link p,.feature-grid p,
+.about-story>div>p:not(.eyebrow),.about-principles>p:not(.eyebrow),.catalog-card>p,
+.contact-aside>p,.contact-help p,.notice-rows p,.portal-card>p:not(.eyebrow),
+.auth-story>p:not(.eyebrow),.auth-form-panel>.text-secondary,.empty-state p { font-size:1rem; line-height:1.7; }
+.portal-service-list dt { font-size:1.0625rem; }
+.prestige-strip small,.programme-keywords span,.programme-feature .eyebrow,.discovery-quote .eyebrow { font-size:.8125rem; }
+.prestige-strip strong,.programme-availability,.discovery-quote>p:not(.eyebrow),.notice-invitation p { font-size:.9375rem; line-height:1.65; }
+.prestige-strip { flex-wrap:wrap; }
+.eyebrow,.section-label,.sidebar-heading,.dashboard-topbar .section-label,.page-heading .section-label,
+.portal-card .eyebrow,.auth-form-panel>.eyebrow { font-size:.8125rem; letter-spacing:1px; line-height:1.5; }
+.programme-feature-top>span,.programme-feature-bottom,.programme-tags span,
+.programme-note,.institution-strip,.institution-strip strong,.catalog-facts,
+.resource-link span,.academic-source p,.source-note,.syllabus-unit p,.staff-card p,
+.staff-card span,.activity-meta,.academic-footnote,.footer-college,.footer-top nav a,
+.footer-bottom,.form-note,.auth-note,.auth-back,.login-options,.portal-support,
+.portal-card ul,.signup-prompt,.signup-card-link,.signup-login-link,.signup-aside li span,
+.signup-aside>p,.login-session-note,.contact-help h3,.notice-type,.notice-rows time { font-size:.875rem; line-height:1.65; }
+.resource-link strong,.programme-entry p,.page-tabs a,.signup-aside strong { font-size:1rem; }
+.programme-entry span { font-size:.875rem; }
+.btn,.btn-lg,.portal-card .btn,.text-link { font-size:1rem; line-height:1.5; }
+.btn-sm { font-size:.875rem; min-height:38px; }
+.form-label,.form-check-label,.invalid-feedback,.form-text { font-size:.9375rem; line-height:1.5; }
+.form-control,.form-select { font-size:1rem; line-height:1.5; min-height:46px; }
+.alert { font-size:1rem; line-height:1.6; }
+.role-nav a,.role-nav button { font-size:.9375rem; line-height:1.5; padding:12px; }
+.role-nav i { flex-shrink:0; }
+.sidebar-toggle,.sidebar-bottom { font-size:.8125rem; }
+.dashboard-topbar p.text-secondary,.page-heading p,.panel-heading p { font-size:.9375rem; line-height:1.65; }
+.panel-heading h2 { font-size:1.125rem; line-height:1.4; }
+.stat-card span,.quick-actions>span,.status-pill { font-size:.875rem; }
+.stat-card span { line-height:1.5; }
+.stat-card { min-height:140px; }
+.quick-actions>a { font-size:.9375rem; line-height:1.5; }
+.table { font-size:.9375rem; line-height:1.6; }
+.data-panel .table th { font-size:.8125rem; letter-spacing:.35px; line-height:1.5; }
+.table td { vertical-align:middle; }
+.table .small,.table small,.record-subtitle { font-size:.8125rem; }
+.badge { font-size:.8125rem; line-height:1.4; white-space:normal; }
+.notification-list strong,.compact-list strong,.detail-grid strong { font-size:1rem; }
+.notification-list span,.compact-list span,.detail-grid span { font-size:.875rem; line-height:1.6; }
+.academic-context strong { font-size:1rem; }
+.academic-context div>span,.context-count,.subject-faculty span,.subject-metrics span { font-size:.875rem; }
+.subject-faculty strong { font-size:.9375rem; line-height:1.5; }
+.dashboard-main,.data-panel,.subject-card { min-width:0; }
+.panel-heading,.academic-context,.subject-faculty { overflow-wrap:anywhere; }
+@media(max-width:700px) {
+ .role-nav a,.role-nav button { font-size:.875rem; line-height:1.5; padding:11px 8px; }
+ .account-toolbar { flex-wrap:wrap; }
+ .account-identity strong { font-size:.875rem; }
+ .stat-card { min-height:140px; }
+ .stat-card span { font-size:.875rem; padding-top:32px; padding-right:0; }
+ .dashboard-stats { align-items:stretch; }
+ .site-nav .brand-subtitle,.workspace-nav .brand-subtitle { font-size:.75rem; }
+ .programme-feature-top { flex-wrap:wrap; gap:12px; }
+}
