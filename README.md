@@ -52,6 +52,8 @@ Launcher कोणतीही काल्पनिक attendance, marks कि
 
 Setup पुन्हा केल्यावर आधीची खाती, passwords, enrollment किंवा शैक्षणिक records reset होत नाहीत. Demo password स्वतः बदलला असल्यास नवीन password वापरा. वरील username आधीपासून एखाद्या वास्तविक खात्याचा असेल तर setup conflict दाखवतो आणि त्या खात्यावर लिहीत नाही. या संगणकावरील मूळ administrator खाते जतन केले आहे; चार demo accounts वेगळे आहेत.
 
+Office ने स्थानिक खात्याचे नाव किंवा email बदलले असल्यासही launcher ते जतन करतो. एखाद्या दुसऱ्या खात्याचा email किंवा चुकीचा role आढळल्यास setup बदल न करता थांबतो.
+
 ## 3. Login, Back आणि Logout flow
 
 - **Home → Login → Student → BCA / Home Science → Login form → त्या विद्यार्थिनीचा dashboard.**
@@ -102,6 +104,14 @@ Staff आणि Office खात्यांना सार्वजनिक S
 सर्व्हर बंद केला किंवा संगणक restart केला तरी त्याच project folder मधील database टिकतो. नवीन ZIP वेगळ्या फोल्डरमध्ये extract केल्यास तो **नवीन installation** असतो: त्यात चार demo खाती आणि catalogue पुन्हा तयार होतात. जुना data हवा असल्यास server बंद करून जुनी `instance` आणि `uploads` folders सुरक्षितपणे जतन करा आणि नवीन installation मध्ये migrate करा. जुना database overwrite करण्यापूर्वी backup ठेवा.
 
 `.gitignore` मध्ये database, local secret, backups, uploads, `.env`, logs आणि `.venv` वगळले आहेत. GitHub मध्ये **code + reproducible setup** जाईल; तुमचे खाजगी records जाणार नाहीत.
+
+### दुसऱ्या laptop वर Pending दिसत असल्यास
+
+GitHub ZIP मधील नवीन installation मध्ये गुण, हजेरी आणि assignments भरलेले नसतात. त्यामुळे **Attendance / Average Marks: Pending** आणि **Assignments: 0** दिसणे अपेक्षित आहे. आधी भरलेली माहिती दुसऱ्या laptop वर आणण्यासाठी database आणि संबंधित uploads यांची खाजगी प्रत आवश्यक आहे.
+
+मालकाने दिलेली **डेटासह project ZIP** वापरताना जुना server `Ctrl+C` ने बंद करा, ZIP **नवीन वेगळ्या फोल्डरमध्ये** extract करा आणि त्या फोल्डरमधील `START-PRAVA.cmd` चालवा. जुना फोल्डर जतन ठेवा. त्याच पॅकेजसोबत दिलेल्या खाजगी login यादीतील ID/password वापरा. या यादीत सर्व विद्यार्थिनी, Staff आणि Administration खाती असू शकतात; ती सार्वजनिक GitHub repository मध्ये ठेवू नका. नंतर website मधून बदल केले तर या नवीन फोल्डरमधील database चा backup घ्या.
+
+प्रोफाइल नोंदवणे आणि त्या विद्यार्थिनीचे गुण/हजेरी भरणे या वेगळ्या गोष्टी आहेत. ज्या खात्यासाठी शैक्षणिक नोंदी भरलेल्या नाहीत, तिथे Pending दिसत राहील; संबंधित Staff ने त्या नोंदी भरायच्या आहेत.
 
 ## 6. पहिल्या presentation साठी वापराचा क्रम
 

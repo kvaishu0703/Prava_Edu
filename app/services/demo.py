@@ -1,6 +1,5 @@
 """Reproducible local demo identities without resetting college data."""
 from flask import current_app
-from sqlalchemy import or_
 from app.extensions import db
 from app.models import Course, Curriculum, User, Student, Faculty
 
@@ -23,9 +22,13 @@ def setup_demo():
     if current_app.config.get('SUPABASE_AUTH_ENABLED'):
         raise ValueError('Local demo setup requires SUPABASE_AUTH_ENABLED=false.')
     existing = {}
-    for username, _, _, _, _ in DEMO_ACCOUNTS:
-        user = User.query.filter(or_(User.username == username, User.email == username+'@demo.prava.test')).first()
-        if user and (not user.is_demo or user.username != username or user.email != username+'@demo.prava.test'):
+    for username, _, _, role, _ in DEMO_ACCOUNTS:
+        user = User.query.filter_by(username=username).first()
+        email_owner = User.query.filter_by(email=username+'@demo.prava.test').first()
+        # Local profiles may be personalised by the office. Keep their saved
+        # identity, password and academic records when the launcher runs again.
+        if ((user and (not user.is_demo or user.role != role))
+                or (email_owner and email_owner is not user)):
             raise ValueError(f'{username} conflicts with an existing account. No accounts were changed.')
         existing[username] = user
     for programme, enrollment in [('BCA', 'DEMO-BCA-001'), ('BSC-FSN', 'DEMO-HS-001')]:

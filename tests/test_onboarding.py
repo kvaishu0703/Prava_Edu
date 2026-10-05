@@ -120,6 +120,49 @@ class OnboardingTest(TestCase):
             with self.assertRaisesRegex(RuntimeError, 'PRAVA_DEMO_MODE'):
                 validate_runtime_config(self.app)
 
+    def test_restart_preserves_personalised_local_accounts(self):
+        with self.app.app_context():
+            users = User.query.filter_by(is_demo=True).order_by(User.id).all()
+            for user in users:
+                user.full_name = 'Updated ' + user.username
+                user.email = user.username + '@prava.example'
+                user.password_hash = self.password_hash
+            student = User.query.filter_by(username='home').one().student_profile
+            student.enrollment_number = 'PRV-HS-2025-002'
+            student.semester = 3
+            student.admission_year = 2025
+            db.session.commit()
+            original = [(u.id, u.full_name, u.email, u.password_hash, u.role) for u in users]
+            for _ in range(2):
+                setup_demo()
+            self.assertEqual(original, [(u.id, u.full_name, u.email, u.password_hash, u.role)
+                                        for u in User.query.filter_by(is_demo=True).order_by(User.id).all()])
+            self.assertEqual((student.enrollment_number, student.semester, student.admission_year),
+                             ('PRV-HS-2025-002', 3, 2025))
+            self.assertEqual(Student.query.count(), 2)
+
+    def test_setup_rejects_reserved_email_owned_by_another_account(self):
+        with self.app.app_context():
+            bca = User.query.filter_by(username='bca').one()
+            bca.email = 'bca@prava.example'
+            db.session.add(User(username='other', email='bca@demo.prava.test', full_name='Other Account',
+                                role='student', password_hash=self.password_hash))
+            db.session.commit()
+            count = User.query.count()
+            with self.assertRaisesRegex(ValueError, 'conflicts'):
+                setup_demo()
+            self.assertEqual(User.query.count(), count)
+            self.assertEqual(bca.email, 'bca@prava.example')
+
+    def test_setup_rejects_changed_role_on_local_account(self):
+        with self.app.app_context():
+            bca = User.query.filter_by(username='bca').one()
+            bca.role = 'admin'
+            db.session.commit()
+            with self.assertRaisesRegex(ValueError, 'conflicts'):
+                setup_demo()
+            self.assertEqual(bca.role, 'admin')
+
     def test_demo_disabled_revokes_login_and_existing_session(self):
         self.login('bca','bca123','student/bca')
         self.app.config['DEMO_MODE'] = False
