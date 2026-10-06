@@ -22,6 +22,7 @@
                     <th>Semester</th>
                     <th>Maximum Marks</th>
                     <th>Passing Marks</th>
+                    <th>Teaching workspace</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,9 +34,10 @@
                     <td>{{ subject.semester }}</td>
                     <td>{{ subject.maximum_marks }}</td>
                     <td>{{ subject.passing_marks }}</td>
+                    <td>{% if subject.is_active %}<div class="d-flex flex-wrap gap-2"><a href="{{ url_for('faculty.attendance', subject_id=subject.id) }}">Attendance</a><a href="{{ url_for('faculty.marks', subject_id=subject.id) }}">Marks</a>{% if subject.curriculum_subject and subject.curriculum_subject.is_verified %}<a href="{{ url_for('academics.subject', subject_id=subject.curriculum_subject.id) }}">Syllabus</a>{% endif %}</div>{% else %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}</td>
                 </tr>
                 {% else %}
-                <tr><td colspan="6" class="text-secondary">No subjects assigned yet.</td></tr>
+                <tr><td colspan="7" class="text-secondary">No subjects assigned yet.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

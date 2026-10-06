@@ -23,6 +23,10 @@ class Student(TimestampMixin, db.Model):
     curriculum_id = db.Column(db.Integer, db.ForeignKey("curricula.id"))
     curriculum = db.relationship("Curriculum")
     practical_batch = db.Column(db.String(10))
+    # Independent of User.is_demo, which controls local-account authentication.
+    record_source = db.Column(db.String(20), nullable=False, default="provided", server_default="provided")
+    archived_at = db.Column(db.DateTime(timezone=True))
+    archive_reason = db.Column(db.String(500))
 
     user = db.relationship("User", back_populates="student_profile")
     course = db.relationship("Course", back_populates="students")

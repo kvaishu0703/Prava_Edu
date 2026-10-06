@@ -1,6 +1,7 @@
 """Regression tests for the student-only Student Test Form."""
 
 from unittest import TestCase
+from sqlalchemy import text
 
 from app import create_app
 from app.extensions import db
@@ -131,6 +132,63 @@ class StudentTestFormTestCase(TestCase):
         self.assertEqual(admin_page.status_code, 200)
         self.assertIn(b"Test Student", admin_page.data)
         self.assertIn(b"8/8", admin_page.data)
+
+    def test_response_identity_is_bound_to_login_and_other_students_cannot_read_it(self):
+        self.login_student()
+        payload = self.valid_payload()
+        payload.update(full_name='Another Student', email='other@example.com', course_year='Other course')
+        submitted = self.client.post('/student-test', data=payload)
+        with self.app.app_context():
+            saved = StudentTestResponse.query.one()
+            student = User.query.filter_by(username='student').one()
+            self.assertEqual(saved.user_id, student.id)
+            self.assertEqual(saved.full_name, student.full_name)
+            self.assertEqual(saved.email, student.email)
+            self.assertEqual(saved.course_year, 'BCA - Semester 5')
+            student.email = 'updated@example.com'
+            other = User(username='other', email='other@example.com', full_name='Another Student', role='student')
+            other.set_password('Other@123')
+            db.session.add(other); db.session.commit()
+        # Updating the profile email does not orphan the response.
+        self.assertEqual(self.client.get(submitted.location).status_code, 200)
+        self.client.post('/auth/logout')
+        self.client.post('/auth/login', data={'username_or_email': 'other', 'password': 'Other@123'})
+        self.assertEqual(self.client.get(submitted.location).status_code, 404)
+        self.assertEqual(self.client.get(submitted.location+'/score').status_code, 404)
+        self.client.post('/auth/logout')
+        self.client.post('/auth/login', data={'username_or_email': 'admin', 'password': 'Admin@123'})
+        self.assertEqual(self.client.get(submitted.location+'/score').status_code, 200)
+
+    def test_legacy_ownership_migration_does_not_guess_owner_from_editable_email(self):
+        from app.services.student_test_schema import upgrade_student_test_ownership
+        with self.app.app_context():
+            for name, email in [('ambiguous1', 'duplicate@example.com'), ('ambiguous2', 'DUPLICATE@example.com')]:
+                user = User(username=name, email=email, full_name=name, role='student')
+                user.set_password('Private@123'); db.session.add(user)
+            db.session.commit()
+            with db.engine.begin() as connection:
+                connection.execute(text('DROP TABLE student_test_responses'))
+                connection.execute(text('CREATE TABLE student_test_responses (id INTEGER PRIMARY KEY, email VARCHAR(120))'))
+                for number, email in enumerate([' STUDENT@example.com ', 'duplicate@example.com', 'unknown@example.com', 'admin@example.com'], 1):
+                    connection.execute(text('INSERT INTO student_test_responses (id,email) VALUES (:id,:email)'), {'id':number,'email':email})
+            self.assertTrue(upgrade_student_test_ownership())
+            rows = db.session.execute(text('SELECT user_id FROM student_test_responses ORDER BY id')).scalars().all()
+            self.assertEqual(rows, [None, None, None, None])
+            new_user = User(username='lateowner', email='unknown@example.com', full_name='New user', role='student')
+            new_user.set_password('Private@123'); db.session.add(new_user); db.session.commit()
+            self.assertFalse(upgrade_student_test_ownership())
+            self.assertIsNone(db.session.execute(text('SELECT user_id FROM student_test_responses WHERE id=3')).scalar())
+
+    def test_unmatched_legacy_response_is_admin_only(self):
+        with self.app.app_context():
+            saved = StudentTestResponse(full_name='Legacy response', email='unknown@example.com',
+                course_year='BCA', answers_json='{}', score=0, total_questions=8, website_rating=3)
+            db.session.add(saved); db.session.commit(); token = saved.public_token
+        self.login_student()
+        self.assertEqual(self.client.get(f'/student-test/response/{token}').status_code, 404)
+        self.client.post('/auth/logout')
+        self.client.post('/auth/login', data={'username_or_email': 'admin', 'password': 'Admin@123'})
+        self.assertEqual(self.client.get(f'/student-test/response/{token}').status_code, 200)
 
 
 if __name__ == "__main__":

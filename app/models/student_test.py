@@ -12,6 +12,8 @@ class StudentTestResponse(TimestampMixin, db.Model):
     __tablename__ = "student_test_responses"
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User')
     public_token = db.Column(
         db.String(36),
         unique=True,

@@ -2,7 +2,7 @@
 from collections import defaultdict
 from datetime import date, timedelta
 from sqlalchemy.orm import joinedload
-from app.models import Attendance
+from app.models import Attendance, Faculty
 from app.services.timetable import academic_year_for, college_today, year_bounds
 
 
@@ -20,7 +20,11 @@ def build_attendance_overview(student, year=None, month=None, today=None):
     today = today or college_today()
     year = year if year is not None else academic_year_for(today)
     start, end = year_bounds(year)
-    records = Attendance.query.options(joinedload(Attendance.subject), joinedload(Attendance.timetable_slot)).filter(
+    records = Attendance.query.options(
+        joinedload(Attendance.subject), joinedload(Attendance.timetable_slot),
+        joinedload(Attendance.faculty).joinedload(Faculty.user),
+        joinedload(Attendance.recorded_by), joinedload(Attendance.updated_by),
+    ).filter(
         Attendance.student_id == student.id, Attendance.attendance_date >= start,
         Attendance.attendance_date <= min(end, today),
     ).order_by(Attendance.attendance_date, Attendance.session_number, Attendance.id).all()

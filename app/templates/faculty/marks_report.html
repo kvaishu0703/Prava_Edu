@@ -70,6 +70,7 @@
                     <th>Total</th>
                     <th>Grade</th>
                     <th>Result</th>
+                    <th>Recorded by / updated</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,15 +84,12 @@
                     <td>{{ mark.total_marks }}</td>
                     <td><span class="badge text-bg-primary">{{ mark.grade or 'Pending' }}</span></td>
                     <td>
-                        {% if mark.total_marks >= mark.subject.passing_marks %}
-                        <span class="badge text-bg-success">Pass</span>
-                        {% else %}
-                        <span class="badge text-bg-danger">Fail</span>
-                        {% endif %}
+                        <span class="badge {{ 'text-bg-success' if mark.result_status == 'Pass' else 'text-bg-danger' if mark.result_status == 'Fail' else 'text-bg-secondary' }}">{{ mark.result_status }}</span>
                     </td>
+                    <td>{{ mark.entered_by_user.user.display_name }}<span class="record-subtitle">{{ mark.updated_at|college_timestamp }}</span></td>
                 </tr>
                 {% else %}
-                <tr><td colspan="8" class="text-secondary">No marks found.</td></tr>
+                <tr><td colspan="9" class="text-secondary">No marks found.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

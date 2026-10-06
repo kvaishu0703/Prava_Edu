@@ -1,12 +1,12 @@
 # PRAVA — कॉलेज पोर्टल वापर मार्गदर्शक
 
-अद्ययावत: 4 ऑक्टोबर 2026. BCA आणि Home Science या दोन्हींसाठी वापरकर्त्याने निश्चित केलेला **2024 NEP Pattern** वापरला आहे.
+अद्ययावत: 6 ऑक्टोबर 2026. BCA आणि Home Science या दोन्हींसाठी वापरकर्त्याने निश्चित केलेला **2024 NEP Pattern** वापरला आहे.
 
 ## 1. प्रोजेक्ट उघडणे
 
 स्थानिक वेबसाइट: [http://127.0.0.1:5000/](http://127.0.0.1:5000/)
 
-प्रोजेक्ट सुरू करण्यासाठी `README.md` असलेल्या फोल्डरमधील **START-PRAVA.cmd** वर double-click करा. पहिल्या run मध्ये Python 3.11–3.13 आणि internet आवश्यक आहे. Launcher environment, database, catalogue आणि चार demo खाती तयार करतो; पुढच्या run मध्ये data जतन राहतो.
+प्रोजेक्ट सुरू करण्यासाठी `README.md` असलेल्या फोल्डरमधील **START-PRAVA.cmd** वर double-click करा. पहिल्या run मध्ये Python 3.11–3.13 आणि internet आवश्यक आहे. नवीन folder मध्ये launcher १६० विद्यार्थी, ११ Staff आणि ३ प्रशासन खाती असलेला snapshot restore करतो. प्रत्येकासाठी त्या installation चे स्वतंत्र random passwords तयार करून `instance/PRAVA_Local_Login_Details.txt` आणि `.csv` मध्ये जतन करतो. पुढच्या run मध्ये local database आणि passwords कायम राहतात.
 
 सध्याच्या संगणकावरील जुन्या shortcut साठी PowerShell मध्ये:
 
@@ -50,12 +50,12 @@ Home वर **College Academic Management System** हे स्पष्ट श
 | Home Science विद्यार्थी | `/login/student/home-science` | नोंदवलेल्या specialization व semester नुसार शैक्षणिक माहिती |
 | Staff | `/login/staff` | नेमलेल्या विषयांचे वर्ग, हजेरी, गुण, assignments आणि कार्यक्रम समन्वय |
 | Office | `/login/administration` | दोन्ही विभागांचे विद्यार्थी, staff, विषय, अभ्यासक्रम आणि records |
-| Principal | `/login/administration` | दोन्ही विभागांची माहिती आणि reports पाहणे; शैक्षणिक नोंदी बदलण्याचा अधिकार नाही |
+| Principal | `/login/administration` | विद्यार्थी खाते व्यवस्थापन, Excel/CSV import, staff attendance आणि दोन्ही विभागांचे reports |
 | System administrator | `/login/administration` | Office काम आणि Office/Principal खाते तयार करणे |
 
 चुकीच्या विभागातून विद्यार्थी login स्वीकारला जात नाही. Staff ला दिलेल्या teaching assignments वरून उपलब्ध विद्यार्थी ठरतात. विषयाचे programme, pattern आणि semester तिन्ही जुळणे आवश्यक आहे. Inactive account ची चालू session पुढील protected request वर बंद होते.
 
-कॉलेजच्या सार्वजनिक वेबसाइटवरील staff/Principal नावे directory मध्ये आहेत. त्या नावांवरून आपोआप login accounts तयार केलेले नाहीत. सध्याचे मूळ administrator खाते जतन केले आहे. वापरकर्त्याच्या मागणीनुसार चार स्वतंत्र local demo accounts तयार आहेत: `bca / bca123`, `home / home123`, `staff / staff123`, `office / office123`. त्यांची सविस्तर माहिती [README](../README.md) मध्ये आहे.
+कॉलेजच्या सार्वजनिक वेबसाइटवरील staff/Principal नावे directory मध्ये आहेत. Bundled project मध्ये १७४ स्थानिक खाती आहेत; GitHub प्रतीत working password hashes किंवा वापरता येणारी password यादी नसते. पहिल्या setup नंतर `instance/PRAVA_Local_Login_Details.txt` किंवा `.csv` मध्ये नावानुसार ID/password पाहा. BCA, Home Science, Staff आणि Administration साठी योग्य login form निवडा. प्रत्येक नवीन installation चे passwords वेगळे असतात. आधी दिलेला private PDF मूळ संगणकासाठीच वापरा; नवीन folder साठी त्याच folder चा local handout वापरा.
 
 प्रत्येक खात्याचे योग्य नाव आणि भूमिका वर दिसते. **Back**, **Switch account** आणि **Logout** desktop/mobile वर उपलब्ध आहेत. दुसऱ्या भूमिकेचा login form उघडल्यावर आधीचे Admin खाते आपोआप उघडत नाही; नवीन credentials पडताळल्यावर session बदलते.
 
@@ -113,18 +113,18 @@ Contact inquiry स्थानिक database मध्ये जाते आ�
 
 ## 6. खरी विद्यार्थी आणि staff यादी भरणे
 
-Office / System administrator → **Import records** (`/admin/records/import`).
+Principal / Office / System administrator → **Import records** (`/admin/records/import`).
 
-1. Student किंवा Staff CSV template डाउनलोड करा.
-2. कॉलेजची अधिकृत यादी वापरून UTF-8 CSV भरा. एका upload मध्ये 1–200 records आणि कमाल 1 MB स्वीकारले जाते.
+1. Student किंवा Staff **Excel template** डाउनलोड करा. UTF-8 CSV template देखील उपलब्ध आहे.
+2. Excel च्या **Roster** sheet मध्ये एका व्यक्तीसाठी एक row भरा. **Instructions** sheet मध्ये प्रत्येक column ची माहिती आहे. एका upload मध्ये 1–200 records आणि कमाल 1 MB स्वीकारले जाते. Username आणि enrollment/employee ID रिकामे ठेवल्यास स्वतंत्र IDs तयार होतात; कॉलेजचे IDs असल्यास तेच भरा.
 3. **Validate & preview** निवडा. Duplicate username, email, enrollment/employee ID, programme, pattern आणि semester तपासले जातात.
-4. Preview मधील नावे आणि विभाग तपासा. **Import these records** केल्यानंतरच खाती तयार होतात.
-5. Student/Faculty editor मध्ये प्रत्येक खात्यास योग्य password द्या आणि Active करा. Import झालेली खाती सुरुवातीला inactive असतात.
+4. Preview मधील नावे, तयार झालेले IDs, विभाग आणि semester तपासा. **Create accounts and generate passwords** केल्यानंतरच सर्व खाती एकत्र तयार होतात.
+5. खाती लगेच Active होतात. पुढील पानावरील **Download login IDs and passwords (CSV)** निवडून यादी एका तासाच्या आत एकदाच डाउनलोड करा. Excel मध्ये उघडून प्रत्येकाला फक्त स्वतःचे login details द्या. ही यादी private folder मध्ये ठेवा. Password हरवल्यास संबंधित account editor मधून reset करा.
 
 Student CSV columns:
 
 ```text
-full_name,username,email,enrollment_number,programme,pattern,semester,admission_year
+full_name,username,email,enrollment_number,programme,pattern,semester,admission_year,mobile_number,gender,date_of_birth,address,practical_batch
 ```
 
 Programme values: `BCA`, `BSC-FSN`, `BSC-TEXTILE`. Pattern: `2024 NEP`. Semester: `1` ते `6`. Admission year प्रत्यक्ष admission नुसार द्या.
@@ -132,10 +132,14 @@ Programme values: `BCA`, `BSC-FSN`, `BSC-TEXTILE`. Pattern: `2024 NEP`. Semester
 Staff CSV columns:
 
 ```text
-full_name,username,email,employee_id,department,qualification
+full_name,username,email,employee_id,department,qualification,mobile_number,gender,joining_date
 ```
 
-Preview फक्त upload करणाऱ्या Office user ला उपलब्ध असतो आणि एका तासानंतर expire होतो. Confirm करतानाही database पुन्हा तपासला जातो; conflict आल्यास अर्धवट import होत नाही. कोणतीही खोटी enrollment number, email किंवा password यादी तयार केलेली नाही.
+Profile/contact columns optional आहेत. Gender: `Female`, `Male` किंवा `Other`. Dates: `YYYY-MM-DD`. Mobile number text म्हणून भरा. जुन्या CSV template मधील मूळ columns देखील स्वीकारले जातात. नाव, email, विद्यार्थी programme/pattern/semester/admission year किंवा staff department आवश्यक आहेत.
+
+Preview आणि password handout फक्त upload करणाऱ्या खात्याला उपलब्ध असतात आणि एका तासानंतर expire होतात. Confirm करताना database पुन्हा तपासला जातो; conflict किंवा saving error आल्यास अर्धवट import होत नाही. Passwords database मध्ये hash म्हणून असतात; तात्पुरता download bundle encrypted असतो आणि डाउनलोड केल्यावर हटवला जातो. Students ना `imported` source नोंद मिळते. त्यांच्या वर्गाला जोडलेले subjects, timetable आणि resources दिसतात; attendance/marks शिक्षकांनी भरायचे आहेत. नवीन staff ला Subjects आणि Class teachers मधून allocation द्या.
+
+ही account-generation प्रक्रिया local authentication साठी आहे. `SUPABASE_AUTH_ENABLED=true` असल्यास import थांबतो: external login provisioning आधी जोडणे आवश्यक आहे. दोन laptop वरील स्वतंत्र local database आपोआप sync होत नाहीत.
 
 **Office / Principal account:** System administrator → **Office access** (`/admin/access`). Principal साठी `Principal · view both departments and reports` निवडा. Office user ला दुसरे privileged account तयार करता येत नाही. Initial password किमान 12 characters आहे.
 
@@ -170,7 +174,7 @@ Teaching assignments सध्या programme + pattern + semester या व�
 
 ## 9. जतन केलेली माहिती आणि backups
 
-ओळख पटलेल्या मूळ sample accounts, demo students/faculty, marks, attendance आणि notices काढण्यापूर्वी database backups घेतले आहेत. मूळ administrator जतन केला आहे. नंतर वापरकर्त्याच्या स्पष्ट मागणीनुसार दोन demo students, एक demo Staff आणि एक demo Administrator वेगळे तयार केले आहेत. वास्तविक हजेरी, गुण किंवा शिक्षक-विषय वाटप अद्याप भरलेले नसल्यामुळे त्या counts शून्य/Pending दिसतात.
+नवीन snapshot मध्ये दोन्ही विभागांचे विद्यार्थी, Staff, प्रशासन खाती आणि सादरीकरणासाठी academic records आहेत. प्रत्यक्ष माहिती आणि generated project records चे source labels प्रशासनात स्वतंत्र दिसतात. नवीन local installation मध्ये passwords स्वतंत्रपणे तयार होतात; विद्यमान database व passwords launcher बदलत नाही. या records चे provenance [README](../README.md) आणि [project-data/README](../project-data/README.md) मध्ये दिले आहे.
 
 Outer workspace मधील backups:
 
@@ -182,7 +186,7 @@ Outer workspace मधील backups:
 
 ## 10. पडताळणी आणि कॉलेजकडून आवश्यक पुढील माहिती
 
-पूर्ण unittest suite: **62 tests passed**. Login व department isolation, Principal read-only access, CSV preview ownership आणि atomic import, inactive sessions, CSRF, syllabus publication, teaching allocation, marks boundaries, notification targeting आणि activity ownership/completion तपासले आहेत. Account switching, remember-cookie cleanup, demo-mode controls आणि student sign-up/approval समाविष्ट आहेत. चारही demo खात्यांचे प्रत्यक्ष browser login केले आहेत. Desktop day/night आणि mobile layout तपासले आहेत; वेगळ्या downloaded-folder simulation मध्ये launcher ने fresh environment, catalogue व खाती तयार केली. Launcher restart मध्ये database टिकतो. Bootstrap styles, icons आणि scripts repository मध्ये आहेत, त्यामुळे setup नंतर local interface साठी बाह्य CDN आवश्यक नाही; external syllabus/source links साठी internet लागतो.
+Role / department isolation, account switching, CSRF, Principal student management, Excel/CSV preview आणि atomic import, private one-time credentials, reversible removal, attendance audit आणि curriculum/marks workflows यांसाठी isolated database tests आहेत. स्थानिक database, uploads आणि private login files चा private backup ठेवा. Setup नंतर local interface साठी बाह्य CDN आवश्यक नाही; external syllabus/source links साठी internet लागतो.
 
 उरलेल्या अचूक माहितीचा क्रम:
 

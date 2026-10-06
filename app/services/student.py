@@ -96,25 +96,7 @@ def student_assignments(student: Student):
     return [{"assignment": assignment, "submission": submissions.get(assignment.id)} for assignment in assignments]
 
 
-def student_notifications(user, student: Student | None = None):
-    """Return notifications relevant to a student."""
-    query = Notification.query.filter(Notification.is_active.is_(True)).filter(
-        or_(
-            Notification.target_role == "all",
-            Notification.target_role == "student",
-            Notification.target_user_id == user.id,
-        )
-    )
-    if student is not None:
-        query = query.filter(
-            or_(
-                Notification.target_course_id.is_(None),
-                Notification.target_course_id == student.course_id,
-            )
-        ).filter(
-            or_(
-                Notification.target_semester.is_(None),
-                Notification.target_semester == student.semester,
-            )
-        )
-    return query.order_by(Notification.created_at.desc()).all()
+def student_notifications(user, student=None):
+    """Reuse the same targeting and expiry rules as the announcements page."""
+    from app.services.notifications import visible_notifications_for_user
+    return [row['notification'] for row in visible_notifications_for_user(user, student)]

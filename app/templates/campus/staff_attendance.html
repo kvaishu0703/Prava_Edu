@@ -1,0 +1,69 @@
+{% extends "campus/base.html" %}
+{% block title %}Staff Attendance{% endblock %}
+{% block campus_content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/campus-attendance.css', v='20261006b') }}">
+<div class="staff-register-page">
+<div class="panel-heading page-heading"><div><p class="section-label mb-1">Principal &amp; Administration</p><h1>Staff Attendance</h1><p>Choose a date, mark each staff member, and save.</p></div><a class="btn btn-outline-secondary" href="{{ url_for('campus.class_teachers') }}">Class teachers</a></div>
+<section class="data-panel staff-date-panel">
+    <div class="staff-date-shortcuts" aria-label="Quick dates">
+        <a class="btn {{ 'btn-primary' if day == today else 'btn-outline-secondary' }}" href="{{ url_for('campus.staff_attendance', date=today.isoformat()) }}" {% if day == today %}aria-current="date"{% endif %}>Today</a>
+        <a class="btn {{ 'btn-primary' if day == yesterday else 'btn-outline-secondary' }}" href="{{ url_for('campus.staff_attendance', date=yesterday.isoformat()) }}" {% if day == yesterday %}aria-current="date"{% endif %}>Yesterday</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('campus.staff_attendance', date=previous_day.isoformat()) }}" aria-label="Previous date"><i class="bi bi-chevron-left" aria-hidden="true"></i> Previous</a>
+        {% if day < today %}<a class="btn btn-outline-secondary" href="{{ url_for('campus.staff_attendance', date=next_day.isoformat()) }}" aria-label="Next date">Next <i class="bi bi-chevron-right" aria-hidden="true"></i></a>{% endif %}
+    </div>
+    <form method="get" class="staff-calendar-form"><label for="register-date">Choose date</label><input type="date" id="register-date" name="date" value="{{ day.isoformat() }}" min="2000-01-01" max="{{ today.isoformat() }}" class="form-control" required><button class="btn btn-outline-secondary" type="submit">View date</button></form>
+</section>
+<section class="staff-register-heading">
+    <div><p class="section-label">{{ 'Today' if day == today else 'Yesterday' if day == yesterday else 'Selected date' }}</p><h2>{{ day.strftime('%A, %d %B %Y') }}</h2><p>{{ members|length }} active staff members · India time (IST)</p></div>
+    {% if not editing and policy.can_edit and members %}<a class="btn btn-primary" href="{{ url_for('campus.staff_attendance', date=day.isoformat(), edit=1) }}"><i class="bi {{ 'bi-pencil-square' if saved_count else 'bi-calendar-check' }}" aria-hidden="true"></i> {{ 'Edit attendance' if saved_count else 'Record attendance' }}</a>{% endif %}
+    {% if editing %}<button class="btn btn-primary" type="submit" form="staff-attendance-form" data-staff-save {% if conflict %}disabled{% endif %}><i class="bi bi-check2-circle" aria-hidden="true"></i> Save attendance</button>{% endif %}
+</section>
+<div class="staff-register-state {{ 'editing' if editing else 'saved' if saved_count == members|length and members else 'partial' }}" role="status">
+    <i class="bi {{ 'bi-pencil-square' if editing else 'bi-check-circle' if saved_count == members|length and members else 'bi-info-circle' }}" aria-hidden="true"></i>
+    <div><strong>{% if editing %}Editing attendance — changes are not saved yet{% elif saved_count == members|length and members %}Attendance saved · {{ saved_count }} of {{ members|length }} staff{% elif saved_count %}Partly saved · {{ saved_count }} of {{ members|length }} staff{% else %}Attendance has not been recorded for this date{% endif %}</strong>
+    {% if latest_saved %}<span>Last saved: {{ timefmt(latest_saved.updated_at) }} · {{ latest_saved.updated_by.display_name }}</span>{% elif not editing and policy.can_edit %}<span>Select Record attendance to begin. No one is marked present automatically.</span>{% endif %}</div>
+</div>
+<p class="staff-policy-note"><i class="bi {{ 'bi-unlock' if policy.can_edit else 'bi-lock' }}" aria-hidden="true"></i> {{ policy.message }}</p>
+{% set counts = draft_counts if editing else daily_counts %}
+<div class="staff-day-counts" aria-label="{{ 'Current selections' if editing else 'Saved daily attendance counts' }}">
+    {% for status in ['Present', 'Absent', 'Leave', 'Holiday', 'Unrecorded'] %}<div class="staff-count staff-count-{{ status|lower }}"><span>{{ 'Not marked' if status == 'Unrecorded' and editing else 'Not recorded' if status == 'Unrecorded' else status }}</span><strong data-staff-count="{{ status }}">{{ counts[status] }}</strong></div>{% endfor %}
+</div>
+{% if editing %}
+<form method="post" novalidate class="staff-register-editor" id="staff-attendance-form" data-staff-register data-staff-total="{{ members|length }}" data-staff-conflict="{{ 'true' if conflict else 'false' }}">
+    {{ form.hidden_tag() }}<input type="hidden" name="attendance_date" value="{{ day.isoformat() }}">
+    {% for error in form.attendance_date.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+    {% for error in form.register_version.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+    {% if conflict %}<div class="alert alert-warning"><strong>This register was updated by another administrator.</strong><p>Your unsaved choices remain below. Reload the saved register before making further changes.</p><a class="btn btn-outline-secondary" href="{{ url_for('campus.staff_attendance', date=day.isoformat()) }}">Reload saved register</a></div>{% endif %}
+    {% if policy.requires_reason %}<section class="data-panel staff-correction-reason">{{ form.correction_reason.label(class="form-label") }}{{ form.correction_reason(class="form-control", rows=2, minlength=5, maxlength=500, required=true, placeholder="Explain why this older attendance needs correction.") }}<small>Your reason is retained with every changed attendance entry.</small>{% for error in form.correction_reason.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}</section>{% endif %}
+    <div class="staff-roster">
+    {% for member in members %}{% set row = existing.get(member.id) %}{% set selected = request.form.get('status_' ~ member.id, row.status if row else '') %}
+    <article class="staff-person-card" data-staff-member>
+        <div class="staff-person-main"><img src="{{ url_for('static', filename=member.user.profile_photo_path) }}" alt="" width="48" height="48"><div><h3>{{ member.user.display_name }}</h3><p>{{ member.employee_id }} · {{ member.department }}</p></div></div>
+        <fieldset class="staff-status-options"><legend class="visually-hidden">Attendance status for {{ member.user.display_name }}</legend>
+        {% for option in statuses %}<label class="staff-status-option status-{{ option|lower }}"><input type="radio" name="status_{{ member.id }}" value="{{ option }}" {% if selected == option %}checked{% endif %}><span><i class="bi {{ 'bi-check-circle' if option == 'Present' else 'bi-x-circle' if option == 'Absent' else 'bi-calendar-minus' if option == 'Leave' else 'bi-calendar-event' }}" aria-hidden="true"></i>{{ option }}</span></label>{% endfor %}
+        </fieldset>
+        <details class="staff-optional-details"><summary>Time and remarks <span>Optional</span></summary><div class="staff-optional-grid">
+            <div><label class="form-label" for="staff-in-{{ member.id }}">Check-in (IST)</label><input type="time" class="form-control" id="staff-in-{{ member.id }}" name="check_in_{{ member.id }}" data-staff-time value="{{ request.form.get('check_in_' ~ member.id, row.check_in.strftime('%H:%M') if row and row.check_in else '') }}" {% if selected != 'Present' %}disabled{% endif %}></div>
+            <div><label class="form-label" for="staff-out-{{ member.id }}">Check-out (IST)</label><input type="time" class="form-control" id="staff-out-{{ member.id }}" name="check_out_{{ member.id }}" data-staff-time value="{{ request.form.get('check_out_' ~ member.id, row.check_out.strftime('%H:%M') if row and row.check_out else '') }}" {% if selected != 'Present' %}disabled{% endif %}></div>
+            <div class="staff-remarks"><label class="form-label" for="staff-remark-{{ member.id }}">Remarks</label><input class="form-control" id="staff-remark-{{ member.id }}" name="remarks_{{ member.id }}" maxlength="255" value="{{ request.form.get('remarks_' ~ member.id, row.remarks or '' if row else '') }}" placeholder="Optional note"></div>
+        </div><p>Check-in and check-out apply only to Present staff. The actual save time is recorded automatically.</p></details>
+        {% if row %}<p class="staff-last-save">Saved: <strong>{{ row.status }}</strong> · {{ timefmt(row.updated_at) }} · {{ row.updated_by.display_name }}</p>{% endif %}
+    </article>{% endfor %}
+    </div>
+    <div class="staff-save-bar"><div><strong data-staff-progress>{{ members|length - counts.Unrecorded }} of {{ members|length }} staff marked</strong><span data-staff-save-hint>Review your choices, then save. Unmarked staff remain unchanged.</span></div><div class="staff-save-actions"><a class="btn btn-outline-secondary" href="{{ url_for('campus.staff_attendance', date=day.isoformat()) }}">Cancel</a><button class="btn btn-primary" type="submit" data-staff-save {% if conflict %}disabled{% endif %}><i class="bi bi-check2-circle" aria-hidden="true"></i> Save attendance</button></div></div>
+</form>
+{% else %}
+<div class="staff-roster staff-roster-read" data-staff-read-register>
+    {% for member in members %}{% set row = existing.get(member.id) %}<article class="staff-person-card">
+        <div class="staff-read-main"><div class="staff-person-main"><img src="{{ url_for('static', filename=member.user.profile_photo_path) }}" alt="" width="48" height="48"><div><h3>{{ member.user.display_name }}</h3><p>{{ member.employee_id }} · {{ member.department }}</p></div></div><span class="staff-saved-status status-{{ row.status|lower if row else 'unrecorded' }}"><i class="bi {{ 'bi-check-circle' if row and row.status == 'Present' else 'bi-x-circle' if row and row.status == 'Absent' else 'bi-calendar-minus' if row and row.status == 'Leave' else 'bi-calendar-event' if row else 'bi-dash-circle' }}" aria-hidden="true"></i>{{ row.status if row else 'Not recorded' }}</span></div>
+        {% if row %}<p class="staff-last-save">Saved {{ timefmt(row.updated_at) }} · {{ row.updated_by.display_name }}</p><details class="staff-optional-details"><summary>View details and history</summary><div class="staff-saved-details"><p><strong>Check-in:</strong> {{ row.check_in.strftime('%I:%M %p') if row.check_in else 'Not recorded' }} · <strong>Check-out:</strong> {{ row.check_out.strftime('%I:%M %p') if row.check_out else 'Not recorded' }} (IST)</p>{% if row.remarks %}<p><strong>Remarks:</strong> {{ row.remarks }}</p>{% endif %}<p><strong>First recorded:</strong> {{ timefmt(row.recorded_at) }} · {{ row.recorded_by.display_name }}</p>{% for change in row.changes %}<div class="staff-audit-item"><strong>{{ change.current_values.status }}</strong> · {{ timefmt(change.changed_at) }} · {{ change.changed_by.display_name }}{% if change.previous_values %}<span>Changed from {{ change.previous_values.status }}</span>{% endif %}{% if change.current_values.correction_reason %}<span>Correction reason: {{ change.current_values.correction_reason }}</span>{% endif %}</div>{% endfor %}</div></details>{% endif %}
+    </article>{% else %}<section class="data-panel"><p class="mb-0">No active staff members. Add staff to the Staff accounts directory first.</p></section>{% endfor %}
+</div>
+{% endif %}
+<details class="staff-monthly-section" id="monthly-register" {% if request.args.get('month') or request.args.get('staff') %}open{% endif %}><summary><span><i class="bi bi-calendar3" aria-hidden="true"></i> Monthly summary and history</span><i class="bi bi-chevron-down" aria-hidden="true"></i></summary><div>
+<section class="data-panel mb-3"><form method="get" class="row g-3 align-items-end"><input type="hidden" name="date" value="{{ day.isoformat() }}"><div class="col-sm-4"><label class="form-label" for="month">Month</label><input type="month" class="form-control" id="month" name="month" value="{{ month }}"></div><div class="col-sm-5"><label class="form-label" for="staff">Staff member</label><select id="staff" name="staff" class="form-select"><option value="">All staff</option>{% for member in summary_members %}<option value="{{ member.id }}" {% if member.id == selected_staff %}selected{% endif %}>{{ member.user.display_name }}</option>{% endfor %}</select></div><div class="col-sm-3"><button class="btn btn-outline-secondary w-100" type="submit">View summary</button></div></form></section>
+{% include 'campus/_attendance_summary.html' %}<section class="data-panel">{% set show_staff = true %}{% include 'campus/_attendance_history.html' %}</section>
+</div></details>
+</div>
+<script src="{{ url_for('static', filename='js/campus-attendance.js', v='20261006b') }}" defer></script>
+{% endblock %}

@@ -34,6 +34,17 @@ class Notification(db.Model):
     def __repr__(self) -> str:
         return f"<Notification {self.title}>"
 
+    @property
+    def destination_path(self):
+        """In-app destinations for workflow notices; no external redirect input."""
+        routes = {
+            'student': {'Marks': '/student/marks', 'Assignment': '/student/assignments',
+                        'Material': '/student/materials', 'Attendance': '/student/attendance',
+                        'Activity': '/activities'},
+            'faculty': {'Assignment': '/faculty/assignments', 'Activity': '/activities'},
+        }
+        return routes.get(self.target_role, {}).get(self.notification_type)
+
 
 class NotificationRead(db.Model):
     """Tracks read/unread status per user."""

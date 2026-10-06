@@ -1,0 +1,9 @@
+.portal-live-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 28px;background:var(--surface);border-bottom:1px solid var(--prava-border);color:var(--muted);font-size:.78rem}
+.portal-live-status{display:flex;align-items:center;gap:8px}.portal-live-dot{width:7px;height:7px;border-radius:50%;background:var(--success)}
+.portal-live-bar[data-connection="paused"] .portal-live-dot,.portal-live-bar[data-connection="updates"] .portal-live-dot{background:var(--warning)}
+.class-mentor{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px;padding:18px 22px;background:var(--surface);border:1px solid var(--prava-border);border-radius:16px}.class-mentor h2{font-size:1.05rem;margin:0 0 7px}.class-mentor p{margin:0;color:var(--muted);font-size:.9rem}.class-mentor strong{color:var(--ink)}
+.panel-heading>.btn{flex-shrink:0;white-space:nowrap}.panel-heading:has(>.btn){flex-wrap:wrap}
+.attendance-entry-table{min-width:920px}.attendance-entry-table input[name^="remarks_"]{min-width:180px}
+.staff-entry-table{min-width:1150px}.staff-entry-table select{min-width:135px}.staff-entry-table input[type="time"]{min-width:145px}.staff-entry-table input[name^="remarks_"]{min-width:190px}
+@media(max-width:650px){.portal-live-bar{padding:9px 18px}.portal-live-bar time{font-size:.72rem}}
+@media print{.portal-live-bar{display:none}}

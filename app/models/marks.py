@@ -27,5 +27,13 @@ class Marks(TimestampMixin, db.Model):
     subject = db.relationship("Subject", back_populates="marks_records")
     entered_by_user = db.relationship("Faculty", back_populates="marks_entered")
 
+    @property
+    def result_status(self) -> str:
+        """Use one result rule in student views, staff reports and office exports."""
+        if self.subject.curriculum_id:
+            # A total score alone does not establish the NEP component/credit rules.
+            return "Pending verification"
+        return "Pass" if self.total_marks >= self.subject.passing_marks else "Fail"
+
     def __repr__(self) -> str:
         return f"<Marks student={self.student_id} subject={self.subject_id} total={self.total_marks}>"

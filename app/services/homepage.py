@@ -3,6 +3,7 @@
 from app.models import Course, Faculty, Notification, Student, Subject
 from app.models.base import utc_now
 from sqlalchemy import or_
+from app.services.student_management import active_students_query
 
 
 def public_homepage_data() -> dict:
@@ -18,7 +19,7 @@ def public_homepage_data() -> dict:
     )
     return {
         "summary_cards": [
-            ("Total Students", Student.query.count(), "bi-people-fill", "green"),
+            ("Total Students", active_students_query().count(), "bi-people-fill", "green"),
             ("Total Faculty", Faculty.query.count(), "bi-person-workspace", "orange"),
             ("Total Courses", Course.query.filter_by(is_active=True).count(), "bi-journal-bookmark-fill", "blue"),
             ("Latest Notices", len(latest_notices), "bi-bell-fill", "purple"),
@@ -49,5 +50,5 @@ def course_detail_data(course: Course) -> dict:
         "course": course,
         "description": course.description or "Course description will be updated by Admin.",
         "semester_groups": semester_groups,
-        "student_count": Student.query.filter_by(course_id=course.id).count(),
+        "student_count": active_students_query().filter(Student.course_id == course.id).count(),
     }

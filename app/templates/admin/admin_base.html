@@ -1,2 +1,2 @@
 {% extends "base.html" %}
-{% block content %}<section class="dashboard-wrap">{% include 'components/sidebar.html' %}<div class="dashboard-main">{% if current_user.admin_scope == 'principal' %}<p class="source-note mb-4">Principal view / Both departments / Academic records are available for review and reports.</p>{% endif %}{% block admin_content %}{% endblock %}</div></section>{% endblock %}
+{% block content %}<section class="dashboard-wrap">{% include 'components/sidebar.html' %}<div class="dashboard-main">{% if current_user.admin_scope == 'principal' %}<p class="source-note mb-4">Principal workspace / Both departments / Student accounts and academic records.</p>{% endif %}{% block admin_content %}{% endblock %}</div></section>{% endblock %}

@@ -5,7 +5,7 @@ from flask_wtf.file import FileField
 from datetime import date
 
 from wtforms import DateField, DateTimeLocalField, IntegerField, SelectField, StringField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, Length, NumberRange, Optional, Regexp
+from wtforms.validators import DataRequired, InputRequired, Length, NumberRange, Optional, Regexp
 
 EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
@@ -56,8 +56,8 @@ class MarksSelectionForm(FlaskForm):
 class MarksRowForm(FlaskForm):
     """Optional future single-row marks form."""
 
-    internal_marks = IntegerField("Internal Marks", validators=[DataRequired(), NumberRange(min=0, max=100)])
-    external_marks = IntegerField("External Marks", validators=[DataRequired(), NumberRange(min=0, max=400)])
+    internal_marks = IntegerField("Internal Marks", validators=[InputRequired(), NumberRange(min=0, max=100)])
+    external_marks = IntegerField("External Marks", validators=[InputRequired(), NumberRange(min=0, max=400)])
     remarks = StringField("Remarks", validators=[Optional(), Length(max=255)])
     submit = SubmitField("Save Marks")
 
@@ -101,7 +101,7 @@ class AssignmentActionForm(FlaskForm):
 class SubmissionGradeForm(FlaskForm):
     """Validate marks and feedback for a submitted assignment."""
 
-    marks_obtained = IntegerField("Marks Obtained", validators=[DataRequired(), NumberRange(min=0, max=500)])
+    marks_obtained = IntegerField("Marks Obtained", validators=[InputRequired(), NumberRange(min=0, max=500)])
     faculty_feedback = TextAreaField("Feedback", validators=[Optional(), Length(max=1000)])
     submit = SubmitField("Save Grade")
 

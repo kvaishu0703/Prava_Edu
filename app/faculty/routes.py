@@ -37,7 +37,7 @@ from app.services.faculty import (
     assigned_subjects,
     get_faculty_for_user,
 )
-from app.services.marks import marks_map, save_bulk_marks, subject_marks_report, students_for_marks_subject
+from app.services.marks import marks_map, marks_register_version, save_bulk_marks, subject_marks_report, students_for_marks_subject
 from app.services.materials import create_material, faculty_materials, material_file_exists, material_for_faculty, split_material_path
 from app.services.assignments import (
     assignment_for_faculty,
@@ -150,8 +150,11 @@ def students():
 @roles_required("faculty")
 def attendance():
     """Mark the selected session, keeping repeated subjects and batches separate."""
-    from app.services.timetable import slots_for_subject, college_today
-    from app.models import TimetableSlot
+    from app.services.timetable import slots_for_subject, college_today, academic_year_for
+    from app.models import TimetableSlot, Subject
+    from app.services.attendance import AttendanceRegisterConflict, attendance_register_version
+    from app.services.attendance_policy import attendance_edit_policy, require_attendance_edit
+    from app.services.audit_time import college_timestamp
     faculty = get_faculty_for_user(current_user)
     if faculty is None:
         flash("Faculty profile is not linked yet. Please contact Admin.", "warning")
@@ -165,8 +168,15 @@ def attendance():
         except ValueError:
             form.attendance_date.data = college_today()
             flash('Invalid date. Showing today.', 'warning')
-    subject = get_faculty_subject(faculty, form.subject_id.data) if form.subject_id.data else None
     selected_date = form.attendance_date.data or college_today()
+    day_slots = TimetableSlot.query.join(TimetableSlot.subject).filter(
+        Subject.faculty_id == faculty.id, Subject.is_active.is_(True),
+        TimetableSlot.weekday == selected_date.weekday(),
+        TimetableSlot.academic_year == academic_year_for(selected_date),
+    ).order_by(TimetableSlot.starts_at, TimetableSlot.course_id, TimetableSlot.semester, TimetableSlot.batch).all()
+    if request.method == 'GET' and not request.args.get('subject_id') and day_slots:
+        form.subject_id.data = day_slots[0].subject_id
+    subject = get_faculty_subject(faculty, form.subject_id.data) if form.subject_id.data else None
     slots = slots_for_subject(subject, selected_date) if subject else []
     has_schedule = bool(subject and TimetableSlot.query.filter_by(subject_id=subject.id).first())
     form.session_id.choices = [(slot.id, f'Session {slot.session_number}: {slot.starts_at:%H:%M}-{slot.ends_at:%H:%M} | {slot.session_type} | Batch {slot.batch}') for slot in slots]
@@ -180,24 +190,63 @@ def attendance():
     students_list = students_for_subject(subject) if subject and scheduled else []
     if slot and slot.batch != 'All':
         students_list = [student for student in students_list if (student.practical_batch or 'A') == slot.batch]
+    conflict = False
+    denied = False
+    edit_policy = attendance_edit_policy(current_user, selected_date)
+    draft_rows = {student.id: {'status': request.form.get(f'status_{student.id}', ''),
+                              'remarks': request.form.get(f'remarks_{student.id}', '')}
+                  for student in students_list} if request.method == 'POST' else {}
+    register_version = request.form.get('register_version', '') if request.method == 'POST' else (
+        attendance_register_version(subject, selected_date, slot) if subject and scheduled else '')
     if form.validate_on_submit():
         if not subject or not scheduled:
             flash('Choose a subject and one of its scheduled sessions.', 'danger')
         else:
-            rows = [{'student_id': student.id, 'status': request.form.get(f'status_{student.id}', 'Absent'), 'remarks': request.form.get(f'remarks_{student.id}', '').strip() or None} for student in students_list]
+            rows = [{'student_id': student.id, 'status': request.form.get(f'status_{student.id}', ''), 'remarks': request.form.get(f'remarks_{student.id}', '').strip() or None} for student in students_list]
             try:
-                created, updated = save_bulk_attendance(faculty, subject, selected_date, rows, slot=slot)
+                require_attendance_edit(current_user, selected_date)
+                if not rows:
+                    raise ValueError('No eligible students are assigned to this lecture.')
+                if any(row['status'] not in ATTENDANCE_STATUSES for row in rows):
+                    raise ValueError('Choose Present, Absent or Late for every student before saving. Unmarked students are not automatically marked absent.')
+                created, updated = save_bulk_attendance(faculty, subject, selected_date, rows, slot=slot,
+                                                       expected_version=register_version)
                 db.session.commit()
-                flash(f'Attendance saved. Created: {created}, Updated: {updated}.', 'success')
+                saved_records = attendance_map(subject.id, selected_date, slot.session_number if slot else 1)
+                saved_time = max((record.updated_at or record.created_at) for student_id, record in saved_records.items()
+                                 if student_id in {student.id for student in students_list})
+                flash(f'Attendance saved for {selected_date:%A, %d %b %Y}. {created + updated} students saved at {college_timestamp(saved_time)} by {current_user.display_name}.', 'success')
                 return redirect(url_for('faculty.attendance', subject_id=subject.id, attendance_date=selected_date.isoformat(), session_id=slot.id if slot else 0))
+            except AttendanceRegisterConflict as error:
+                db.session.rollback()
+                conflict = True
+                flash(str(error), 'warning')
             except ValueError as error:
                 db.session.rollback()
+                denied = not edit_policy['can_edit']
                 flash(str(error), 'danger')
             except SQLAlchemyError:
                 db.session.rollback()
                 flash('Database error while saving attendance. Please try again.', 'danger')
     existing = attendance_map(subject.id, selected_date, slot.session_number if slot else 1) if subject and scheduled else {}
-    return render_template('faculty/attendance.html', form=form, subject=subject, students=students_list, existing=existing, statuses=ATTENDANCE_STATUSES, slot=slot, scheduled=scheduled)
+    audited_records = [existing[student.id] for student in students_list if student.id in existing
+                       and (existing[student.id].recorded_by_user_id or existing[student.id].updated_by_user_id)]
+    latest_record = max(audited_records, key=lambda record: record.updated_at or record.created_at) if audited_records else None
+    has_saved = any(student.id in existing for student in students_list)
+    editing = edit_policy['can_edit'] and (request.method == 'POST' or request.args.get('edit') == '1' or not has_saved)
+    counts = {status: 0 for status in ATTENDANCE_STATUSES}
+    counts['Unmarked'] = 0
+    for student in students_list:
+        status = (draft_rows[student.id]['status'] if student.id in draft_rows and editing
+                  else existing[student.id].status if student.id in existing else 'Unmarked')
+        counts[status if status in counts else 'Unmarked'] += 1
+    return render_template('faculty/attendance.html', form=form, subject=subject, students=students_list,
+                           existing=existing, statuses=ATTENDANCE_STATUSES, slot=slot, scheduled=scheduled,
+                           register_version=register_version, conflict=conflict, draft_rows=draft_rows,
+                           editing=editing, has_saved=has_saved, counts=counts, edit_policy=edit_policy,
+                           latest_record=latest_record,
+                           selected_date=selected_date, today=college_today(), yesterday=college_today()-timedelta(days=1),
+                           day_slots=day_slots), (409 if conflict else 403 if denied else 200)
 
 
 @faculty_bp.get("/attendance/report")
@@ -307,6 +356,15 @@ def marks():
         if request.method == 'GET':
             form.exam_type.data = 'Semester Exam'
 
+    def render_register(subject, students_list, status=200, conflict=False):
+        existing = marks_map(subject.id, form.exam_type.data) if subject and form.exam_type.data else {}
+        version = (request.form.get('register_version', '') if request.method == 'POST' else
+                   marks_register_version(subject, form.exam_type.data, students_list, existing) if subject else '')
+        return render_template('faculty/marks.html', form=form, subject=subject,
+                               students=students_list, existing=existing,
+                               register_version=version, register_conflict=conflict,
+                               draft=request.form if request.method == 'POST' else None), status
+
     if form.validate_on_submit():
         subject, students_list = students_for_marks_subject(faculty, form.subject_id.data)
         if subject is None:
@@ -331,25 +389,30 @@ def marks():
                 )
             except ValueError:
                 flash(f"Invalid marks entered for {student.user.full_name}.", "danger")
-                return redirect(url_for("faculty.marks", subject_id=subject.id, exam_type=form.exam_type.data))
+                return render_register(subject, students_list, status=400)
 
         try:
-            created, updated, errors = save_bulk_marks(faculty, subject, form.exam_type.data, rows)
+            created, updated, errors = save_bulk_marks(faculty, subject, form.exam_type.data, rows,
+                expected_version=request.form.get('register_version', ''))
             if errors:
                 for error in errors[:3]:
                     flash(error, "danger")
                 db.session.rollback()
+                return render_register(subject, students_list, status=400)
             else:
                 db.session.commit()
                 flash(f"Marks saved. Created: {created}, Updated: {updated}.", "success")
             return redirect(url_for("faculty.marks", subject_id=subject.id, exam_type=form.exam_type.data))
+        except ValueError as error:
+            db.session.rollback()
+            flash(str(error), 'warning')
+            return render_register(subject, students_list, status=409, conflict=True)
         except SQLAlchemyError:
             db.session.rollback()
             flash("Database error while saving marks. Please try again.", "danger")
 
     subject, students_list = students_for_marks_subject(faculty, form.subject_id.data or form.subject_id.choices[0][0])
-    existing = marks_map(subject.id, form.exam_type.data) if subject and form.exam_type.data else {}
-    return render_template("faculty/marks.html", form=form, subject=subject, students=students_list, existing=existing)
+    return render_register(subject, students_list)
 
 
 @faculty_bp.get("/marks/report")

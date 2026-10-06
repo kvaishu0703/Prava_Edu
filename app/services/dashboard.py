@@ -19,7 +19,10 @@ from app.models import (
     Student,
     StudyMaterial,
     Subject,
+    Submission,
+    User,
 )
+from app.services.student_management import active_students_query
 
 
 def percent(part: int, total: int) -> int:
@@ -31,13 +34,18 @@ def percent(part: int, total: int) -> int:
 
 def attendance_percentage(student_id: int | None = None) -> int:
     """Calculate attendance percentage for one student or all students."""
-    query = Attendance.query
+    from app.services.timetable import academic_year_for, college_today, year_bounds
+    today = college_today()
+    start, _ = year_bounds(academic_year_for(today))
+    query = Attendance.query.filter(Attendance.attendance_date >= start, Attendance.attendance_date <= today)
     if student_id is not None:
         query = query.filter(Attendance.student_id == student_id)
+    else:
+        query = query.filter(Attendance.student_id.in_(active_students_query().with_entities(Student.id)))
 
     total = query.count()
     present = query.filter(Attendance.status.in_(["Present", "Late"])).count()
-    return percent(present, total)
+    return round(present * 100 / total, 1) if total else 0
 
 
 def average_marks(student_id: int | None = None) -> int | None:
@@ -63,13 +71,13 @@ def recent_notifications(limit: int = 4):
 def get_admin_dashboard_data() -> dict:
     """Collect statistics and lists for the Admin dashboard."""
     stats = [
-        ("Students", Student.query.count(), "bi-people-fill", "purple"),
+        ("Students", active_students_query().count(), "bi-people-fill", "purple"),
         ("Faculty", Faculty.query.count(), "bi-person-workspace", "orange"),
         ("Courses", Course.query.filter_by(is_active=True).count(), "bi-journal-bookmark-fill", "green"),
         ("New Inquiries", ContactInquiry.query.filter_by(status="New").count(), "bi-envelope-paper", "blue"),
     ]
     recent_students = (
-        Student.query.join(Student.user)
+        active_students_query()
         .join(Student.course)
         .order_by(Student.created_at.desc())
         .limit(5)
@@ -82,11 +90,11 @@ def get_admin_dashboard_data() -> dict:
         programmes = Course.query.filter(Course.code.in_(codes), Course.is_active.is_(True)).all()
         ids = [course.id for course in programmes]
         departments.append({'name': info['name'], 'slug': slug, 'programmes': len(programmes),
-                            'students': Student.query.filter(Student.course_id.in_(ids)).count(),
+                            'students': active_students_query().filter(Student.course_id.in_(ids)).count(),
                             'subjects': Subject.query.filter(Subject.course_id.in_(ids), Subject.is_active.is_(True)).count()})
     return {
         "departments_overview": departments,
-        "has_attendance": Attendance.query.first() is not None,
+        "has_attendance": Attendance.query.filter(Attendance.student_id.in_(active_students_query().with_entities(Student.id))).first() is not None,
         "stats": stats,
         "recent_students": recent_students,
         "recent_inquiries": ContactInquiry.query.order_by(ContactInquiry.created_at.desc()).limit(4).all(),
@@ -110,12 +118,16 @@ def get_faculty_dashboard_data(user) -> dict:
         is_active=True,
     ).count()
 
-    pending_submissions = sum(
-        1
-        for assignment in faculty.assignments
-        for submission in assignment.submissions
-        if submission.status in {"Submitted", "Late"}
-    )
+    # Count the same active, enrolled students that appear in assignment review.
+    # Removed students' saved submissions remain available in historical records.
+    pending_submissions = (Submission.query.join(Submission.assignment).join(Assignment.subject)
+        .join(Submission.student).join(Student.user).filter(
+            Assignment.faculty_id == faculty.id, Assignment.is_active.is_(True),
+            Submission.status.in_(['Submitted', 'Late']), User.is_active.is_(True),
+            Student.archived_at.is_(None), Student.course_id == Subject.course_id,
+            Student.semester == Subject.semester,
+            Student.curriculum_id.is_not_distinct_from(Subject.curriculum_id),
+        ).count())
 
     stats = [
         ("Assigned Subjects", len(subject_ids), "bi-book-half", "orange"),

@@ -7,7 +7,7 @@
     <div>
         <p class="section-label mb-1">Assignment Module</p>
         <h1>{{ assignment.title }}</h1>
-        <p>{{ assignment.subject.code }} / Due {{ assignment.due_date.strftime("%d %b %Y, %I:%M %p") }}</p>
+        <p>{{ assignment.subject.code }} / Due {{ assignment.due_date.strftime("%a, %d %b %Y, %I:%M %p IST") }}</p>
     </div>
     <a class="btn btn-outline-secondary" href="{{ url_for('faculty.assignments') }}">
         <i class="bi bi-arrow-left"></i> Back
@@ -36,9 +36,9 @@
                     <td>{{ student.user.display_name }}</td>
                     <td>{{ student.display_enrollment }}</td>
                     <td><span class="badge {{ 'text-bg-success' if submission and submission.status == 'Graded' else ('text-bg-info' if submission else 'text-bg-secondary') }}">{{ submission.status if submission else 'Pending' }}</span></td>
-                    <td>{{ submission.submitted_at.strftime("%d %b %Y, %I:%M %p") if submission and submission.submitted_at else '-' }}</td>
+                    <td>{{ submission.submitted_at|college_timestamp if submission and submission.submitted_at else '-' }}</td>
                     <td>{{ submission.marks_obtained if submission and submission.marks_obtained is not none else '-' }}</td>
-                    <td>{{ submission.faculty_feedback if submission and submission.faculty_feedback else '-' }}</td>
+                    <td>{{ submission.faculty_feedback if submission and submission.faculty_feedback else '-' }}{% if submission and submission.graded_at %}<span class="record-subtitle">Reviewed {{ submission.graded_at|college_timestamp }}</span>{% endif %}</td>
                     <td class="action-cell">
                         {% if submission and submission.submitted_file %}
                         <a class="icon-btn" title="Download submission" href="{{ url_for('faculty.download_submission', submission_id=submission.id) }}"><i class="bi bi-download"></i></a>

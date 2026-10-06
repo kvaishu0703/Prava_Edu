@@ -1,0 +1,8 @@
+{% extends "campus/base.html" %}
+{% block title %}My Staff Attendance{% endblock %}
+{% block campus_content %}
+<div class="panel-heading page-heading"><div><p class="section-label mb-1">Staff Workspace</p><h1>My Attendance</h1><p>Your daily staff register, maintained by the Principal and Administration.</p></div><a class="btn btn-outline-secondary" href="{{ url_for('faculty.attendance') }}">Mark student attendance</a></div>
+<section class="data-panel mb-3"><form method="get" class="row g-3 align-items-end"><div class="col-sm-7 col-lg-4"><label class="form-label" for="month">Month</label><input type="month" class="form-control" id="month" name="month" value="{{ month }}" required></div><div class="col-sm-auto"><button class="btn btn-outline-secondary" type="submit">View attendance</button></div></form></section>
+{% include 'campus/_attendance_summary.html' %}
+<section class="data-panel"><h2 class="mb-3">Daily records</h2>{% set show_staff = false %}{% include 'campus/_attendance_history.html' %}</section>
+{% endblock %}

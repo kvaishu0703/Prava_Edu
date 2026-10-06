@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import BooleanField, DateField, DateTimeLocalField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import BooleanField, DateField, DateTimeLocalField, HiddenField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, NumberRange, Optional, Regexp
 
 EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
@@ -78,6 +78,7 @@ class FacultyForm(FlaskForm):
 
 class StudentForm(FlaskForm):
     curriculum_id = SelectField("Curriculum pattern", coerce=int, validators=[Optional()], default=0)
+    edit_version = HiddenField()
     """Validate student user and profile data."""
 
     full_name = StringField("Full Name", validators=[DataRequired(), Length(max=120)])
@@ -99,8 +100,19 @@ class StudentForm(FlaskForm):
     course_id = SelectField("Course", coerce=int, validators=[DataRequired()])
     semester = IntegerField("Semester", validators=[DataRequired(), NumberRange(min=1, max=12)])
     admission_year = IntegerField("Admission Year", validators=[DataRequired(), NumberRange(min=2000, max=2100)])
+    practical_batch = SelectField("Practical batch", choices=[("", "Not assigned"), ("A", "A"), ("B", "B"), ("C", "C")], validators=[Optional()])
+    record_source = SelectField("Record source", choices=[("provided", "Provided by student / college"), ("generated", "Generated project record"), ("imported", "Imported from registration / roster")], default="provided", validators=[DataRequired()])
     is_active = BooleanField("Active", default=True)
     submit = SubmitField("Save Student")
+
+
+class BulkStudentActionForm(FlaskForm):
+    """An explicit confirmation is required before changing selected accounts."""
+
+    action = SelectField("Action", choices=[("archive", "Remove"), ("restore", "Restore")], validators=[DataRequired()])
+    selected_count = IntegerField("Selected count", validators=[DataRequired(), NumberRange(min=1, max=500)])
+    reason = TextAreaField("Reason (optional)", validators=[Optional(), Length(max=500)])
+    confirmed = BooleanField("I confirm the selected students and this action.", validators=[DataRequired()])
 
 
 class SubjectForm(FlaskForm):

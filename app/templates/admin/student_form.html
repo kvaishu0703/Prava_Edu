@@ -16,6 +16,9 @@
 </div>
 
 <section class="data-panel">
+    {% if conflict %}<div class="alert alert-warning" role="alert"><strong>The saved student record has changed.</strong> Your entered profile values remain below. Copy any changes you want to keep, then <a href="{{ url_for('admin.edit_student', student_id=student.id) }}">reload the latest student record</a> before saving again. Re-enter a new password if needed.</div>{% endif %}
+    {% if student is defined and student.archived_at %}<div class="alert alert-warning">This student is removed. Profile details can be corrected here; restore the account from <a href="{{ url_for('admin.students', status='archived') }}">Removed students</a> to enable login.</div>{% endif %}
+    <p class="source-note">The username is the student's login ID. Choose a password of at least 8 characters for a new account. When editing, leave the password blank to keep the current password. Share new login details directly with the student.</p>
     <form method="post" novalidate>
         {{ form.hidden_tag() }}
         <div class="form-grid">
@@ -31,8 +34,11 @@
             {{ render_select(form.curriculum_id) }}
             {{ render_field(form.semester) }}
             {{ render_field(form.admission_year) }}
+            {{ render_select(form.practical_batch) }}
+            {{ render_select(form.record_source) }}
             {{ render_check(form.is_active, "form-check form-switch align-self-end mb-3") }}
         </div>
+        <p class="small text-secondary">Record source is an administration-only label used to organise provided, imported and generated project records.</p>
         <div class="mb-3">
             {{ form.address.label(class="form-label") }}
             {{ form.address(class="form-control", rows="3") }}
@@ -42,7 +48,7 @@
         </div>
         <div class="form-actions">
             <a class="btn btn-outline-secondary" href="{{ url_for('admin.students') }}">Cancel</a>
-            {{ form.submit(class="btn btn-primary") }}
+            {{ form.submit(class="btn btn-primary", disabled=conflict|default(false)) }}
         </div>
     </form>
 </section>

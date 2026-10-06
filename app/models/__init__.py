@@ -18,9 +18,16 @@ from app.models.campus_activity import CampusActivity, ActivityParticipation
 from app.models.record_import import RecordImport
 from app.models.registration import StudentRegistration
 from app.models.timetable import TimetableSlot
+from app.models.portal_revision import PortalRevision
+from app.models.class_teacher import ClassTeacherAssignment
+from app.models.academic_history import AcademicYearRecord
+from app.models.staff_attendance import StaffAttendance, StaffAttendanceChange
 
 __all__ = [
     "ActivityLog",
+    "AcademicYearRecord",
+    "PortalRevision",
+    "ClassTeacherAssignment", "StaffAttendance", "StaffAttendanceChange",
     "TimetableSlot",
     "StudentRegistration",
     "Curriculum", "CurriculumSubject", "SyllabusDocument",

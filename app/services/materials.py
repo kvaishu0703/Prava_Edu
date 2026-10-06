@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 from app.models import StudyMaterial, Subject
 from app.services.attendance import get_faculty_subject
 from app.services.student import student_subjects
+from app.services.workflow_updates import notify_subject_students, record_update
 
 
 def material_extension(filename: str) -> str:
@@ -60,6 +61,9 @@ def create_material(faculty, subject_id: int, title: str, description: str | Non
     if subject is None:
         raise PermissionError("Selected subject is not assigned to you.")
     file_name, file_path, file_type = save_material_file(file)
+    notify_subject_students(faculty, subject, 'Material', f'New material: {subject.code}',
+                            f'{faculty.user.display_name} shared {title.strip()}. Open Study materials to download the file.')
+    record_update(faculty.user, 'materials', 'upload_material', f'{subject.code}: {title.strip()}')
     return StudyMaterial(
         title=title.strip(),
         description=description.strip() if description else None,

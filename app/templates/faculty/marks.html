@@ -38,13 +38,15 @@
         {{ form.hidden_tag() }}
         <input type="hidden" name="subject_id" value="{{ form.subject_id.data }}">
         <input type="hidden" name="exam_type" value="{{ form.exam_type.data }}">
+        <input type="hidden" name="register_version" value="{{ register_version }}">
+        {% if register_conflict %}<div class="alert alert-warning"><strong>Unsaved entries preserved.</strong> The saved register changed in another tab or session. Compare the current saved values below. <a href="{{ url_for('faculty.marks', subject_id=subject.id, exam_type=form.exam_type.data) }}" target="_blank" rel="noopener">Open latest register</a> to re-enter and save the intended changes.</div>{% endif %}
 
         <div class="panel-heading">
             <div>
                 <h2>{{ subject.code }} - {{ subject.name }}</h2>
                 <p>Maximum marks: {{ subject.maximum_marks }} | Passing marks: {{ subject.passing_marks }} | Exam: {{ form.exam_type.data }}</p>
             </div>
-            <button class="btn btn-primary" type="submit">
+            <button class="btn btn-primary" type="submit" {% if register_conflict %}disabled{% endif %}>
                 <i class="bi bi-check2-circle"></i> Save Marks
             </button>
         </div>
@@ -65,19 +67,19 @@
                 <tbody>
                     {% for student in students %}
                     {% set record = existing.get(student.id) %}
-                    {% set internal = record.internal_marks if record else '' %}
-                    {% set external = record.external_marks if record else '' %}
+                    {% set internal = draft.get('internal_' ~ student.id, '') if draft is not none else record.internal_marks if record else '' %}
+                    {% set external = draft.get('external_' ~ student.id, '') if draft is not none else record.external_marks if record else '' %}
                     <tr>
                         <td>{{ student.display_enrollment }}</td>
                         <td>
                             <strong>{{ student.user.display_name }}</strong><br>
                             <span class="text-secondary small">{{ student.user.display_email }}</span>
                         </td>
-                        <td><input class="form-control marks-input" type="number" min="0" max="{{ subject.curriculum_subject.internal_max if subject.curriculum_subject else subject.maximum_marks }}" placeholder="Pending" name="internal_{{ student.id }}" value="{{ internal }}"></td>
-                        <td><input class="form-control marks-input" type="number" min="0" max="{{ subject.curriculum_subject.external_max if subject.curriculum_subject else subject.maximum_marks }}" placeholder="Pending" name="external_{{ student.id }}" value="{{ external }}"></td>
+                        <td><input class="form-control marks-input" type="number" min="0" max="{{ subject.curriculum_subject.internal_max if subject.curriculum_subject else subject.maximum_marks }}" placeholder="Pending" name="internal_{{ student.id }}" value="{{ internal }}">{% if register_conflict %}<span class="record-subtitle">Saved: {{ record.internal_marks if record else 'Pending' }}</span>{% endif %}</td>
+                        <td><input class="form-control marks-input" type="number" min="0" max="{{ subject.curriculum_subject.external_max if subject.curriculum_subject else subject.maximum_marks }}" placeholder="Pending" name="external_{{ student.id }}" value="{{ external }}">{% if register_conflict %}<span class="record-subtitle">Saved: {{ record.external_marks if record else 'Pending' }}</span>{% endif %}</td>
                         <td>{{ record.total_marks if record else 'Pending' }}</td>
                         <td><span class="badge text-bg-primary">{{ record.grade or 'Pending' if record else 'Pending' }}</span></td>
-                        <td><input class="form-control" name="remarks_{{ student.id }}" value="{{ record.remarks if record else '' }}" placeholder="Optional remarks"></td>
+                        <td><input class="form-control" name="remarks_{{ student.id }}" value="{{ draft.get('remarks_' ~ student.id, '') if draft is not none else record.remarks or '' if record else '' }}" placeholder="Optional remarks">{% if register_conflict %}<span class="record-subtitle">Saved: {{ record.remarks or '-' if record else '-' }}</span>{% endif %}</td>
                     </tr>
                     {% else %}
                     <tr><td colspan="7" class="text-secondary">No active students found for this subject.</td></tr>

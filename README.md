@@ -7,7 +7,7 @@ Women's College of Home Science and BCA, Loni साठी Flask आधारि
 1. GitHub वर **Code → Download ZIP** निवडा आणि ZIP **Extract All** करा. ZIP च्या आतून launcher चालवू नका.
 2. पहिल्या वेळी **Python 3.12 (64-bit)** स्थापित करा: [Python for Windows](https://www.python.org/downloads/windows/). Installer मध्ये **Add Python to PATH** निवडा. Python 3.11 आणि 3.13 देखील समर्थित आहेत.
 3. ज्या फोल्डरमध्ये हे `README.md` आहे, त्यातील **`START-PRAVA.cmd` वर double-click करा**.
-4. पहिल्या run मध्ये dependencies डाउनलोड होतील आणि **भरलेला database, ३५ खाती व संबंधित files** आपोआप तयार होतील. पहिल्या setup साठी internet आवश्यक आहे.
+4. पहिल्या run मध्ये dependencies डाउनलोड होतील, **भरलेला database, १७४ खाती व संबंधित files** तयार होतील आणि त्या installation साठी स्वतंत्र random passwords तयार करून `instance/PRAVA_Local_Login_Details.txt` व `.csv` मध्ये जतन होतील. पहिल्या setup साठी internet आवश्यक आहे.
 5. Setup पूर्ण झाल्यावर browser मध्ये **http://127.0.0.1:5000/** आपोआप उघडेल. Home वरून Login निवडा.
 
 **सर्व्हरची window उघडी ठेवा.** बंद करण्यासाठी `Ctrl+C` दाबा. पुढच्या वेळी त्याच launcher वर double-click केल्यावर तुमचा जतन केलेला data वापरला जातो.
@@ -37,33 +37,37 @@ macOS / Linux: Python 3.11–3.13 आणि venv support स्थापित �
 
 ## 2. सर्व Login IDs आणि Passwords
 
-**GitHub ZIP मध्ये संपूर्ण भरलेला project आणि सर्व ३५ खात्यांची login यादी आहे:** [PRAVA_All_Login_Details.txt](PRAVA_All_Login_Details.txt). ZIP extract केल्यावर ही फाईल `START-PRAVA.cmd` च्याच फोल्डरमध्ये मिळेल.
+GitHub ZIP मध्ये **१६० विद्यार्थी, ११ Staff आणि ३ Admin / Office / Principal अशी १७४ खाती व भरलेला project data** आहे. त्यात वापरता येणारे passwords किंवा working password hashes समाविष्ट नाहीत.
 
-| विभाग | खाती |
-| --- | --- |
-| BCA विद्यार्थिनी | १५ — वैष्णवी आणि ऋतुजासह |
-| Home Science विद्यार्थिनी | ६ |
-| Staff | ११ |
-| Admin / Office / Principal | ३ |
+**नवीन folder मध्ये पहिल्यांदा `START-PRAVA.cmd` चालवल्यावर प्रत्येक खात्यासाठी त्या installation चे स्वतंत्र random password तयार होतात.** Launcher खालील private files तयार करतो:
 
-लगेच तपासण्यासाठी:
+- `instance/PRAVA_Local_Login_Details.txt` — थेट उघडून नावानुसार login ID आणि password पाहण्यासाठी.
+- `instance/PRAVA_Local_Login_Details.csv` — Excel मध्ये उघडण्यासाठी किंवा वैयक्तिक login slip छापण्यासाठी.
 
-| कोणासाठी | Login ID | Password | Login page |
+या फाईल्स Git मध्ये जात नाहीत. त्याच laptop च्या त्याच project folder साठी त्यातील passwords वापरा. दुसऱ्या नवीन installation मध्ये passwords वेगळे असतील. वैष्णवी आणि ऋतुजाचे तपशील private file मध्ये त्यांच्या नावाने शोधा.
+
+| खाते / भूमिका | Login ID | Login URL | Password |
 | --- | --- | --- | --- |
-| BCA — Aditi Sandeep Shinde | `bca` | `bca123` | `/login/student/bca` |
-| Home Science — Anushka Prakash Deshmukh | `home` | `home123` | `/login/student/home-science` |
-| Staff — Ms. Surekha K. Kale | `staff` | `staff123` | `/login/staff` |
-| Office — Dr. Anushree Rajendra Khaire | `office` | `office123` | `/login/administration` |
-| TY BCA — Vaishnavi Vijay Kale | `vaishnavi` | `Prava@3298` | `/login/student/bca` |
-| TY BCA — Rutuja Ashok Khobare | `rutuja` | `Prava@3487` | `/login/student/bca` |
+| BCA सुरुवातीचे खाते | `bca` | `/login/student/bca` | त्या installation च्या local handout मध्ये |
+| Home Science सुरुवातीचे खाते | `home` | `/login/student/home-science` | त्या installation च्या local handout मध्ये |
+| Staff सुरुवातीचे खाते | `staff` | `/login/staff` | त्या installation च्या local handout मध्ये |
+| Administration सुरुवातीचे खाते | `office` | `/login/administration` | त्या installation च्या local handout मध्ये |
+| इतर विद्यार्थी, Staff व Principal | private file मधील संबंधित नावाचा ID | संबंधित भूमिका / विभागाचा login form | त्या installation च्या local handout मध्ये |
 
-सर्व २१ विद्यार्थिनींच्या विषयांसाठी गुण, हजेरी, materials आणि assignments उपलब्ध आहेत. सर्व ११ Staff ना विषय आणि संबंधित विद्यार्थी नेमलेले आहेत. Admin / Office / Principal ला दोन्ही विभागांतील विद्यार्थी व Staff दिसतात; Principal चे अधिकार view-only आहेत.
+| Programme | First Year | Second Year | Third Year | एकूण |
+| --- | ---: | ---: | ---: | ---: |
+| BCA | २५ | २७ | २८ | ८० |
+| Home Science — Food Science and Nutrition (`BSC-FSN`) | १३ | १४ | १४ | ४१ |
+| Home Science — Textiles (`BSC-TEXTILE`) | १२ | १३ | १४ | ३९ |
+| **Home Science मिळून** | **२५** | **२७** | **२८** | **८०** |
 
-ही प्रकाशित passwords कॉलेज project च्या स्थानिक सादरीकरणासाठी आहेत. Default launcher स्थानिक project mode सुरू करतो. `-WithoutDemo` दिल्यास bundled खात्यांचा login बंद असतो आणि नवीन रिकाम्या installation मध्ये हा snapshot भरला जात नाही.
+Default launcher स्थानिक project mode सुरू करतो. `-WithoutDemo` दिल्यास bundled खात्यांचा login बंद असतो आणि नवीन रिकाम्या installation मध्ये snapshot भरला जात नाही.
 
 या प्रतीत वापरकर्त्याने दिलेले profiles आणि सादरीकरणासाठी तयार केलेल्या नोंदी आहेत. तयार केलेले marks/attendance/submissions हे अधिकृत कॉलेज निकाल नाहीत. **NEP grading rules अजून निश्चित नसल्याने Grade: Pending दिसू शकतो; भरलेले गुण आणि हजेरी मात्र उपलब्ध आहेत.**
 
-Setup पुन्हा केल्यावर आधीची खाती, passwords, enrollment किंवा शैक्षणिक records reset होत नाहीत. स्थानिक password बदलला असल्यास तोच वापरा. [समाविष्ट डेटाची माहिती](project-data/README.md).
+**आधीचा local database असल्यास launcher त्याचे passwords किंवा records बदलत नाही.** त्याच folder मधील विद्यमान login वापरा. नवीन private handout फक्त नवीन installation साठी तयार होतो. वेबसाइटवर नंतर password बदलल्यास जुना handout आपोआप बदलत नाही. आधी दिलेला private login PDF मूळ संगणकावरील जुन्या credentials साठी आहे; नवीन ZIP installation साठी नवीन local handout वापरा.
+
+Private login files चा private backup ठेवा आणि प्रत्येकाला फक्त स्वतःचा login द्या. यादी हरवल्यास account editor मधून संबंधित password reset करा. [विद्यार्थी व्यवस्थापनाची पद्धत](docs/student-management.md) · [समाविष्ट डेटाची माहिती](project-data/README.md).
 
 ## 3. Login, Back आणि Logout flow
 
@@ -85,7 +89,7 @@ Setup पुन्हा केल्यावर आधीची खाती, 
 - BCA: `/signup/bca`
 - Home Science: `/signup/home-science`
 
-विद्यार्थिनी पूर्ण नाव, स्वतःचा email, username, कॉलेजने दिलेला enrollment / PRN, programme, current semester, admission year आणि password भरते. वास्तविक Sign-up password किमान **8 characters** असतो. Demo passwords ही फक्त local demonstration ची स्वतंत्र सोय आहे.
+विद्यार्थिनी पूर्ण नाव, स्वतःचा email, username, कॉलेजने दिलेला enrollment / PRN, programme, current semester, admission year आणि password भरते. वास्तविक Sign-up password किमान **8 characters** असतो. Bundled project accounts साठी passwords पहिल्या local setup मध्ये स्वतंत्रपणे तयार होतात.
 
 ### Office पडताळणी
 
@@ -116,7 +120,7 @@ Staff आणि Office खात्यांना सार्वजनिक S
 
 आधीचा database असलेल्या फोल्डरमध्ये launcher त्यावर नवीन snapshot लिहीत नाही. नवीन GitHub data पाहण्यासाठी जुना server `Ctrl+C` ने बंद करा आणि ZIP **नवीन स्वतंत्र फोल्डरमध्ये** extract करून तिथला launcher चालवा. जुना folder जतन ठेवा. दोन्ही installation मधील बदल आपोआप merge किंवा sync होत नाहीत.
 
-`.gitignore` मुळे चालू local database, `.local-secret`, backups, `.env`, logs आणि `.venv` स्थानिक राहतात. GitHub मध्ये जाणारी भरलेली प्रत `project-data/` मध्ये स्वतंत्र ठेवली आहे; त्यामुळे laptop वर काम करताना मूळ snapshot बदलत नाही. Backup साठी `instance/prava.sqlite3` आणि `app/static/uploads/` दोन्ही जतन करा.
+`.gitignore` मुळे चालू local database, `.local-secret`, backups, `.env`, logs आणि `.venv` स्थानिक राहतात. GitHub मध्ये जाणारी भरलेली प्रत `project-data/` मध्ये working password hashes काढून स्वतंत्र ठेवली आहे; त्यामुळे laptop वर काम करताना मूळ snapshot बदलत नाही. Private backup मध्ये `instance/prava.sqlite3`, `app/static/uploads/` आणि `instance/PRAVA_Local_Login_Details.txt` / `.csv` जतन करा. Private login files repository किंवा सार्वजनिक folder मध्ये टाकू नका.
 
 ### दुसऱ्या laptop वर संपूर्ण data पाहण्यासाठी
 
@@ -125,7 +129,7 @@ Staff आणि Office खात्यांना सार्वजनिक S
 3. ZIP वर right-click → **Extract All** → नवीन folder निवडा.
 4. आत `START-PRAVA.cmd` दिसेपर्यंत folder उघडा आणि त्यावर double-click करा.
 5. Browser मध्ये **http://127.0.0.1:5000/** उघडेल. Server window सुरू ठेवा.
-6. `PRAVA_All_Login_Details.txt` मधील ID/password वापरा. Office मध्ये **२१ विद्यार्थिनी / ११ Staff** आणि विद्यार्थी खात्यात गुण व हजेरी तपासा.
+6. या नवीन folder मधील `instance/PRAVA_Local_Login_Details.txt` उघडा आणि त्यातील ID/password वापरा. Office मध्ये **१६० विद्यार्थी / ११ Staff** आणि विद्यार्थी खात्यात गुण व हजेरी तपासा. दुसऱ्या laptop चे passwords या नवीन installation मध्ये वापरू नका.
 
 Port 5000 व्यस्त असल्यास त्या folder मध्ये **Open in Terminal** करून `./START-PRAVA.cmd -Port 5001` चालवा; मग **http://127.0.0.1:5001/** उघडा.
 
@@ -140,7 +144,7 @@ Student Test पूर्ण इंग्रजीत आहे. My Profile आ�
 3. Logout / Switch → `home` ने login → Home Science programme व syllabus दाखवा.
 4. `staff` ने login → Staff dashboard, subjects, materials आणि assignments navigation दाखवा.
 5. `office` ने login → दोन्ही विभाग, विद्यार्थी / Staff व्यवस्थापन, curriculum, student sign-ups आणि reports दाखवा.
-6. खरी Office यादी उपलब्ध असल्यास **Import college records** मधून CSV template डाउनलोड करा, यादी भरा, **Validate & preview**, नंतर confirm करा. Import झालेली खाती सुरुवातीला inactive असतात; password ठरवून activate करा.
+6. खरी Office यादी उपलब्ध असल्यास **Import college records** मधून **Student / Staff Excel template** किंवा CSV template डाउनलोड करा. यादी भरा, **Validate & preview** मध्ये प्रत्येक नोंद तपासा, नंतर confirm करा. खाती लगेच active होतात आणि प्रत्येकासाठी स्वतंत्र password तयार होतो. **एका तासाच्या आत private login handout एकदा डाउनलोड करा**; प्रत्येक व्यक्तीला तिचीच नोंद द्या.
 7. विद्यार्थी profile मध्ये programme + pattern + semester ठेवा. Subjects मध्ये verified catalogue item व शिक्षक नेमा; त्यानंतर Staff हजेरी / गुण भरू शकतात.
 
 ## 7. Public आणि workspace pages
@@ -189,7 +193,7 @@ Tests (isolated in-memory database):
 .\.venv\Scripts\python.exe -B -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-चाचण्यांत role / department isolation, account switching, remember-cookie cleanup, Sign up / Office approval, duplicate conflicts, CSRF, Principal permissions, CSV imports, curriculum, marks limits आणि activities तपासल्या आहेत. `seed.py` हा जुन्या sample-data अभ्यासाचा script आहे; या setup मध्ये वापरायचा नाही.
+चाचण्यांत role / department isolation, account switching, remember-cookie cleanup, Sign up / Office approval, duplicate conflicts, CSRF, Principal student management, Excel / CSV import preview, one-time credentials, reversible removal, curriculum, marks limits आणि activities तपासल्या आहेत. `seed.py` हा जुन्या sample-data अभ्यासाचा script आहे; या setup मध्ये वापरायचा नाही.
 
 ## 10. पुढे website publish करताना
 
@@ -237,7 +241,7 @@ ZIP extract केल्यावर सर्व सहा फाईल्स `
 - Student: https://docs.google.com/forms/d/e/1FAIpQLSdTkcm-zC-qoU6q_wrG1IIvGTcXLF1mDZZgxEkDKGI-D_dQQQ/viewform
 - Staff: https://docs.google.com/forms/d/e/1FAIpQLSdF3HYT-MY2DA7vY7L_zlFs2n-J276xHjpXvAsx73iLQGRktQ/viewform
 
-Responses मालकाच्या linked Google Sheets मध्ये साठतात. Forms मध्ये password विचारलेला नाही. माहिती PRAVA database मध्ये आपोआप येत नाही: Office ने अधिकृत नोंदींशी पडताळून **Import college records** मधील Student / Staff CSV template मध्ये आवश्यक माहिती भरावी, preview तपासावा आणि import करावा. नवीन imported खात्यांचे स्वतंत्र password व activation Office पूर्ण करते.
+Responses मालकाच्या linked Google Sheets मध्ये साठतात. Forms मध्ये password विचारलेला नाही. माहिती PRAVA database मध्ये आपोआप येत नाही: Office / Principal ने अधिकृत नोंदींशी पडताळून **Import college records** मधील Student / Staff Excel किंवा CSV template मध्ये आवश्यक माहिती भरावी. Preview तपासून confirm केल्यावर active खाती आणि स्वतंत्र passwords तयार होतात. Private login handout एका तासाच्या आत एकदा डाउनलोड करून प्रत्येकाला तिचे/त्याचे login तपशील द्यावेत. Google Forms export थेट upload करण्याऐवजी PRAVA template मधील ठरलेल्या columns मध्ये माहिती मांडा.
 
 इतर दस्तऐवज: [College guide](docs/college-portal-guide.md), [मूळ redesign आराखडा](docs/college-redesign-plan.md), [तांत्रिक report outline](docs/final_project_report.md), [Viva guide](docs/viva_guide.md).
 
@@ -245,9 +249,34 @@ Responses मालकाच्या linked Google Sheets मध्ये स�
 
 **६ ऑक्टोबर २०२६ अपडेट:** My Attendance मध्ये एकूण, आठवड्याची, महिन्याची, सेमिस्टरची आणि विषयानुसार summary आहे. महिन्यावर क्लिक केल्यावर दिवसवार session, वेळ आणि Present/Absent स्थिती दिसते.
 
-- १५ जून–६ ऑक्टोबर २०२६: ९६ teaching days, रोज ५ sessions, सर्व २१ विद्यार्थिनींसाठी १०,०८० नोंदी; एकूण टक्केवारी ९०–९८%.
+- १५ जून–६ ऑक्टोबर २०२६: ९६ teaching days, रोज ५ sessions आणि सर्व १६० विद्यार्थ्यांसाठी त्या कालावधीची हजेरी; तयार केलेली एकूण टक्केवारी साधारण ९०–९८%.
 - Class Timetable मध्ये TY Semester V चा दिलेल्या फोटोप्रमाणे मूळ तक्ता, practical batches आणि बाकी वर्गांची स्वतंत्र वेळापत्रके आहेत.
 - Staff हजेरी भरताना session / batch निवडू शकतात. Office सर्व वर्गांची वेळापत्रके पाहू शकते.
 - भविष्याची हजेरी भरलेली नाही. तयार केलेली नोंद ही college-project presentation साठी आहे.
 
 [वेळापत्रक, session मोजण्याची पद्धत आणि डेटा नोंदी](docs/attendance-and-timetable.md).
+
+## 15. Connected Admin, Staff and Student workflows
+
+- **Staff → Attendance:** विषय, दिनांक आणि session/batch निवडा. Save केल्यावर नोंद करणाऱ्या शिक्षकाचे नाव व प्रत्यक्ष save वेळ (IST) विद्यार्थ्यांच्या Daily Attendance Register आणि Admin CSV मध्ये दिसते. दुरुस्तीची वेळ स्वतंत्र आहे; lecture ची वेळ स्वतंत्र आहे.
+- **Principal / Admin → Staff attendance:** staff चा Present / Absent / Leave / Holiday status, check-in/out आणि remarks भरा. त्याच नोंदी Staff → My staff attendance मध्ये दिसतात. बदलांचा इतिहास जतन होतो.
+- **Admin → Class teachers:** programme, curriculum, semester आणि academic year प्रमाणे शिक्षक नेमा. Student dashboard/profile वर वर्गशिक्षक, Staff → My classes मध्ये वर्गातील विद्यार्थ्यांचा आढावा दिसतो.
+- Marks, study materials, assignments, submissions आणि activity reviews सेव्ह झाल्यावर संबंधित खात्यांना portal मध्ये सूचना दिसतात. अधिकृत NEP grading rules निश्चित नसलेल्या विषयांचे final result/grade आपोआप गृहीत धरले जात नाहीत.
+- सुरक्षित read-only पाने **दर १५ सेकंदांनी** बदल तपासून refresh होतात. फॉर्म भरताना auto-refresh होत नाही. तारीख, वार आणि वेळ **India / IST** प्रमाणे दिसते.
+
+ही जोडणी **एकाच चालू PRAVA server आणि database** वापरणाऱ्या खात्यांसाठी आहे. GitHub ZIP वेगळ्या laptop वर चालवल्यास त्या laptop ची स्वतंत्र database copy असते. Laptop मधील नवे बदल दुसऱ्या laptop ला आपोआप sync होत नाहीत.
+
+## 16. Principal — विद्यार्थी खाती आणि सुरक्षित Remove / Restore
+
+**Students → Add student** मधून नाव, programme, curriculum, semester, practical batch, enrollment, login ID आणि password भरा. **Edit** मधून माहिती दुरुस्त करा; password रिकामा ठेवल्यास सध्याचा password कायम राहतो.
+
+- यादीत programme, year, gender, account status, record source आणि नाव / login ID ने शोध उपलब्ध आहे.
+- एका किंवा अनेक विद्यार्थ्यांचे checkbox निवडा → **Remove selected** → popup मधील सर्व नावे व संख्या तपासा → confirmation checkbox निवडा → **Remove** करा.
+- काढलेली खाती login करू शकत नाहीत आणि चालू class rosters मधून बाहेर पडतात. त्यांची हजेरी, गुण, submissions आणि जतन केलेला शैक्षणिक इतिहास कायम राहतो.
+- **Account status → Removed students → Restore** केल्यावर खाते पुन्हा active होते; आधीचा login ID आणि password वापरता येतो.
+- **Record source → Generated project record** किंवा **Select generated records** वापरून फक्त तयार केलेल्या नोंदी निवडता येतात. हा source flag स्थानिक login mode पासून स्वतंत्र आहे; दिलेली / imported नोंद आपोआप generated मानली जात नाही. निवड सध्या दिसणाऱ्या filtered list पुरतीच असते.
+- Remove / Restore कृती करणारे खाते आणि कारण audit log मध्ये जतन होते. संबंधित Admin किंवा Principal शिवाय विद्यार्थी स्वतःचे किंवा इतरांचे खाते काढू शकत नाहीत.
+
+**Excel / CSV import:** १–२०० नोंदी, कमाल १ MB; आधी preview, नंतर सर्व नोंदींचे एकत्र account creation. Username किंवा enrollment / employee ID रिकामा असल्यास unique ID तयार करून preview मध्ये दाखवला जातो. तयार झालेला private credential handout एकदा, एका तासाच्या आत डाउनलोड करता येतो. Login तपशील हरवल्यास account editor मधून नवीन password ठरवा. हा automatic password workflow local authentication साठी आहे; external Supabase Auth configuration मध्ये matching identities provision करणे आवश्यक आहे.
+
+[पूर्ण विद्यार्थी व्यवस्थापन, import columns आणि पडताळणी](docs/student-management.md).

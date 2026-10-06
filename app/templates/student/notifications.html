@@ -23,7 +23,8 @@
                     <span class="badge {{ 'text-bg-secondary' if row.is_read else 'text-bg-success' }}">{{ 'Read' if row.is_read else 'Unread' }}</span>
                 </div>
                 <span>{{ notification.notification_type }} | {{ notification.message }}</span>
-                <span>{{ notification.created_at.strftime("%d %b %Y") }}</span>
+                {% if notification.destination_path %}<a class="btn btn-sm btn-outline-primary mt-2" href="{{ notification.destination_path }}">Open {{ notification.notification_type|lower }}</a>{% endif %}
+                <span>{{ notification.created_at|college_timestamp }}</span>
                 {% if not row.is_read %}
                 <div class="action-cell mt-2">
                     <form method="post" action="{{ url_for('student.mark_notification_read_route', notification_id=notification.id) }}">

@@ -26,6 +26,8 @@
                     <span class="badge {{ 'text-bg-secondary' if row.is_read else 'text-bg-success' }}">{{ 'Read' if row.is_read else 'Unread' }}</span>
                 </div>
                 <span>{{ notification.notification_type }} | {{ notification.message }}</span>
+                {% if notification.destination_path %}<a class="btn btn-sm btn-outline-primary mt-2" href="{{ notification.destination_path }}">Open {{ notification.notification_type|lower }}</a>{% endif %}
+                <span>{{ notification.created_at|college_timestamp }}</span>
                 <span>Target: {{ notification.target_role|title }}{% if notification.target_course %} | {{ notification.target_course.code }}{% endif %}{% if notification.target_semester %} | Sem {{ notification.target_semester }}{% endif %}</span>
                 <div class="action-cell mt-2">
                     {% if not row.is_read %}

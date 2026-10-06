@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 from uuid import uuid4
+from datetime import timezone
+from zoneinfo import ZoneInfo
 
 from flask import current_app
 from werkzeug.datastructures import FileStorage
@@ -13,6 +15,7 @@ from app.models import Assignment, Student, Subject, Submission, User
 from app.models.base import utc_now
 from app.services.attendance import get_faculty_subject
 from app.services.student import student_subjects
+from app.services.workflow_updates import notify_user, notify_subject_students, record_update
 
 
 def assignment_extension(filename: str) -> str:
@@ -48,6 +51,9 @@ def create_assignment(faculty, subject_id: int, title: str, description: str | N
     if attachment and attachment.filename:
         attachment_path = save_assignment_file(attachment, current_app.config["ASSIGNMENT_UPLOAD_SUBDIR"])
 
+    notify_subject_students(faculty, subject, 'Assignment', f'New assignment: {subject.code}',
+                            f'{faculty.user.display_name} assigned {title.strip()}. Open My assignments to view the deadline and submit work.')
+    record_update(faculty.user, 'assignments', 'create_assignment', f'{subject.code}: {title.strip()}')
     return Assignment(
         title=title.strip(),
         description=description.strip() if description else None,
@@ -122,6 +128,8 @@ def submission_by_id_for_student(student, submission_id: int) -> Submission | No
 
 def submit_assignment(student, assignment: Assignment, file: FileStorage) -> Submission:
     """Create or update a student's assignment submission."""
+    if assignment_for_student(student, assignment.id) is None:
+        raise ValueError('This assignment is not available for your enrolled subjects.')
     if not file or not file.filename:
         raise ValueError("Please select a submission file.")
     file_path = save_assignment_file(file, current_app.config["SUBMISSION_UPLOAD_SUBDIR"])
@@ -129,6 +137,16 @@ def submit_assignment(student, assignment: Assignment, file: FileStorage) -> Sub
     if submission is None:
         submission = Submission(assignment_id=assignment.id, student_id=student.id)
     submission.mark_submitted(file_path)
+    # Existing due dates are entered as India-local wall times in the form.
+    due = assignment.due_date
+    if due.tzinfo is None:
+        due = due.replace(tzinfo=ZoneInfo('Asia/Kolkata'))
+    if submission.submitted_at > due.astimezone(timezone.utc):
+        submission.status = 'Late'
+    notify_user(student.user, assignment.faculty.user, 'Assignment',
+                f'Work submitted: {assignment.subject.code}',
+                f'{student.user.display_name} submitted {assignment.title}. Open Assignments to review the uploaded work.')
+    record_update(student.user, 'assignments', 'submit_assignment', f'Assignment {assignment.id}: {submission.status}')
     return submission
 
 
@@ -147,10 +165,17 @@ def grade_submission(submission: Submission, marks_obtained: int, feedback: str 
         raise ValueError("Marks cannot be negative.")
     if marks_obtained > submission.assignment.maximum_marks:
         raise ValueError("Marks cannot be greater than assignment maximum marks.")
+    if not submission.submitted_file:
+        raise ValueError('The student must submit work before it can be graded.')
     submission.marks_obtained = marks_obtained
     submission.faculty_feedback = feedback.strip() if feedback else None
     submission.status = "Graded"
     submission.graded_at = utc_now()
+    notify_user(submission.assignment.faculty.user, submission.student.user, 'Assignment',
+                f'Assignment reviewed: {submission.assignment.subject.code}',
+                f'{submission.assignment.faculty.user.display_name} reviewed {submission.assignment.title}. Open My assignments for the score and feedback.')
+    record_update(submission.assignment.faculty.user, 'assignments', 'grade_submission',
+                  f'Submission {submission.id}: {marks_obtained}/{submission.assignment.maximum_marks}')
 
 
 def split_upload_path(file_path: str) -> tuple[str, str]:

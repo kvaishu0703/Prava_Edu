@@ -1,7 +1,7 @@
 """Shared calendar and class-timetable queries."""
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
-from app.models import TimetableSlot
+from app.models import Subject, TimetableSlot
 
 DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
 SESSION_TYPES = ('Theory', 'Practical', 'Activity')
@@ -21,7 +21,8 @@ def year_bounds(year):
 
 def student_slots(student, year=None):
     year = year if year is not None else academic_year_for(college_today())
-    return TimetableSlot.query.filter(
+    return TimetableSlot.query.join(TimetableSlot.subject).filter(
+        Subject.is_active.is_(True),
         TimetableSlot.course_id == student.course_id,
         TimetableSlot.curriculum_id == student.curriculum_id,
         TimetableSlot.semester == student.semester,
@@ -36,6 +37,7 @@ def timetable_days(slots):
 
 
 def slots_for_subject(subject, day):
-    return TimetableSlot.query.filter_by(
-        subject_id=subject.id, weekday=day.weekday(), academic_year=academic_year_for(day)
+    return TimetableSlot.query.join(TimetableSlot.subject).filter(
+        TimetableSlot.subject_id == subject.id, TimetableSlot.weekday == day.weekday(),
+        TimetableSlot.academic_year == academic_year_for(day), Subject.is_active.is_(True),
     ).order_by(TimetableSlot.session_number, TimetableSlot.batch).all()

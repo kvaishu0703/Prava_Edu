@@ -5,8 +5,10 @@ from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 from app.extensions import db
 from app.decorators import roles_required
-from app.models import CampusActivity, ActivityParticipation, ActivityLog
+from app.models import CampusActivity, ActivityParticipation, ActivityLog, Student, User
 from app.services.college import ACTIVITY_AREAS, department_for_course
+from app.services.workflow_updates import notify_user, record_update
+from app.services.college_activity_sources import OFFICIAL_ACTIVITY_REFERENCES
 from app.activities.forms import ActivityForm, ParticipationForm, ReviewForm
 
 activities_bp = Blueprint('activities', __name__)
@@ -20,6 +22,18 @@ def can_manage(activity):
     return current_user.is_authenticated and (
         (current_user.role == 'admin' and current_user.admin_scope != 'principal') or
         (current_user.role == 'faculty' and activity.coordinator_id == current_user.id))
+
+
+def can_inspect(activity):
+    return current_user.is_authenticated and (current_user.role == 'admin' or can_manage(activity))
+
+
+def notify_activity_students(activity, message):
+    """Only active students in the activity's department receive a notice."""
+    students = Student.query.join(Student.user).filter(User.is_active.is_(True)).all()
+    for student in students:
+        if activity.department in ('all', department_for_course(student.course)):
+            notify_user(current_user, student.user, 'Activity', activity.title, message)
 
 
 def eligible_student(activity):
@@ -44,7 +58,8 @@ def index():
     items = query.order_by(CampusActivity.starts_at.desc()).all()
     today = now_ist()
     return render_template('activities/index.html', items=items, upcoming=[a for a in reversed(items) if a.starts_at >= today],
-                           past=[a for a in items if a.starts_at < today], areas=ACTIVITY_AREAS, selected=department)
+                           past=[a for a in items if a.starts_at < today], areas=ACTIVITY_AREAS, selected=department,
+                           official_references=OFFICIAL_ACTIVITY_REFERENCES)
 
 
 @activities_bp.get('/activities/<int:activity_id>')
@@ -59,7 +74,8 @@ def detail(activity_id):
         eligible = activity.department in ('all', department_for_course(student.course))
         participation = ActivityParticipation.query.filter_by(activity_id=activity.id, student_id=student.id).first()
     return render_template('activities/detail.html', activity=activity, participation=participation,
-                           eligible=eligible, can_manage=can_manage(activity), form=ParticipationForm(), registration_open=activity.starts_at > now_ist())
+                           eligible=eligible, can_manage=can_manage(activity), can_inspect=can_inspect(activity),
+                           form=ParticipationForm(), registration_open=activity.starts_at > now_ist())
 
 
 @activities_bp.post('/activities/<int:activity_id>/register')
@@ -74,6 +90,8 @@ def register(activity_id):
         abort(400)
     if not ActivityParticipation.query.filter_by(activity_id=activity.id, student_id=student.id).first():
         db.session.add(ActivityParticipation(activity=activity, student=student))
+        notify_user(current_user, activity.coordinator, 'Activity', 'Activity registration',
+                    f'{student.user.display_name} registered for {activity.title}. Open College activities to review participants.')
         try:
             db.session.commit()
         except IntegrityError:
@@ -92,6 +110,8 @@ def evidence(activity_id):
     if not form.validate_on_submit() or row.status == 'Completed':
         abort(400)
     row.evidence = form.evidence.data
+    notify_user(current_user, activity.coordinator, 'Activity', 'Participation details submitted',
+                f'{student.user.display_name} updated participation evidence for {activity.title}.')
     db.session.commit()
     flash('Participation details saved for review.', 'success')
     return redirect(url_for('activities.detail', activity_id=activity.id))
@@ -107,6 +127,9 @@ def create():
         item = CampusActivity(coordinator_id=current_user.id)
         form.populate_obj(item)
         db.session.add(item)
+        if item.is_active:
+            notify_activity_students(item, f'{item.title} is published for {item.starts_at:%a, %d %b %Y, %I:%M %p} IST at {item.venue}. Open College activities for details and registration.')
+        record_update(current_user, 'activities', 'create_activity', item.title)
         db.session.commit()
         flash('Activity saved.', 'success')
         return redirect(url_for('activities.detail', activity_id=item.id))
@@ -128,6 +151,9 @@ def edit(activity_id):
             form.title.errors.append('This activity has verified participation records. Return them to review before changing the title, venue or date.')
         else:
             form.populate_obj(item)
+            if item.is_active:
+                notify_activity_students(item, f'{item.title} has updated details. Check the date, venue and instructions in College activities.')
+            record_update(current_user, 'activities', 'update_activity', f'Activity {item.id}: {item.title}')
             db.session.commit()
             flash('Activity updated.', 'success')
             return redirect(url_for('activities.detail', activity_id=item.id))
@@ -138,7 +164,9 @@ def edit(activity_id):
 @roles_required('admin', 'faculty')
 def participants(activity_id):
     item = CampusActivity.query.get_or_404(activity_id)
-    if not can_manage(item):
+    if not can_inspect(item):
+        abort(403)
+    if request.method == 'POST' and not can_manage(item):
         abort(403)
     form = ReviewForm()
     if form.validate_on_submit():
@@ -147,14 +175,16 @@ def participants(activity_id):
             flash('Completion requires positive verified hours and an activity that has started.', 'danger')
         else:
             row.status = form.status.data
-            row.hours = form.hours.data
+            row.hours = form.hours.data if row.status == 'Completed' else None
             row.reviewed_by = current_user.id
             row.reviewed_at = datetime.utcnow()
             db.session.add(ActivityLog(user_id=current_user.id, action='activity_review', module='activities', description=f'Participation {row.id}: {row.status}'))
+            notify_user(current_user, row.student.user, 'Activity', 'Participation reviewed',
+                        f'{item.title}: {row.status}. Open My participation to view the review and any available certificate.')
             db.session.commit()
             flash('Participation reviewed.', 'success')
             return redirect(url_for('activities.participants', activity_id=item.id))
-    return render_template('activities/participants.html', activity=item, form=form, base=workspace_base())
+    return render_template('activities/participants.html', activity=item, form=form, base=workspace_base(), can_manage=can_manage(item))
 
 
 @activities_bp.get('/student/activities')
@@ -170,7 +200,7 @@ def portfolio():
 def certificate(participation_id):
     row = ActivityParticipation.query.get_or_404(participation_id)
     owns = current_user.role == 'student' and current_user.student_profile and row.student_id == current_user.student_profile.id
-    if not owns and not can_manage(row.activity):
+    if not owns and not can_inspect(row.activity):
         abort(403)
     if row.status != 'Completed' or not row.reviewer:
         abort(404)

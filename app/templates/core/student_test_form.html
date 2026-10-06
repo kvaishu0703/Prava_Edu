@@ -17,25 +17,26 @@
 
             <section class="test-section" aria-labelledby="student-details-heading">
                 <h2 id="student-details-heading">Student Details</h2>
+                <p class="source-note">Details are linked to your account and enrolled semester. Update personal details in <a href="{{ url_for('student.profile') }}">My profile</a>.</p>
                 <div class="form-grid mt-3">
                     <div class="mb-3">
                         {{ form.full_name.label(class="form-label") }}
-                        {{ form.full_name(class="form-control", placeholder="Enter your full name") }}
+                        {{ form.full_name(class="form-control", readonly=true) }}
                         {% for error in form.full_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                     </div>
                     <div class="mb-3">
                         {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control", placeholder="name@example.com") }}
+                        {{ form.email(class="form-control", readonly=true) }}
                         {% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                     </div>
                     <div class="mb-0">
                         {{ form.college_name.label(class="form-label") }}
-                        {{ form.college_name(class="form-control", placeholder="Enter college name") }}
+                        {{ form.college_name(class="form-control", readonly=true) }}
                         {% for error in form.college_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                     </div>
                     <div class="mb-0">
                         {{ form.course_year.label(class="form-label") }}
-                        {{ form.course_year(class="form-control", placeholder="Example: BCA Third Year") }}
+                        {{ form.course_year(class="form-control", readonly=true) }}
                         {% for error in form.course_year.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                     </div>
                 </div>

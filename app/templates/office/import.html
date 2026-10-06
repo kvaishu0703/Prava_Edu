@@ -1,3 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}Import college records{% endblock %}
-{% block content %}<div class="dashboard-wrap">{% include 'components/sidebar.html' %}<div class="dashboard-main"><div class="page-heading"><p class="eyebrow">OFFICE / RECORDS</p><h1>Import College Records</h1><p>Validate the complete file, review the preview, then save the records together.</p></div><section class="data-panel"><h2>Start with a template</h2><p>Use official enrollment numbers, employee IDs and email addresses. Programme codes: BCA, BSC-FSN, BSC-TEXTILE. Pattern: 2024 NEP.</p><div class="d-flex gap-3 flex-wrap mb-4"><a class="btn btn-outline-primary" href="{{ url_for('office.roster_template',kind='students') }}">Student CSV template</a><a class="btn btn-outline-primary" href="{{ url_for('office.roster_template',kind='staff') }}">Staff CSV template</a></div><p class="source-note">New records stay inactive until the office sets an individual password and activates each account. Existing records are protected from duplicate imports.</p><form method="post" enctype="multipart/form-data">{{ form.hidden_tag() }}{% include 'components/auto_form.html' %}</form></section></div></div>{% endblock %}
+{% block content %}
+<div class="dashboard-wrap">{% include 'components/sidebar.html' %}<div class="dashboard-main">
+  <div class="page-heading"><p class="eyebrow">ADMINISTRATION / REGISTRATION</p><h1>Import College Records</h1><p>Upload the roster, check every record, then create student or staff login accounts together.</p></div>
+  {% if pending_handouts %}<section class="data-panel mb-4"><h2>Login handouts awaiting download</h2><p>These private downloads expire one hour after the accounts are created.</p>
+    {% for batch in pending_handouts %}<a class="btn btn-outline-primary me-2 mb-2" href="{{ url_for('office.import_credentials', batch_id=batch.id) }}">{{ batch.payload.count }} {{ batch.payload.record_kind }} · {{ batch.created_at|college_timestamp }}</a>{% endfor %}
+  </section>{% endif %}
+  <section class="data-panel"><h2>1. Download and fill a template</h2>
+    <div class="d-flex gap-3 flex-wrap mb-3">
+      <a class="btn btn-primary" href="{{ url_for('office.roster_excel_template',kind='students') }}">Student Excel template</a>
+      <a class="btn btn-primary" href="{{ url_for('office.roster_excel_template',kind='staff') }}">Staff Excel template</a>
+      <a class="btn btn-outline-primary" href="{{ url_for('office.roster_template',kind='students') }}">Student CSV</a>
+      <a class="btn btn-outline-primary" href="{{ url_for('office.roster_template',kind='staff') }}">Staff CSV</a>
+    </div>
+    <p>Enter names and email addresses in the <strong>Roster</strong> sheet. Use one row per person. Leave <strong>username</strong> and <strong>enrollment_number / employee_id</strong> blank to generate unique IDs, or enter the college's existing IDs.</p>
+    <p>For students, enter the programme code (BCA, BSC-FSN or BSC-TEXTILE), pattern (2024 NEP), semester and admission year. For staff, enter the department. Contact and profile fields are optional. Dates use YYYY-MM-DD; mobile numbers should be entered as text.</p>
+    <p class="source-note">Up to 200 records per file, maximum 1 MB. The preview shows generated IDs before saving. Existing usernames, emails and enrollment / employee IDs are checked to prevent duplicate accounts.</p>
+    <h2>2. Upload and review</h2>
+    <form method="post" enctype="multipart/form-data">{{ form.hidden_tag() }}{% include 'components/auto_form.html' %}</form>
+    <h2 class="mt-4">3. Confirm and download login details</h2>
+    <p>After confirmation, accounts become active and an individual password is generated for each account. Download the private CSV handout once within one hour and give each person their own login details. Open the downloaded file in Excel to print or distribute individual entries.</p>
+    <p>Imported students appear in their programme and semester. Staff appear in Faculty Management; allocate subjects or class-teacher responsibility there. Teachers enter attendance and marks through their assigned classes.</p>
+  </section>
+</div></div>
+{% endblock %}

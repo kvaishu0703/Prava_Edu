@@ -1,0 +1,6 @@
+<div class="row g-3 mb-4">
+    {% for label, value, icon in [('Present', summary.present, 'check-circle'), ('Absent', summary.absent, 'x-circle'), ('On leave', summary.leave, 'calendar-minus'), ('Holidays', summary.holiday, 'calendar-event')] %}
+    <div class="col-6 col-xl-3"><section class="data-panel h-100"><p class="text-secondary mb-2"><i class="bi bi-{{ icon }} me-1"></i>{{ label }}</p><h2 class="mb-0">{{ value }}</h2></section></div>
+    {% endfor %}
+</div>
+<p class="source-note">{{ summary.recorded }} recorded staff-day{{ '' if summary.recorded == 1 else 's' }}. {% if summary.percentage is not none %}Presence: <strong>{{ summary.percentage }}%</strong> of {{ summary.working_days }} recorded working days.{% else %}No working days recorded for this selection.{% endif %} Holidays are excluded from the percentage; leave remains a recorded working day. Unrecorded dates are not counted as absent.</p>

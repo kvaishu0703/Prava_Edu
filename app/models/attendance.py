@@ -31,11 +31,28 @@ class Attendance(db.Model):
     timetable_slot_id = db.Column(db.Integer, db.ForeignKey("timetable_slots.id"))
     remarks = db.Column(db.String(255))
     created_at = db.Column(db.DateTime(timezone=True), default=utc_now, nullable=False)
+    # Legacy/imported rows deliberately retain a null recorder: an assigned
+    # subject teacher is not evidence that they entered a historical record.
+    recorded_by_user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    updated_at = db.Column(db.DateTime(timezone=True))
+    updated_by_user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
     student = db.relationship("Student", back_populates="attendance_records")
     subject = db.relationship("Subject", back_populates="attendance_records")
     faculty = db.relationship("Faculty", back_populates="attendance_records")
     timetable_slot = db.relationship("TimetableSlot")
+    recorded_by = db.relationship("User", foreign_keys=[recorded_by_user_id])
+    updated_by = db.relationship("User", foreign_keys=[updated_by_user_id])
+
+    @property
+    def recorded_time_display(self):
+        from app.services.audit_time import college_timestamp
+        return college_timestamp(self.created_at)
+
+    @property
+    def updated_time_display(self):
+        from app.services.audit_time import college_timestamp
+        return college_timestamp(self.updated_at)
 
     def __repr__(self) -> str:
         return f"<Attendance student={self.student_id} subject={self.subject_id} date={self.attendance_date}>"

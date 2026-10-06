@@ -31,13 +31,13 @@
                 {% set assignment = row.assignment %}
                 {% set submission = row.submission %}
                 <tr>
-                    <td>{{ assignment.title }}</td>
+                    <td><strong>{{ assignment.title }}</strong><span class="record-subtitle">{{ assignment.faculty.user.display_name }}</span></td>
                     <td>{{ assignment.subject.code }}</td>
-                    <td>{{ assignment.due_date.strftime("%d %b %Y") }}</td>
+                    <td>{{ assignment.due_date.strftime("%a, %d %b %Y, %I:%M %p IST") }}</td>
                     <td>{{ assignment.maximum_marks }}</td>
-                    <td><span class="badge {{ 'text-bg-success' if submission and submission.status == 'Graded' else ('text-bg-info' if submission else 'text-bg-secondary') }}">{{ submission.status if submission else 'Not Submitted' }}</span></td>
+                    <td><span class="badge {{ 'text-bg-success' if submission and submission.status == 'Graded' else ('text-bg-info' if submission else 'text-bg-secondary') }}">{{ submission.status if submission else 'Not Submitted' }}</span>{% if submission and submission.submitted_at %}<span class="record-subtitle">Submitted {{ submission.submitted_at|college_timestamp }}</span>{% endif %}</td>
                     <td>{{ submission.marks_obtained if submission and submission.marks_obtained is not none else '-' }}</td>
-                    <td>{{ submission.faculty_feedback if submission and submission.faculty_feedback else '-' }}</td>
+                    <td>{{ submission.faculty_feedback if submission and submission.faculty_feedback else '-' }}{% if submission and submission.graded_at %}<span class="record-subtitle">Reviewed {{ submission.graded_at|college_timestamp }}</span>{% endif %}</td>
                     <td class="action-cell">
                         {% if assignment.attachment_path %}
                         <a class="icon-btn" title="Download assignment" href="{{ url_for('student.download_assignment_attachment', assignment_id=assignment.id) }}"><i class="bi bi-download"></i></a>

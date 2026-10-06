@@ -1,60 +1,51 @@
 {% extends "admin/admin_base.html" %}
-
-{% block title %}Students{% endblock %}
-
+{% block title %}Student Directory{% endblock %}
 {% block admin_content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student-directory.css', v='20261006') }}">
 <div class="panel-heading page-heading">
-    <div>
-        <p class="section-label mb-1">Admin Module</p>
-        <h1>Students</h1>
-        <p>Manage student login accounts and academic profiles.</p>
-    </div>
-    {% if current_user.admin_scope != 'principal' %}<a class="btn btn-primary" href="{{ url_for('admin.new_student') }}">
-        <i class="bi bi-plus-lg"></i> Add Student
-    </a>{% endif %}
+  <div><p class="section-label mb-1">Student administration</p><h1>Student Directory</h1><p>Manage profiles, login accounts and class enrolment.</p></div>
+  <div class="directory-heading-actions"><a class="btn btn-outline-primary" href="{{ url_for('office.roster_import') }}">Import roster</a><a class="btn btn-primary" href="{{ url_for('admin.new_student') }}"><i class="bi bi-plus-lg"></i> Add student</a></div>
 </div>
-
-<section class="data-panel">
-    <form class="search-row" method="get">
-        <select class="form-select" name="department" aria-label="Department"><option value="">Both departments</option>{% for slug, info in departments.items() %}<option value="{{ slug }}" {{ 'selected' if request.args.get('department') == slug }}>{{ info.name }}</option>{% endfor %}</select>
-        <input class="form-control" name="q" value="{{ search }}" placeholder="Search students...">
-        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
-    </form>
-    <div class="table-responsive mt-3">
-        <table class="table align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Enrollment</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Course</th>
-                    <th>Semester</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for student in students %}
-                <tr>
-                    <td>{{ student.display_enrollment }}</td>
-                    <td><span class="person-cell"><img src="{{ url_for('static', filename=student.user.profile_photo_path) }}" alt="" width="40" height="40"><span>{{ student.user.display_name }}</span></span></td>
-                    <td>{{ student.user.display_email }}</td>
-                    <td>{{ student.course.code }}</td>
-                    <td>{{ student.semester }}</td>
-                    <td><span class="badge {{ 'text-bg-success' if student.user.is_active else 'text-bg-secondary' }}">{{ 'Active' if student.user.is_active else 'Inactive' }}</span></td>
-                    <td class="action-cell">{% if current_user.admin_scope != 'principal' %}
-                        <a class="icon-btn" title="Edit student" href="{{ url_for('admin.edit_student', student_id=student.id) }}"><i class="bi bi-pencil"></i></a>
-                        <form method="post" action="{{ url_for('admin.deactivate_student', student_id=student.id) }}">
-                            {{ action_form.hidden_tag() }}
-                            <button class="icon-btn danger" title="Deactivate student" type="submit"><i class="bi bi-trash"></i></button>
-                        </form>
-                    {% else %}<span class="text-secondary">View only</span>{% endif %}</td>
-                </tr>
-                {% else %}
-                <tr><td colspan="7" class="text-secondary">No students found.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<section class="data-panel student-directory" data-student-directory>
+  <form class="directory-filters" method="get">
+    {% if request.args.get('department') %}<input type="hidden" name="department" value="{{ request.args.get('department') }}">{% endif %}
+    <label class="directory-search">Search<input class="form-control" name="q" value="{{ search }}" placeholder="Name, login ID, email or enrolment"></label>
+    <label>Programme<select class="form-select" name="programme"><option value="">All programmes</option>{% for course in programmes %}<option value="{{ course.code }}" {{ 'selected' if filters.programme == course.code }}>{{ course.code }}</option>{% endfor %}</select></label>
+    <label>Year<select class="form-select" name="year"><option value="">All years</option>{% for year in study_years %}<option value="{{ year }}" {{ 'selected' if filters.year == year|string }}>Year {{ year }}</option>{% endfor %}</select></label>
+    <label>Gender<select class="form-select" name="gender"><option value="">All genders</option>{% for gender in ['Female', 'Male', 'Other'] %}<option {{ 'selected' if filters.gender == gender }}>{{ gender }}</option>{% endfor %}</select></label>
+    <label>Account status<select class="form-select" name="status">{% for value, label in [('current','Current students'),('active','Active login'),('inactive','Inactive login'),('archived','Removed students'),('all','All records')] %}<option value="{{ value }}" {{ 'selected' if filters.status == value }}>{{ label }}</option>{% endfor %}</select></label>
+    <label>Record source<select class="form-select" name="source"><option value="">All sources</option>{% for value, label in sources.items() %}<option value="{{ value }}" {{ 'selected' if filters.source == value }}>{{ label }}</option>{% endfor %}</select></label>
+    <div class="directory-filter-actions"><button class="btn btn-primary" type="submit">Apply filters</button><a class="btn btn-outline-secondary" href="{{ url_for('admin.students') }}">Reset</a></div>
+  </form>
+  <div class="directory-selection">
+    <div><strong>{{ students|length }} students</strong><span class="text-secondary ms-2" data-selection-count aria-live="polite">0 selected</span></div>
+    <div class="directory-selection-actions"><button type="button" class="btn btn-sm btn-outline-secondary" data-select-generated>Select generated records</button><button type="button" class="btn btn-sm btn-outline-danger" data-open-action="archive" disabled>Remove selected</button><button type="button" class="btn btn-sm btn-outline-primary" data-open-action="restore" disabled>Restore selected</button></div>
+  </div>
+  <p class="small text-secondary mb-2">Selection applies to the visible list. Removed accounts keep their attendance, marks and submissions; use “Removed students” to restore them.</p>
+  <div class="table-responsive"><table class="table align-middle mb-0">
+    <thead><tr><th><input type="checkbox" class="form-check-input" data-select-all aria-label="Select all visible students"></th><th>Student / enrolment</th><th>Login ID / email</th><th>Programme / year</th><th>Gender</th><th>Source</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>{% for student in students %}<tr>
+      <td><input type="checkbox" class="form-check-input" data-student-select value="{{ student.id }}" data-name="{{ student.user.full_name }}" data-enrolment="{{ student.enrollment_number }}" data-source="{{ student.record_source }}" data-archived="{{ 'true' if student.archived_at else 'false' }}" aria-label="Select {{ student.user.full_name }}"></td>
+      <td><a class="person-cell text-decoration-none" href="{{ url_for('campus.student_record', student_id=student.id) }}"><img src="{{ url_for('static', filename=student.user.profile_photo_path) }}" alt="" width="40" height="40"><span>{{ student.user.display_name }}<small class="d-block text-secondary">{{ student.display_enrollment }}</small></span></a></td>
+      <td><strong>{{ student.user.username }}</strong><small class="d-block text-secondary">{{ student.user.display_email }}</small></td>
+      <td>{{ student.course.code }}<small class="d-block text-secondary">Year {{ (student.semester + 1) // 2 }} · Semester {{ student.semester }}</small></td>
+      <td>{{ student.gender or 'Not specified' }}</td><td><span class="small">{{ sources.get(student.record_source, 'Provided') }}</span></td>
+      <td>{% if student.archived_at %}<span class="badge text-bg-secondary">Removed</span><small class="d-block text-secondary">{{ student.archived_at|college_timestamp }}</small>{% if student.archive_reason %}<small class="d-block text-secondary">{{ student.archive_reason }}</small>{% endif %}{% else %}<span class="badge {{ 'text-bg-success' if student.user.is_active else 'text-bg-secondary' }}">{{ 'Active' if student.user.is_active else 'Inactive' }}</span>{% endif %}</td>
+      <td><div class="directory-row-actions"><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.edit_student', student_id=student.id) }}">Edit</a><button type="button" class="btn btn-sm {{ 'btn-outline-primary' if student.archived_at else 'btn-outline-danger' }}" data-single-action="{{ 'restore' if student.archived_at else 'archive' }}" data-student-id="{{ student.id }}">{{ 'Restore' if student.archived_at else 'Remove' }}</button></div></td>
+    </tr>{% else %}<tr><td colspan="8" class="text-secondary py-4">No students match these filters.</td></tr>{% endfor %}</tbody>
+  </table></div>
 </section>
+<div class="modal fade student-confirm-modal" id="studentActionModal" tabindex="-1" aria-labelledby="studentActionTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content"><form method="post" action="{{ url_for('admin.bulk_students') }}" data-student-action-form>
+    {{ action_form.hidden_tag() }}
+    <input type="hidden" name="action" data-action-value><input type="hidden" name="selected_count" data-confirm-count><div data-confirm-ids></div>
+    <div class="modal-header"><h2 class="modal-title fs-5" id="studentActionTitle" data-confirm-title>Confirm student accounts</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+    <div class="modal-body"><p data-confirm-explanation></p><ol class="directory-confirm-names" data-confirm-names></ol>
+      <label class="form-label" for="studentActionReason">Reason (optional)</label><textarea class="form-control" id="studentActionReason" name="reason" rows="2" maxlength="500"></textarea>
+      <div class="form-check mt-3"><input class="form-check-input" id="studentActionConfirmed" name="confirmed" value="y" type="checkbox" required><label class="form-check-label" for="studentActionConfirmed">I have checked every name above and confirm this action.</label></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-danger" type="submit" data-confirm-submit disabled>Confirm</button></div>
+  </form></div></div>
+</div>
+<script src="{{ url_for('static', filename='js/student-directory.js', v='20261006') }}" defer></script>
 {% endblock %}

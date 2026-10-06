@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 
-from app.admin.forms import AdminProfileForm, CourseForm, EmptyForm, FacultyForm, InquiryStatusForm, NotificationForm, StudentForm, SubjectForm
+from app.admin.forms import AdminProfileForm, BulkStudentActionForm, CourseForm, EmptyForm, FacultyForm, InquiryStatusForm, NotificationForm, StudentForm, SubjectForm
 from app.decorators import roles_required
 from app.extensions import db
 from app.models import ContactInquiry, Course, Faculty, Notification, Student, StudentTestResponse, Subject, User
@@ -32,6 +32,9 @@ from app.services.reports import (
     student_report_rows,
 )
 from app.services.supabase_auth import SupabaseAuthError, upsert_auth_user
+from app.services.student_management import (RECORD_SOURCES, change_student_status,
+    lock_student_accounts, student_edit_is_current, student_edit_version)
+from app.services.workflow_updates import record_update
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -41,8 +44,10 @@ def principal_permissions():
     if current_user.is_authenticated and current_user.role == 'admin' and current_user.admin_scope == 'principal':
         allowed = {'admin.dashboard', 'admin.profile', 'admin.edit_profile', 'admin.reports', 'admin.export_report',
                    'admin.students', 'admin.faculty', 'admin.courses', 'admin.subjects', 'admin.notifications',
-                   'admin.student_test_responses', 'admin.contact_inquiries'}
-        if request.endpoint not in allowed or (request.method != 'GET' and request.endpoint != 'admin.edit_profile'):
+                   'admin.student_test_responses', 'admin.contact_inquiries',
+                   'admin.new_student', 'admin.edit_student', 'admin.bulk_students'}
+        writable = {'admin.edit_profile', 'admin.new_student', 'admin.edit_student', 'admin.bulk_students'}
+        if request.endpoint not in allowed or (request.method != 'GET' and request.endpoint not in writable):
             abort(403)
 
 
@@ -149,13 +154,14 @@ def update_contact_inquiry_status(inquiry_id: int):
 def students():
     """List students with simple search."""
     search = request.args.get("q", "").strip()
-    query = Student.query.join(Student.user).join(Student.course)
+    query = Student.query.join(Student.user).join(Student.course).filter(User.role == 'student')
     if search:
         like = f"%{search}%"
         query = query.filter(
             or_(
                 User.full_name.ilike(like),
                 User.email.ilike(like),
+                User.username.ilike(like),
                 Student.enrollment_number.ilike(like),
                 Course.code.ilike(like),
             )
@@ -166,8 +172,63 @@ def students():
         if department not in DEPARTMENTS:
             abort(400)
         query = query.filter(Course.code.in_([code for code, _, slug, _ in PROGRAMMES if slug == department]))
-    students_list = query.order_by(Student.created_at.desc()).all()
-    return render_template("admin/students.html", students=students_list, search=search, action_form=EmptyForm())
+    filters = {key: request.args.get(key, '').strip() for key in ('programme', 'year', 'gender', 'source')}
+    filters['status'] = request.args.get('status', 'current').strip()
+    programmes = Course.query.order_by(Course.code).all()
+    study_years = range(1, max(((course.total_semesters + 1) // 2 for course in programmes), default=3) + 1)
+    if filters['programme']:
+        if filters['programme'] not in {course.code for course in programmes}:
+            abort(400)
+        query = query.filter(Course.code == filters['programme'])
+    if filters['year']:
+        if filters['year'] not in {str(year) for year in study_years}:
+            abort(400)
+        year = int(filters['year'])
+        query = query.filter(Student.semester.in_([year * 2 - 1, year * 2]))
+    if filters['gender']:
+        if filters['gender'] not in {'Female', 'Male', 'Other'}:
+            abort(400)
+        query = query.filter(Student.gender == filters['gender'])
+    if filters['source']:
+        if filters['source'] not in RECORD_SOURCES:
+            abort(400)
+        query = query.filter(Student.record_source == filters['source'])
+    if filters['status'] not in {'current', 'active', 'inactive', 'archived', 'all'}:
+        abort(400)
+    if filters['status'] == 'archived':
+        query = query.filter(Student.archived_at.isnot(None))
+    elif filters['status'] != 'all':
+        query = query.filter(Student.archived_at.is_(None))
+        if filters['status'] in {'active', 'inactive'}:
+            query = query.filter(User.is_active.is_(filters['status'] == 'active'))
+    students_list = query.order_by(User.full_name, Student.id).all()
+    return render_template("admin/students.html", students=students_list, search=search,
+                           filters=filters, programmes=programmes, study_years=study_years, sources=RECORD_SOURCES,
+                           action_form=BulkStudentActionForm())
+
+
+@admin_bp.post('/students/bulk-action')
+@roles_required('admin')
+def bulk_students():
+    """Remove or restore only the explicitly confirmed student selection."""
+    form = BulkStudentActionForm()
+    if not form.validate_on_submit():
+        flash('Confirm the selected students and action before saving. No accounts were changed.', 'danger')
+        return redirect(url_for('admin.students')), 303
+    try:
+        changed = change_student_status(current_user, request.form.getlist('student_ids'), form.action.data,
+                                        selected_count=form.selected_count.data, reason=form.reason.data)
+        db.session.commit()
+    except ValueError as error:
+        db.session.rollback()
+        flash(str(error), 'danger')
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash('Unable to save this selection. No accounts were changed; please retry.', 'danger')
+    else:
+        verb = 'removed from active lists' if form.action.data == 'archive' else 'restored and enabled for login'
+        flash(f'{len(changed)} student account(s) {verb}. Attendance, marks and submissions are retained.', 'success')
+    return redirect(url_for('admin.students', status='archived' if form.action.data == 'archive' else 'current'))
 
 
 @admin_bp.route("/students/new", methods=["GET", "POST"])
@@ -184,7 +245,7 @@ def new_student():
             role="student",
             is_active=form.is_active.data,
         )
-        user.set_password(form.password.data or "Student@123")
+        user.set_password(form.password.data)
         if not save_supabase_auth_account(form, "student"):
             return render_template("admin/student_form.html", form=form, mode="Create")
         student = Student(
@@ -198,7 +259,10 @@ def new_student():
             semester=form.semester.data,
             admission_year=form.admission_year.data,
             curriculum_id=form.curriculum_id.data or None,
+            practical_batch=form.practical_batch.data or None,
+            record_source=form.record_source.data,
         )
+        record_update(current_user, 'students', 'created', f'Created student {user.full_name} ({student.enrollment_number}).')
         return save_and_redirect([user, student], "Student created successfully.", "admin.students")
     return render_template("admin/student_form.html", form=form, mode="Create")
 
@@ -207,12 +271,33 @@ def new_student():
 @roles_required("admin")
 def edit_student(student_id: int):
     """Edit a student login account and profile."""
-    student = Student.query.get_or_404(student_id)
+    if request.method == 'POST':
+        try:
+            selected = lock_student_accounts([student_id])
+        except SQLAlchemyError:
+            db.session.rollback()
+            student = Student.query.get_or_404(student_id)
+            form = StudentForm(obj=student)
+            populate_student_form_choices(form)
+            flash('This account could not be locked for saving. Your draft is retained; reload the latest record before retrying.', 'warning')
+            return render_template('admin/student_form.html', form=form, mode='Edit', student=student, conflict=True), 409
+        if not selected:
+            abort(404)
+        student = selected[0]
+    else:
+        student = Student.query.get_or_404(student_id)
+    if student.user.role != 'student':
+        abort(404)
     form = StudentForm(obj=student)
     populate_student_form_choices(form)
 
     if request.method == "GET":
         fill_student_form(form, student)
+        form.edit_version.data = student_edit_version(student)
+    elif not student_edit_is_current(student, form.edit_version.data):
+        db.session.rollback()
+        flash('This student account changed after you opened it. Your draft is retained. Reload the latest record and review the changes before saving.', 'warning')
+        return render_template('admin/student_form.html', form=form, mode='Edit', student=student, conflict=True), 409
 
     if form.validate_on_submit() and validate_student_form(form, student):
         previous_email = student.user.email
@@ -233,6 +318,9 @@ def edit_student(student_id: int):
         student.semester = form.semester.data
         student.admission_year = form.admission_year.data
         student.curriculum_id = form.curriculum_id.data or None
+        student.practical_batch = form.practical_batch.data or None
+        student.record_source = form.record_source.data
+        record_update(current_user, 'students', 'updated', f'Updated student #{student.id}: {student.user.full_name} ({student.enrollment_number}).')
         return save_and_redirect([], "Student updated successfully.", "admin.students")
 
     return render_template("admin/student_form.html", form=form, mode="Edit", student=student)
@@ -244,7 +332,10 @@ def deactivate_student(student_id: int):
     """Deactivate a student account instead of deleting records."""
     form = EmptyForm()
     if form.validate_on_submit():
-        student = Student.query.get_or_404(student_id)
+        selected = lock_student_accounts([student_id])
+        if not selected or selected[0].user.role != 'student':
+            abort(404)
+        student = selected[0]
         student.user.is_active = False
         return save_and_redirect([], "Student deactivated successfully.", "admin.students")
     flash("Invalid request. Please try again.", "danger")
@@ -547,6 +638,7 @@ def edit_subject(subject_id: int):
         form.curriculum_id.data = subject.curriculum_id or 0
         form.curriculum_subject_id.data = subject.curriculum_subject_id or 0
     if form.validate_on_submit() and validate_subject_form(form, subject):
+        previous_faculty_id = subject.faculty_id
         subject.name = form.name.data.strip()
         subject.code = form.code.data.strip().upper()
         subject.course_id = form.course_id.data
@@ -557,6 +649,13 @@ def edit_subject(subject_id: int):
         subject.maximum_marks = form.maximum_marks.data
         subject.passing_marks = form.passing_marks.data
         subject.is_active = form.is_active.data
+        if subject.faculty_id != previous_faculty_id:
+            from app.models import TimetableSlot
+            for slot in TimetableSlot.query.filter_by(subject_id=subject.id).all():
+                slot.faculty_id = subject.faculty_id
+                # The supplied photo's initials describe the original teacher.
+                # An explicit reassignment displays the newly selected person.
+                slot.teacher_code = None
         return save_and_redirect([], "Subject updated successfully.", "admin.subjects")
     return render_template("admin/subject_form.html", form=form, mode="Edit", subject=subject)
 
@@ -612,6 +711,8 @@ def fill_student_form(form: StudentForm, student: Student) -> None:
     form.semester.data = student.semester
     form.admission_year.data = student.admission_year
     form.curriculum_id.data = student.curriculum_id or 0
+    form.practical_batch.data = student.practical_batch or ''
+    form.record_source.data = student.record_source or 'provided'
     form.is_active.data = student.user.is_active
 
 
@@ -675,6 +776,9 @@ def validate_student_form(form: StudentForm, student: Student | None = None) -> 
     if not student and not form.password.data:
         form.password.errors.append("Password is required for a new student.")
         is_valid = False
+    if student and student.archived_at and form.is_active.data:
+        form.is_active.errors.append('Restore this student from the Removed students filter before enabling login.')
+        is_valid = False
     return is_valid
 
 
@@ -708,8 +812,18 @@ def validate_course_form(form: CourseForm, course: Course | None = None) -> bool
 def validate_subject_form(form: SubjectForm, subject: Subject | None = None) -> bool:
     """Check subject marks and duplicate subject code for a course semester."""
     is_valid = validate_curriculum_selection(form)
+    academic_definition_unchanged = bool(subject and (
+        subject.name, subject.code, subject.course_id, subject.curriculum_id or 0,
+        subject.semester, subject.curriculum_subject_id or 0, subject.maximum_marks,
+    ) == (
+        form.name.data.strip(), form.code.data.strip().upper(), form.course_id.data,
+        form.curriculum_id.data or 0, form.semester.data,
+        form.curriculum_subject_id.data or 0, form.maximum_marks.data,
+    ))
     item = db.session.get(CurriculumSubject, form.curriculum_subject_id.data) if form.curriculum_subject_id.data else None
-    if form.curriculum_id.data:
+    # A teacher allocation can be corrected on an existing imported subject
+    # without claiming that its unchanged academic definition is newly verified.
+    if form.curriculum_id.data and not academic_definition_unchanged:
         if not item or not item.is_verified or (item.curriculum_id, item.semester, item.curriculum.course_id) != (form.curriculum_id.data, form.semester.data, form.course_id.data):
             form.curriculum_subject_id.errors.append('Choose a verified subject from this programme, pattern and semester.')
             is_valid = False
@@ -724,9 +838,18 @@ def validate_subject_form(form: SubjectForm, subject: Subject | None = None) -> 
             if form.code.data.strip().upper() != item.code:
                 form.code.errors.append('Use the code from the selected official subject.')
                 is_valid = False
-    elif item:
+    elif item and not form.curriculum_id.data:
         form.curriculum_subject_id.errors.append('Select the matching curriculum pattern.')
         is_valid = False
+    if subject:
+        from app.models import TimetableSlot
+        has_timetable = TimetableSlot.query.filter_by(subject_id=subject.id).first() is not None
+        if has_timetable and not form.faculty_id.data:
+            form.faculty_id.errors.append('This subject has scheduled classes. Select a replacement teacher to keep its timetable connected.')
+            is_valid = False
+        if has_timetable and (subject.course_id, subject.curriculum_id or 0, subject.semester) != (form.course_id.data, form.curriculum_id.data or 0, form.semester.data):
+            form.semester.errors.append('This subject has scheduled classes. Update its timetable before changing programme, curriculum or semester.')
+            is_valid = False
     if subject and (subject.marks_records or subject.attendance_records or subject.assignments or subject.materials):
         if (subject.course_id, subject.curriculum_id or 0, subject.semester, subject.curriculum_subject_id or 0, subject.maximum_marks) != (form.course_id.data, form.curriculum_id.data or 0, form.semester.data, form.curriculum_subject_id.data or 0, form.maximum_marks.data):
             form.curriculum_subject_id.errors.append('This subject has academic records. Preserve its programme, pattern, semester, syllabus link and maximum marks.')

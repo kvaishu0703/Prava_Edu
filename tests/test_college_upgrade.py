@@ -2,6 +2,7 @@
 from datetime import timedelta
 from io import BytesIO
 from unittest import TestCase
+import re
 from werkzeug.security import generate_password_hash
 from app import create_app
 from app.extensions import db
@@ -107,11 +108,11 @@ class CollegeUpgradeTest(TestCase):
                 self.assertEqual(db.session.get(SyllabusDocument, doc_id).status, 'pending')
         self.assertEqual(self.client.post(path, data={**data, 'status': 'pending'}).status_code, 302)
 
-    def test_principal_read_only_and_office_cannot_create_privileged_accounts(self):
+    def test_principal_student_management_and_office_cannot_create_privileged_accounts(self):
         self.login('principal')
-        for path in ['/admin/dashboard','/admin/curriculum','/admin/students','/admin/reports']:
+        for path in ['/admin/dashboard','/admin/curriculum','/admin/students','/admin/reports','/admin/students/new','/admin/records/import']:
             self.assertEqual(self.client.get(path).status_code,200,path)
-        for path in ['/admin/students/new','/admin/courses/new','/admin/records/import','/admin/access','/campus/activities/new']:
+        for path in ['/admin/courses/new','/admin/access','/campus/activities/new']:
             self.assertEqual(self.client.get(path).status_code,403,path)
         with self.app.app_context():
             doc_id=SyllabusDocument.query.first().id
@@ -146,9 +147,10 @@ class CollegeUpgradeTest(TestCase):
         self.login('office');self.assertEqual(self.client.post(preview).status_code,302)
         with self.app.app_context():
             user=User.query.filter_by(username='official').one()
-            self.assertFalse(user.is_active)
+            self.assertTrue(user.is_active)
             self.assertEqual(user.student_profile.curriculum.pattern,'2024 NEP')
-            self.assertEqual(RecordImport.query.count(),0)
+            self.assertEqual(RecordImport.query.filter_by(kind='students').count(),0)
+            self.assertEqual(RecordImport.query.filter_by(kind='credential_handout').count(),1)
         self.assertEqual(self.client.post(preview).status_code,404)
         valid=dict(row,username='second',email='second@example.test',enrollment_number='REAL002')
         response=self.client.post('/admin/records/import',data={'kind':'students','file':(BytesIO(encode_roster([valid,row],'students')),'duplicate.csv')})
@@ -263,11 +265,14 @@ class CollegeUpgradeTest(TestCase):
         self.login('teacher')
         page=self.client.get(f'/faculty/marks?subject_id={subject_id}')
         self.assertIn(b'placeholder="Pending"',page.data)
-        base={'subject_id':subject_id,'exam_type':'Semester Exam'}
+        base={'subject_id':subject_id,'exam_type':'Semester Exam',
+              'register_version':re.search(rb'name="register_version" value="([^"]+)"',page.data).group(1).decode()}
         self.client.post('/faculty/marks',data=base)
         with self.app.app_context():self.assertEqual(Marks.query.count(),0)
         self.client.post('/faculty/marks',data=dict(base,**{f'internal_{student_id}':'10',f'external_{student_id}':'30'}))
         with self.app.app_context():self.assertEqual(Marks.query.one().total_marks,40)
+        page=self.client.get(f'/faculty/marks?subject_id={subject_id}')
+        base['register_version']=re.search(rb'name="register_version" value="([^"]+)"',page.data).group(1).decode()
         self.client.post('/faculty/marks',data=dict(base,**{f'internal_{student_id}':'16',f'external_{student_id}':'20'}))
         with self.app.app_context():self.assertEqual(Marks.query.one().total_marks,40)
 

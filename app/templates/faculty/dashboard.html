@@ -5,6 +5,8 @@
 
 {% block content %}
 {% call dashboard_shell("Faculty", "accent-faculty", stats) %}
+<section class="class-mentor"><div><h2>Staff Workspace</h2><p>View your own attendance and the classes assigned to you.</p></div><div class="d-flex gap-2 flex-wrap"><a class="btn btn-outline-primary btn-sm" href="{{ url_for('campus.my_attendance') }}">My staff attendance</a><a class="btn btn-outline-primary btn-sm" href="{{ url_for('campus.class_teachers') }}">My classes</a></div></section>
+{% for assignment in my_teacher_classes %}<section class="class-mentor"><div><h2>Class Teacher · {{ assignment.course.code }} / Semester {{ assignment.semester }}</h2><p>{{ assignment.curriculum.pattern }} · {{ assignment.academic_year }}–{{ assignment.academic_year + 1 }}</p></div><a class="btn btn-outline-primary btn-sm" href="{{ url_for('campus.class_students', assignment_id=assignment.id) }}">View class students</a></section>{% endfor %}
 <div class="dashboard-grid mt-4">
     <section class="data-panel">
         <div class="panel-heading">

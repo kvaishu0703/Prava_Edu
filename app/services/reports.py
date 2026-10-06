@@ -38,7 +38,7 @@ def admin_report_cards() -> list[dict]:
         },
         {
             "title": "Attendance Report",
-            "description": "Daily attendance rows with student, subject, status, and faculty.",
+            "description": "Daily sessions, attendance status, teacher and entry/update times in IST.",
             "icon": "bi-calendar2-check",
             "endpoint": "attendance",
         },
@@ -132,6 +132,16 @@ def attendance_report_rows(records) -> tuple[list[str], list[list]]:
         "Status",
         "Faculty",
         "Remarks",
+        "Day",
+        "Session",
+        "Session Type",
+        "Class Starts",
+        "Class Ends",
+        "Entry Type",
+        "Recorded / Imported At (IST)",
+        "Recorded By",
+        "Last Updated At (IST)",
+        "Updated By",
     ], [
         [
             record.attendance_date.isoformat(),
@@ -142,6 +152,16 @@ def attendance_report_rows(records) -> tuple[list[str], list[list]]:
             record.status,
             record.faculty.user.full_name,
             record.remarks or "",
+            record.attendance_date.strftime("%A"),
+            record.session_number,
+            record.session_type,
+            record.starts_at.strftime("%H:%M") if record.starts_at else "",
+            record.ends_at.strftime("%H:%M") if record.ends_at else "",
+            "Teacher entry" if record.recorded_by else "Imported / earlier record",
+            record.recorded_time_display,
+            record.recorded_by.display_name if record.recorded_by else "Original recorder not recorded",
+            record.updated_time_display if record.updated_at else "",
+            record.updated_by.display_name if record.updated_by else "",
         ]
         for record in records
     ]
@@ -149,8 +169,14 @@ def attendance_report_rows(records) -> tuple[list[str], list[list]]:
 
 def admin_attendance_records():
     """Return all attendance records for Admin exports."""
+    from sqlalchemy.orm import joinedload
     return (
-        Attendance.query.join(Attendance.student)
+        Attendance.query.options(
+            joinedload(Attendance.student).joinedload(Student.user),
+            joinedload(Attendance.subject),
+            joinedload(Attendance.faculty).joinedload(Faculty.user),
+            joinedload(Attendance.recorded_by), joinedload(Attendance.updated_by),
+        ).join(Attendance.student)
         .join(Student.user)
         .join(Attendance.subject)
         .order_by(Attendance.attendance_date.desc(), User.full_name)
@@ -160,6 +186,7 @@ def admin_attendance_records():
 
 def marks_report_rows(records) -> tuple[list[str], list[list]]:
     """Return CSV rows from marks records."""
+    from app.services.audit_time import college_timestamp
     return [
         "Enrollment",
         "Student",
@@ -172,6 +199,7 @@ def marks_report_rows(records) -> tuple[list[str], list[list]]:
         "Grade",
         "Result",
         "Entered By",
+        "Updated (IST)",
         "Remarks",
     ], [
         [
@@ -184,8 +212,9 @@ def marks_report_rows(records) -> tuple[list[str], list[list]]:
             record.external_marks,
             record.total_marks,
             record.grade or "",
-            "Pass" if record.total_marks >= record.subject.passing_marks else "Fail",
+            record.result_status,
             record.entered_by_user.user.full_name,
+            college_timestamp(record.updated_at),
             record.remarks or "",
         ]
         for record in records

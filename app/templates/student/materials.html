@@ -33,7 +33,7 @@
                     <td>{{ material.title }}</td>
                     <td>{{ material.subject.code }}</td>
                     <td>{{ material.file_type|upper }}</td>
-                    <td>{{ material.uploaded_at.strftime("%d %b %Y") }}</td>
+                    <td>{{ material.uploaded_at|college_timestamp }}</td>
                     <td>
                         <a class="icon-btn" title="Download material" href="{{ url_for('student.download_material', material_id=material.id) }}">
                             <i class="bi bi-download"></i>

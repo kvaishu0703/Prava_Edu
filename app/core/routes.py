@@ -72,16 +72,18 @@ def course_detail(course_code: str):
 def student_test():
     """Show and process the PRAVA student-only test form."""
     form = StudentTestForm()
-    if request.method == "GET" and current_user.is_authenticated:
-        form.full_name.data = current_user.full_name
-        form.email.data = current_user.email
-        if current_user.role == "student" and current_user.student_profile:
-            student = current_user.student_profile
-            form.course_year.data = f"{student.course.code} - Semester {student.semester}"
+    # Identity is taken from the authenticated account on GET and POST. The
+    # posted display fields cannot attribute this response to another student.
+    student = current_user.student_profile
+    form.full_name.data = current_user.full_name
+    form.email.data = current_user.email
+    form.college_name.data = current_app.config.get('COLLEGE_NAME', '')
+    form.course_year.data = f"{student.course.code} - Semester {student.semester}" if student else 'Enrolment awaiting office confirmation'
 
     if form.validate_on_submit():
         answers, score = grade_answers(request.form)
         response = StudentTestResponse(
+            user_id=current_user.id,
             full_name=form.full_name.data.strip(),
             email=form.email.data.strip().lower(),
             college_name=form.college_name.data.strip() if form.college_name.data else None,
@@ -107,7 +109,7 @@ def student_test():
 @roles_required("student", "admin")
 def student_test_confirmation(token):
     """Show a student test response confirmation page."""
-    response = StudentTestResponse.query.filter_by(public_token=str(token)).first_or_404()
+    response = student_test_response_for_reader(token)
     return render_template("core/student_test_confirmation.html", response=response)
 
 
@@ -115,12 +117,19 @@ def student_test_confirmation(token):
 @roles_required("student", "admin")
 def student_test_score(token):
     """Show the student's score and question-wise review."""
-    response = StudentTestResponse.query.filter_by(public_token=str(token)).first_or_404()
+    response = student_test_response_for_reader(token)
     return render_template(
         "core/student_test_score.html",
         response=response,
         result_rows=response_result_rows(response),
     )
+
+
+def student_test_response_for_reader(token):
+    query = StudentTestResponse.query.filter_by(public_token=str(token))
+    if current_user.role != 'admin':
+        query = query.filter_by(user_id=current_user.id)
+    return query.first_or_404()
 
 
 @core_bp.get("/phase-summary")

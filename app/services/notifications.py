@@ -20,6 +20,7 @@ def notification_type_choices() -> list[tuple[str, str]]:
         ("Material", "Material"),
         ("Attendance", "Attendance"),
         ("Marks", "Marks"),
+        ("Activity", "Activity"),
     ]
 
 

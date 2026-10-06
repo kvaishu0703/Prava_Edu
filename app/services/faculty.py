@@ -58,14 +58,7 @@ def faculty_assignments(faculty: Faculty):
     )
 
 
-def faculty_notifications(user, faculty: Faculty | None = None):
-    """Return notifications relevant to a faculty user."""
-    query = Notification.query.filter(Notification.is_active.is_(True)).filter(
-        or_(
-            Notification.target_role == "all",
-            Notification.target_role == "faculty",
-            Notification.target_user_id == user.id,
-            Notification.created_by == user.id,
-        )
-    )
-    return query.order_by(Notification.created_at.desc()).all()
+def faculty_notifications(user, faculty=None):
+    """Reuse the same targeting and expiry rules as the announcements page."""
+    from app.services.notifications import visible_notifications_for_user
+    return [row['notification'] for row in visible_notifications_for_user(user, faculty)]

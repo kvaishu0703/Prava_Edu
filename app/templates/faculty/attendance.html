@@ -1,96 +1,115 @@
 {% extends "faculty/faculty_base.html" %}
-
-{% block title %}Mark Attendance{% endblock %}
-
+{% from "components/attendance_audit.html" import audit_details %}
+{% block title %}Student Attendance{% endblock %}
 {% block faculty_content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/attendance-entry.css', v='20261007') }}">
 <div class="panel-heading page-heading">
-    <div>
-        <p class="section-label mb-1">Attendance Module</p>
-        <h1>Mark Attendance</h1>
-        <p>Select the subject, date and class session. Practical batches are shown separately.</p>
-    </div>
-    <a class="btn btn-outline-secondary" href="{{ url_for('faculty.attendance_report') }}">
-        <i class="bi bi-file-earmark-bar-graph"></i> Report
-    </a>
+ <div><p class="section-label mb-1">Staff Workspace</p><h1>Student Attendance</h1><p>Choose a date and your lecture, then mark the students in that class.</p></div>
+ <a class="btn btn-outline-secondary" href="{{ url_for('faculty.attendance_report') }}"><i class="bi bi-file-earmark-bar-graph"></i> Attendance report</a>
 </div>
-
-<section class="data-panel">
-    <form method="get" class="attendance-filter">
-        <div>
-            {{ form.subject_id.label(class="form-label") }}
-            {{ form.subject_id(class="form-select") }}
-        </div>
-        <div>
-            {{ form.attendance_date.label(class="form-label") }}
-            {{ form.attendance_date(class="form-control") }}
-        </div>
-        <div>{{ form.session_id.label(class="form-label") }}{{ form.session_id(class="form-select") }}</div>
-        <div class="align-self-end">
-            <button class="btn btn-outline-secondary w-100" type="submit">
-                <i class="bi bi-funnel"></i> Load
-            </button>
-        </div>
-    </form>
+<section class="data-panel attendance-picker">
+ <div class="attendance-date-shortcuts" aria-label="Choose attendance date">
+  <a class="btn {{ 'btn-primary' if selected_date == today else 'btn-outline-primary' }}" href="{{ url_for('faculty.attendance', attendance_date=today.isoformat()) }}">Today <small>{{ today.strftime('%d %b') }}</small></a>
+  <a class="btn {{ 'btn-primary' if selected_date == yesterday else 'btn-outline-primary' }}" href="{{ url_for('faculty.attendance', attendance_date=yesterday.isoformat()) }}">Yesterday <small>{{ yesterday.strftime('%d %b') }}</small></a>
+  <strong>{{ selected_date.strftime('%A, %d %B %Y') }}</strong>
+ </div>
+ <form method="get" class="attendance-filter">
+  <div>{{ form.attendance_date.label(class="form-label") }}{{ form.attendance_date(class="form-control", max=today.isoformat()) }}</div>
+  <div>{{ form.subject_id.label(class="form-label") }}{{ form.subject_id(class="form-select") }}</div>
+  <div><label class="form-label" for="session_id">Lecture / practical session</label>{{ form.session_id(class="form-select") }}</div>
+  <div class="align-self-end"><button class="btn btn-outline-primary w-100" type="submit">Load class</button></div>
+ </form>
+ {% if day_slots %}
+ <details class="attendance-day-lectures" open>
+  <summary>Your lectures on {{ selected_date.strftime('%A') }} <span>{{ day_slots|length }} scheduled sessions</span></summary>
+  <div class="attendance-lecture-options">
+  {% for lecture in day_slots %}
+   <a href="{{ url_for('faculty.attendance', subject_id=lecture.subject_id, attendance_date=selected_date.isoformat(), session_id=lecture.id) }}" {% if slot and lecture.id == slot.id %}aria-current="true"{% endif %}>
+    <span>{{ lecture.starts_at.strftime('%I:%M %p') }}–{{ lecture.ends_at.strftime('%I:%M %p') }} · {{ lecture.session_type }}</span>
+    <strong>{{ lecture.subject.name }}</strong><small>{{ lecture.course.code }} · Semester {{ lecture.semester }}{% if lecture.batch != 'All' %} · Batch {{ lecture.batch }}{% endif %}</small>
+   </a>
+  {% endfor %}
+  </div>
+ </details>
+ {% endif %}
 </section>
 
-<section class="data-panel mt-3">
-    {% if subject and scheduled %}
-    <form method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <input type="hidden" name="session_id" value="{{ form.session_id.data }}">
-        <input type="hidden" name="subject_id" value="{{ form.subject_id.data }}">
-        <input type="hidden" name="attendance_date" value="{{ form.attendance_date.data.isoformat() }}">
-
-        <div class="panel-heading">
-            <div>
-                <h2>{{ subject.code }} - {{ subject.name }}</h2>
-                <p>{{ subject.course.code }} Semester {{ subject.semester }} | {{ form.attendance_date.data.strftime("%d %b %Y") }}</p>
-            </div>
-            <button class="btn btn-primary" type="submit">
-                <i class="bi bi-check2-circle"></i> Save Attendance
-            </button>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th>Enrollment</th>
-                        <th>Student</th>
-                        <th>Status</th>
-                        <th>Remarks</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in students %}
-                    {% set record = existing.get(student.id) %}
-                    {% set current_status = record.status if record else 'Present' %}
-                    <tr>
-                        <td>{{ student.display_enrollment }}</td>
-                        <td>
-                            <strong>{{ student.user.display_name }}</strong><br>
-                            <span class="text-secondary small">{{ student.user.display_email }}</span>
-                        </td>
-                        <td>
-                            <select class="form-select attendance-status" name="status_{{ student.id }}">
-                                {% for status in statuses %}
-                                <option value="{{ status }}" {% if current_status == status %}selected{% endif %}>{{ status }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td>
-                            <input class="form-control" name="remarks_{{ student.id }}" value="{{ record.remarks if record else '' }}" placeholder="Optional remarks">
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="4" class="text-secondary">No active students found for this subject.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </form>
-    {% else %}
-    <p class="text-secondary mb-0">No teaching session is scheduled for the selected subject and date. Choose another date and click Load.</p>
-    {% endif %}
+<section class="data-panel mt-3 attendance-entry" data-attendance-entry data-editing="{{ 'true' if editing else 'false' }}" data-conflict="{{ 'true' if conflict else 'false' }}">
+ {% if subject and scheduled %}
+ <form method="post" novalidate data-attendance-form>
+  {{ form.hidden_tag() }}
+  <input type="hidden" name="register_version" value="{{ register_version }}">
+  <input type="hidden" name="session_id" value="{{ form.session_id.data }}">
+  <input type="hidden" name="subject_id" value="{{ form.subject_id.data }}">
+  <input type="hidden" name="attendance_date" value="{{ selected_date.isoformat() }}">
+  <div class="panel-heading attendance-register-heading">
+   <div>
+    <span class="attendance-mode">{{ 'Review your unsaved entries' if conflict else 'Editing attendance' if editing else 'Saved register' if has_saved else 'Attendance register' }}</span>
+    <h2>{{ subject.name }}</h2>
+    <p>{{ subject.course.code }} · Year {{ (subject.semester + 1)//2 }} · Semester {{ subject.semester }}{% if slot %} · {{ slot.session_type }} · {{ slot.starts_at.strftime('%I:%M %p') }}–{{ slot.ends_at.strftime('%I:%M %p') }}{% if slot.batch != 'All' %} · Batch {{ slot.batch }}{% endif %}{% endif %}</p>
+    <strong>{{ selected_date.strftime('%A, %d %b %Y') }} · {{ students|length }} students</strong>
+    {% if latest_record %}<p class="attendance-last-saved">Last saved: {{ latest_record.updated_time_display if latest_record.updated_at else latest_record.recorded_time_display }} · {{ latest_record.updated_by.display_name if latest_record.updated_by else latest_record.recorded_by.display_name }}</p>{% endif %}
+   </div>
+   <div class="attendance-register-actions">
+   {% if editing and students %}<button class="btn btn-primary" type="submit" data-attendance-save {% if conflict %}disabled{% endif %}><i class="bi bi-check2-circle"></i> Save attendance</button>{% endif %}
+   {% if conflict %}<a class="btn btn-outline-primary" href="{{ url_for('faculty.attendance', subject_id=subject.id, attendance_date=selected_date.isoformat(), session_id=form.session_id.data) }}">Reload latest register</a>
+   {% elif not editing and edit_policy.can_edit and students %}<a class="btn btn-primary" href="{{ url_for('faculty.attendance', subject_id=subject.id, attendance_date=selected_date.isoformat(), session_id=form.session_id.data, edit=1) }}"><i class="bi bi-pencil-square"></i> Edit attendance</a>
+   {% elif editing and has_saved %}<a class="btn btn-outline-secondary" href="{{ url_for('faculty.attendance', subject_id=subject.id, attendance_date=selected_date.isoformat(), session_id=form.session_id.data) }}">Cancel edits</a>{% endif %}
+   </div>
+  </div>
+  <p class="attendance-policy-note"><i class="bi {{ 'bi-info-circle' if edit_policy.can_edit else 'bi-lock' }}" aria-hidden="true"></i> {{ edit_policy.message }}</p>
+  {% if students %}
+  <div class="attendance-entry-totals" aria-label="Entire class attendance counts" aria-live="polite">
+   {% for status in ['Present', 'Absent', 'Late', 'Unmarked'] %}<div class="{{ status|lower }}"><span>{{ status }}</span><strong data-attendance-count="{{ status }}">{{ counts[status] }}</strong></div>{% endfor %}
+  </div>
+  <div class="attendance-entry-tools">
+   <div><label for="attendance-student-search">Find student</label><input type="search" id="attendance-student-search" class="form-control" placeholder="Name or enrollment number" data-attendance-search autocomplete="off"></div>
+   {% if editing and not conflict %}<button type="button" class="btn btn-outline-success" data-all-present><i class="bi bi-check2-all"></i> Mark all Present</button>{% endif %}
+   <span class="text-secondary small" data-visible-count>{{ students|length }} students shown</span>
+  </div>
+  {% endif %}
+  <div class="table-responsive">
+   <table class="table align-middle attendance-entry-roster">
+    <thead><tr><th>Student</th><th>Attendance</th><th>Note and entry details</th></tr></thead>
+    <tbody>
+    {% for student in students %}
+    {% set record = existing.get(student.id) %}
+    {% set draft = draft_rows.get(student.id) %}
+    {% set current_status = draft.status if draft and editing else (record.status if record else '') %}
+    <tr data-attendance-student data-search="{{ (student.user.display_name ~ ' ' ~ student.display_enrollment)|lower }}" data-saved-status="{{ current_status }}">
+     <td><strong id="student-{{ student.id }}">{{ student.user.display_name }}</strong><br><small class="text-secondary">{{ student.display_enrollment }}</small></td>
+     <td>
+     {% if editing %}
+      <fieldset class="attendance-radio-group" aria-labelledby="student-{{ student.id }}">
+       <legend class="visually-hidden">Attendance for {{ student.user.display_name }}</legend>
+       {% for status in statuses %}
+       <label class="attendance-radio {{ status|lower }}"><input type="radio" name="status_{{ student.id }}" value="{{ status }}" {% if current_status == status %}checked{% endif %} aria-label="{{ status }} — {{ student.user.display_name }}"><span><i class="bi {{ 'bi-check-circle' if status == 'Present' else 'bi-x-circle' if status == 'Absent' else 'bi-clock' }}" aria-hidden="true"></i>{{ status }}</span></label>
+       {% endfor %}
+      </fieldset>
+      {% if conflict %}<small class="text-secondary">Latest saved: {{ record.status if record else 'Not recorded' }}</small>{% endif %}
+     {% else %}<span class="attendance-status-pill {{ current_status|lower if current_status else 'unmarked' }}">{{ current_status or 'Unmarked' }}</span>{% endif %}
+     </td>
+     <td>
+      {% if editing %}<label class="visually-hidden" for="remarks-{{ student.id }}">Note for {{ student.user.display_name }}</label><input id="remarks-{{ student.id }}" class="form-control" name="remarks_{{ student.id }}" value="{{ draft.remarks if draft else ((record.remarks or '') if record else '') }}" placeholder="Optional note" maxlength="255">
+      {% if conflict and record %}<small class="text-secondary">Latest saved note: {{ record.remarks or 'None' }}</small>{% endif %}
+      {% elif record and record.remarks %}<details class="attendance-entry-audit"><summary>Saved note</summary><p class="attendance-saved-note">{{ record.remarks }}</p></details>{% endif %}
+      {% if record %}
+       {% if record.updated_by or record.recorded_by %}<div class="attendance-visible-time"><span>{{ 'Updated' if record.updated_at else 'Saved' }}: {{ record.updated_time_display if record.updated_at else record.recorded_time_display }}</span><small>By {{ record.updated_by.display_name if record.updated_by else record.recorded_by.display_name }}</small></div>{% endif %}
+       <details class="attendance-entry-audit"><summary>Entry and update details</summary>{{ audit_details(record) }}</details>
+      {% else %}<small class="text-secondary">Not saved yet</small>{% endif %}
+     </td>
+    </tr>
+    {% else %}<tr><td colspan="3" class="text-secondary">No active students are assigned to this lecture.</td></tr>{% endfor %}
+    </tbody>
+   </table>
+  </div>
+  <p class="attendance-no-results text-secondary" data-attendance-no-results hidden>No students match your search.</p>
+  {% if editing and students %}<div class="attendance-save-bar">
+   <div><strong data-attendance-save-note>{{ counts.Unmarked }} unmarked · {{ students|length }} students in this lecture</strong><small>Saving updates every student in this lecture, including students hidden by search.</small></div>
+   <button class="btn btn-primary" type="submit" data-attendance-save {% if conflict %}disabled{% endif %}><i class="bi bi-check2-circle"></i> Save attendance</button>
+  </div>{% endif %}
+ </form>
+ {% else %}<div class="attendance-empty"><i class="bi bi-calendar2-week" aria-hidden="true"></i><h2>No lecture selected for this date</h2><p>Choose one of your scheduled lectures above, or select another date and load the class.</p></div>{% endif %}
 </section>
+<script defer src="{{ url_for('static', filename='js/attendance-entry.js', v='20261008') }}"></script>
 {% endblock %}

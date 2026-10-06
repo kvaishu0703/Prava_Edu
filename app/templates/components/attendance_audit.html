@@ -1,0 +1,15 @@
+{% macro audit_details(record) %}
+<div class="small attendance-audit">
+  {% if record.recorded_by %}
+  <div><strong>Recorded:</strong> {{ record.recorded_time_display }}</div>
+  <div class="text-secondary">By {{ record.recorded_by.display_name }}</div>
+  {% else %}
+  <div><strong>Added to system:</strong> {{ record.recorded_time_display }}</div>
+  <div class="text-secondary">Original entry time and recorder not recorded.</div>
+  {% endif %}
+  {% if record.updated_at %}
+  <div class="mt-1"><strong>Last updated:</strong> {{ record.updated_time_display }}</div>
+  <div class="text-secondary">By {{ record.updated_by.display_name if record.updated_by else 'Not recorded' }}</div>
+  {% endif %}
+</div>
+{% endmacro %}

@@ -11,3 +11,6 @@ app/static/uploads/*
 !app/static/uploads/.gitkeep
 venv/
 .venv/
+PRAVA_All_Login_Details.txt
+docs/PRAVA_All_Login_Details.pdf
+**/PRAVA_Local_Login_Details.*

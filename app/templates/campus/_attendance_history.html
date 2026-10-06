@@ -1,0 +1,18 @@
+<div class="table-responsive"><table class="table align-middle mb-0">
+    <thead><tr><th>Date / day</th>{% if show_staff %}<th>Staff member</th>{% endif %}<th>Status</th><th>Check-in / out</th><th>Recorded by</th><th>Last update / history</th></tr></thead>
+    <tbody>{% for row in records %}<tr>
+        <td>{{ row.attendance_date.strftime('%d %b %Y') }}<br><span class="text-secondary small">{{ row.attendance_date.strftime('%A') }}</span></td>
+        {% if show_staff %}<td><strong>{{ row.faculty.user.display_name }}</strong><br><span class="text-secondary small">{{ row.faculty.employee_id }}</span></td>{% endif %}
+        <td><span class="badge {{ 'text-bg-success' if row.status == 'Present' else 'text-bg-danger' if row.status == 'Absent' else 'text-bg-secondary' }}">{{ row.status }}</span>{% if row.remarks %}<div class="small mt-2">{{ row.remarks }}</div>{% endif %}</td>
+        <td>{{ row.check_in.strftime('%I:%M %p') if row.check_in else '—' }}<br>{{ row.check_out.strftime('%I:%M %p') if row.check_out else '—' }}<div class="text-secondary small">IST</div></td>
+        <td>{{ row.recorded_by.display_name }}<br><span class="text-secondary small">{{ timefmt(row.recorded_at) }}</span></td>
+        <td>{{ row.updated_by.display_name }}<br><span class="text-secondary small">{{ timefmt(row.updated_at) }}</span>
+            <details class="mt-2"><summary class="small">{{ row.changes|length }} saved change{{ '' if row.changes|length == 1 else 's' }}</summary><div class="small mt-2">
+                {% for change in row.changes %}<p class="mb-2"><strong>{{ change.changed_by.display_name }}</strong> · {{ timefmt(change.changed_at) }}<br>
+                {% if change.previous_values %}{{ change.previous_values.status }} → {% else %}Recorded: {% endif %}{{ change.current_values.status }}
+                {% if change.current_values.check_in %} · {{ change.current_values.check_in }}–{{ change.current_values.check_out or '—' }} IST{% endif %}
+                {% if change.current_values.remarks %}<br>{{ change.current_values.remarks }}{% endif %}{% if change.current_values.correction_reason %}<br><strong>Correction reason:</strong> {{ change.current_values.correction_reason }}{% endif %}</p>{% endfor %}
+            </div></details>
+        </td>
+    </tr>{% else %}<tr><td colspan="{{ 6 if show_staff else 5 }}" class="text-secondary">No attendance entries for this selection.</td></tr>{% endfor %}</tbody>
+</table></div>

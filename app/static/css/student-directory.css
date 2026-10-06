@@ -1,0 +1,15 @@
+.directory-heading-actions,.directory-selection-actions,.directory-row-actions,.directory-filter-actions {display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}
+.directory-filters {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;align-items:end}
+.directory-filters label {font-size:.88rem;font-weight:600;display:grid;gap:.35rem}
+.directory-search {grid-column:span 2}
+.directory-selection {display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;border-top:1px solid var(--prava-border);margin-top:1.5rem;padding:1.25rem 0 .75rem}
+.student-directory .form-check-input {width:1.2rem;height:1.2rem;cursor:pointer}
+.student-directory .table th {white-space:nowrap}
+.student-directory .person-cell {min-width:200px}
+.student-directory td {font-size:.92rem}
+.student-confirm-modal .modal-content {background:var(--surface,#fff);color:var(--ink,#17243c);border-color:var(--prava-border,#cad1df)}
+.student-confirm-modal .modal-header,.student-confirm-modal .modal-footer {border-color:var(--prava-border,#cad1df)}
+.directory-confirm-names {max-height:15rem;overflow:auto;padding-left:1.6rem;line-height:1.8;border-block:1px solid var(--prava-border,#cad1df);padding-block:.7rem}
+[data-theme="dark"] .student-confirm-modal .btn-close {filter:invert(1)}
+@media(max-width:800px) {.directory-filters {grid-template-columns:repeat(2,minmax(0,1fr))}.directory-selection-actions {width:100%}}
+@media(max-width:480px) {.directory-filters {grid-template-columns:1fr}.directory-search {grid-column:auto}}

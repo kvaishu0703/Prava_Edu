@@ -30,6 +30,11 @@ class Submission(db.Model):
         self.submitted_file = file_path
         self.submitted_at = utc_now()
         self.status = "Submitted"
+        # A replacement file must be reviewed again; its predecessor's grade
+        # must not appear as the result for the new work.
+        self.marks_obtained = None
+        self.faculty_feedback = None
+        self.graded_at = None
 
     def __repr__(self) -> str:
         return f"<Submission assignment={self.assignment_id} student={self.student_id}>"

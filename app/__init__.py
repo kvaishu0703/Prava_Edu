@@ -52,6 +52,18 @@ def create_app(config_name: str | None = None) -> Flask:
     from app.services.navigation import register_navigation
     app.register_blueprint(registration_bp)
     register_navigation(app)
+    from app.services.portal_sync import register_portal_sync
+    register_portal_sync(app)
+    from app.campus.routes import campus_bp
+    from app.services.audit_time import college_timestamp
+    from app.services.campus_context import register_campus_context
+    app.register_blueprint(campus_bp)
+    from app.campus.corrections import corrections_bp
+    app.register_blueprint(corrections_bp)
+    from app.academic_history_routes import academic_history_bp
+    app.register_blueprint(academic_history_bp)
+    app.add_template_filter(college_timestamp, 'college_timestamp')
+    register_campus_context(app)
     register_commands(app)
     register_error_handlers(app)
     register_security_headers(app)
@@ -82,6 +94,8 @@ def register_commands(app: Flask) -> None:
         from app import models  # noqa: F401
 
         db.create_all()
+        from app.services.portal_sync import ensure_revision
+        ensure_revision()
         print("Database tables created successfully.")
 
     @app.cli.command("upgrade-db")
@@ -90,6 +104,8 @@ def register_commands(app: Flask) -> None:
         from app import models  # noqa: F401
 
         db.create_all()
+        from app.services.portal_sync import ensure_revision
+        ensure_revision()
         inspector = inspect(db.engine)
         course_columns = {column["name"] for column in inspector.get_columns("courses")}
         if "description" not in course_columns:
@@ -108,8 +124,22 @@ def register_commands(app: Flask) -> None:
                     db.session.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {definition}"))
                     db.session.commit()
                     click.echo(f"Added {table}.{name}.")
-        from app.services.attendance_schema import upgrade_attendance_sessions
+        from app.services.attendance_schema import upgrade_attendance_sessions, upgrade_attendance_audit
         upgrade_attendance_sessions()
+        upgrade_attendance_audit()
+        from app.services.student_test_schema import upgrade_student_test_ownership
+        upgrade_student_test_ownership()
+        from app.services.academic_history_schema import upgrade_academic_history_schema
+        upgrade_academic_history_schema()
+        student_columns = {column['name'] for column in inspect(db.engine).get_columns('students')}
+        for name, definition in {
+            'record_source': "VARCHAR(20) NOT NULL DEFAULT 'provided'",
+            'archived_at': 'TIMESTAMP',
+            'archive_reason': 'VARCHAR(500)',
+        }.items():
+            if name not in student_columns:
+                db.session.execute(text(f'ALTER TABLE students ADD COLUMN {name} {definition}'))
+        db.session.commit()
         click.echo("Database schema upgraded successfully.")
 
     @app.cli.command("bootstrap-admin")

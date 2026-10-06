@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% macro percentage(value) %}{{ ('%.1f'|format(value) ~ '%') if value is not none else 'Not recorded' }}{% endmacro %}
+{% block title %}Academic History{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/academic-history.css', v='20261007') }}">
+<section class="dashboard-wrap">{% include 'components/sidebar.html' %}<div class="dashboard-main">
+ <div class="panel-heading page-heading"><div><p class="section-label mb-1">Academic Records</p><h1>{{ 'My Academic History' if mine else 'Student Academic History' }}</h1><p>Attendance, subject marks and assignments organised by academic year.</p></div><button type="button" class="btn btn-outline-secondary" data-print-page><i class="bi bi-printer"></i> Print summary</button></div>
+ <div class="history-student"><img src="{{ url_for('static', filename=student.user.profile_photo_path) }}" width="52" height="52" alt=""><div><strong>{{ student.user.display_name }}</strong><p>{{ student.display_enrollment }} · {{ student.course.name }} · Current semester {{ student.semester }}</p></div></div>
+ <nav class="history-years" aria-label="Academic years">
+ {% for year in years %}<a href="{{ history_url }}?year={{ year.academic_year }}" {% if selected.academic_year == year.academic_year %}aria-current="page"{% endif %}><span>{{ year.name }}</span><strong>{{ year.label }}</strong><small>{{ 'Current academic year' if year.is_current else 'Previous academic year' }}</small></a>{% endfor %}
+ </nav>
+ <section class="data-panel history-year-heading"><div><span class="section-label">{{ selected.name }}</span><h2>{{ selected.label }}</h2><p>{{ 'Current registers' if selected.is_current else 'Read-only academic record' }}</p></div>{% if not full_access %}<span class="history-scope">Showing only subjects currently assigned to you.</span>{% endif %}</section>
+ {% if selected.is_current %}
+ <section class="data-panel mt-3"><h2>Current-year academic records</h2><p>The current academic year opens the saved attendance, marks and assignment records directly.</p>
+ <div class="history-live-links">
+ {% if mine %}<a href="{{ current_record_url }}"><i class="bi bi-calendar2-check"></i><strong>My attendance</strong><span>Daily, weekly and monthly register</span></a><a href="{{ url_for('student.marks') }}"><i class="bi bi-award"></i><strong>My marks</strong><span>Saved subject marks and results</span></a><a href="{{ url_for('student.assignments') }}"><i class="bi bi-clipboard-check"></i><strong>My assignments</strong><span>Submission and grading progress</span></a>
+ {% else %}<a href="{{ current_record_url }}"><i class="bi bi-journal-check"></i><strong>Open current academic record</strong><span>Attendance, marks and assignments within your authorised scope</span></a>{% endif %}
+ </div></section>
+ {% elif summary and summary.subject_count %}
+ <div class="history-metrics"><section><span>Attendance</span><strong>{{ percentage(summary.attendance.percentage) }}</strong><small>{{ summary.attendance.present + summary.attendance.late }} attended / {{ summary.attendance.held }} sessions</small></section><section><span>Recorded marks</span><strong>{{ percentage(summary.marks_percentage) }}</strong><small>{{ summary.total_marks }} / {{ summary.maximum_marks }} across recorded assessments</small></section><section><span>Assignments submitted</span><strong>{{ summary.assignments_completed }} / {{ summary.assignments_total }}</strong><small>Submitted, graded or completed records</small></section></div>
+ <p class="history-note">Late sessions count as attended. Grades and SGPA require approved assessment rules; no grade or SGPA is calculated from this archive.</p>
+ {% for semester in summary.snapshot.semesters %}
+ <section class="data-panel history-semester"><div class="panel-heading"><h2>Semester {{ semester.semester }}</h2><span class="text-secondary small">{{ semester.subjects|length }} subjects</span></div>
+ <h3>Attendance by subject</h3><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Subject</th><th>Held</th><th>Present</th><th>Late</th><th>Absent</th><th>Attendance</th></tr></thead><tbody>
+ {% for subject in semester.subjects %}<tr><td><strong>{{ subject.name }}</strong><br><small class="text-secondary">{{ subject.code }}</small></td><td>{{ subject.attendance.held }}</td><td>{{ subject.attendance.present }}</td><td>{{ subject.attendance.late }}</td><td>{{ subject.attendance.absent }}</td><td>{{ percentage(subject.attendance_percentage) }}</td></tr>{% endfor %}
+ </tbody></table></div>
+ <h3>Marks and assessment totals</h3><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Subject / exam</th><th>Internal</th><th>External</th><th>Total</th><th>Maximum</th><th>Recorded threshold check</th></tr></thead><tbody>
+ {% for subject in semester.subjects %}{% for assessment in subject.assessments %}<tr><td><strong>{{ subject.name }}</strong><br><small class="text-secondary">{{ assessment.exam_type }}</small></td><td>{{ assessment.internal_marks }}</td><td>{{ assessment.external_marks }}</td><td><strong>{{ assessment.total_marks }}</strong></td><td>{{ assessment.maximum_marks }}</td><td>{{ assessment.result }}{% if assessment.passing_marks is not none %}<br><small class="text-secondary">Threshold {{ assessment.passing_marks }}</small>{% endif %}</td></tr>{% else %}<tr><td>{{ subject.name }}</td><td colspan="5" class="text-secondary">No assessment marks recorded.</td></tr>{% endfor %}{% endfor %}
+ </tbody></table></div>
+ <details class="history-assignment-details"><summary>Assignment completion records</summary><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Subject / assignment</th><th>Due date</th><th>Submitted</th><th>Status</th><th>Score</th></tr></thead><tbody>
+ {% for subject in semester.subjects %}{% for assignment in subject.assignments %}<tr><td><strong>{{ assignment.title }}</strong><br><small class="text-secondary">{{ subject.name }}</small></td><td>{{ assignment.due_date or 'Not recorded' }}</td><td>{{ assignment.submitted_date or 'Not recorded' }}</td><td><span class="history-status {{ 'complete' if assignment.status in ['Submitted','Graded','Completed'] else 'pending' }}">{{ assignment.status }}</span></td><td>{{ (assignment.score|string ~ ' / ' ~ assignment.maximum|string) if assignment.score is not none else 'Not graded' }}</td></tr>{% else %}<tr><td>{{ subject.name }}</td><td colspan="4" class="text-secondary">No assignment records loaded.</td></tr>{% endfor %}{% endfor %}
+ </tbody></table></div></details>
+ </section>{% endfor %}
+ {% elif archive %}<section class="data-panel mt-3"><h2>No archived subjects in your teaching scope</h2><p>The class teacher and college administration can review the complete prior-year record.</p></section>
+ {% else %}<section class="data-panel mt-3"><h2>Previous-year records are not loaded</h2><p>The college can add the attendance summary, subject marks and completed assignments for {{ selected.label }} here.</p></section>{% endif %}
+ {% if archive and current_user.role == 'admin' %}<details class="data-panel history-source"><summary>Record source and audit</summary><dl><dt>Source</dt><dd>{{ 'College register' if archive.source_kind == 'college_register' else 'College project preparation' }}</dd><dt>Provenance</dt><dd>{{ archive.provenance }}</dd><dt>Last saved</dt><dd>{{ timefmt(archive.updated_at) }}</dd><dt>Saved by</dt><dd>{{ archive.updated_by.display_name if archive.updated_by else 'Project preparation process' }}</dd></dl></details>{% endif %}
+</div></section>
+{% endblock %}

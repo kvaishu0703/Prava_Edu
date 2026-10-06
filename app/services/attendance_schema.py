@@ -40,3 +40,18 @@ def upgrade_attendance_sessions():
             connection.execute(text('ALTER TABLE attendance ADD CONSTRAINT uq_attendance_student_subject_date_session UNIQUE (student_id, subject_id, attendance_date, session_number)'))
     else:
         raise RuntimeError('Attendance session upgrade supports SQLite and PostgreSQL.')
+
+
+def upgrade_attendance_audit():
+    """Add audit columns without backfilling invented historical actor/time."""
+    columns = {row['name'] for row in inspect(db.engine).get_columns('attendance')}
+    timestamp_type = 'TIMESTAMP WITH TIME ZONE' if db.engine.dialect.name == 'postgresql' else 'DATETIME'
+    definitions = {
+        'recorded_by_user_id': 'INTEGER REFERENCES users(id)',
+        'updated_at': timestamp_type,
+        'updated_by_user_id': 'INTEGER REFERENCES users(id)',
+    }
+    with db.engine.begin() as connection:
+        for name, definition in definitions.items():
+            if name not in columns:
+                connection.execute(text(f'ALTER TABLE attendance ADD COLUMN {name} {definition}'))
