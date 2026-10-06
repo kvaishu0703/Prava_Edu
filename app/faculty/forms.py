@@ -32,6 +32,7 @@ class AttendanceSelectionForm(FlaskForm):
 
     subject_id = SelectField("Subject", coerce=int, validators=[DataRequired()])
     attendance_date = DateField("Date", default=date.today, validators=[DataRequired()])
+    session_id = SelectField("Class session", coerce=int, default=0)
     submit = SubmitField("Load Students")
 
 

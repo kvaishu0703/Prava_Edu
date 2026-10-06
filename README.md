@@ -112,7 +112,7 @@ Staff आणि Office खात्यांना सार्वजनिक S
 | `.venv/` | Project च्या स्वतंत्र Python dependencies |
 | `app/data/nep_2024.json` | स्रोत तपासून भरलेला curriculum catalogue |
 
-सर्व्हर बंद केला किंवा संगणक restart केला तरी त्याच project folder मधील database टिकतो. GitHub ZIP मध्ये `project-data/` येथे **५ ऑक्टोबर २०२६ चा भरलेला snapshot** आणि संबंधित uploads आहेत. नवीन फोल्डरमध्ये launcher चालवताना तो एकदाच copy होतो. त्यानंतरचे बदल `instance/prava.sqlite3` मध्ये साठतात.
+सर्व्हर बंद केला किंवा संगणक restart केला तरी त्याच project folder मधील database टिकतो. GitHub ZIP मध्ये `project-data/` येथे **६ ऑक्टोबर २०२६ चा भरलेला snapshot** आणि संबंधित uploads आहेत. नवीन फोल्डरमध्ये launcher चालवताना तो एकदाच copy होतो. त्यानंतरचे बदल `instance/prava.sqlite3` मध्ये साठतात.
 
 आधीचा database असलेल्या फोल्डरमध्ये launcher त्यावर नवीन snapshot लिहीत नाही. नवीन GitHub data पाहण्यासाठी जुना server `Ctrl+C` ने बंद करा आणि ZIP **नवीन स्वतंत्र फोल्डरमध्ये** extract करून तिथला launcher चालवा. जुना folder जतन ठेवा. दोन्ही installation मधील बदल आपोआप merge किंवा sync होत नाहीत.
 
@@ -240,3 +240,14 @@ ZIP extract केल्यावर सर्व सहा फाईल्स `
 Responses मालकाच्या linked Google Sheets मध्ये साठतात. Forms मध्ये password विचारलेला नाही. माहिती PRAVA database मध्ये आपोआप येत नाही: Office ने अधिकृत नोंदींशी पडताळून **Import college records** मधील Student / Staff CSV template मध्ये आवश्यक माहिती भरावी, preview तपासावा आणि import करावा. नवीन imported खात्यांचे स्वतंत्र password व activation Office पूर्ण करते.
 
 इतर दस्तऐवज: [College guide](docs/college-portal-guide.md), [मूळ redesign आराखडा](docs/college-redesign-plan.md), [तांत्रिक report outline](docs/final_project_report.md), [Viva guide](docs/viva_guide.md).
+
+## 14. Attendance Summary आणि Class Timetable
+
+**६ ऑक्टोबर २०२६ अपडेट:** My Attendance मध्ये एकूण, आठवड्याची, महिन्याची, सेमिस्टरची आणि विषयानुसार summary आहे. महिन्यावर क्लिक केल्यावर दिवसवार session, वेळ आणि Present/Absent स्थिती दिसते.
+
+- १५ जून–६ ऑक्टोबर २०२६: ९६ teaching days, रोज ५ sessions, सर्व २१ विद्यार्थिनींसाठी १०,०८० नोंदी; एकूण टक्केवारी ९०–९८%.
+- Class Timetable मध्ये TY Semester V चा दिलेल्या फोटोप्रमाणे मूळ तक्ता, practical batches आणि बाकी वर्गांची स्वतंत्र वेळापत्रके आहेत.
+- Staff हजेरी भरताना session / batch निवडू शकतात. Office सर्व वर्गांची वेळापत्रके पाहू शकते.
+- भविष्याची हजेरी भरलेली नाही. तयार केलेली नोंद ही college-project presentation साठी आहे.
+
+[वेळापत्रक, session मोजण्याची पद्धत आणि डेटा नोंदी](docs/attendance-and-timetable.md).

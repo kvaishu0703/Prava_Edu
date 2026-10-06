@@ -43,23 +43,35 @@ def students_for_subject(subject: Subject):
     )
 
 
-def attendance_map(subject_id: int, attendance_date: date):
+def attendance_map(subject_id: int, attendance_date: date, session_number: int = 1):
     """Return existing attendance records keyed by student id."""
     records = Attendance.query.filter_by(
         subject_id=subject_id,
         attendance_date=attendance_date,
+        session_number=session_number,
     ).all()
     return {record.student_id: record for record in records}
 
 
-def save_bulk_attendance(faculty: Faculty, subject: Subject, attendance_date: date, rows: list[dict]) -> tuple[int, int]:
+def save_bulk_attendance(faculty: Faculty, subject: Subject, attendance_date: date, rows: list[dict], slot=None) -> tuple[int, int]:
     """Create or update attendance rows for one subject and date."""
-    existing = attendance_map(subject.id, attendance_date)
+    from app.services.timetable import college_today
+    if subject.faculty_id != faculty.id:
+        raise ValueError('This subject is not assigned to you.')
+    if attendance_date > college_today():
+        raise ValueError('Attendance cannot be marked for a future date.')
+    if slot and (slot.subject_id != subject.id or slot.weekday != attendance_date.weekday()):
+        raise ValueError('Choose a scheduled session for this subject and date.')
+    number = slot.session_number if slot else 1
+    existing = attendance_map(subject.id, attendance_date, number)
+    eligible = {s.id for s in students_for_subject(subject) if not slot or slot.batch == 'All' or (s.practical_batch or 'A') == slot.batch}
     created = 0
     updated = 0
 
     for row in rows:
         student_id = row["student_id"]
+        if student_id not in eligible:
+            raise ValueError('A student does not belong to this subject or practical batch.')
         status = row["status"]
         remarks = row.get("remarks")
         if status not in ATTENDANCE_STATUSES:
@@ -72,6 +84,9 @@ def save_bulk_attendance(faculty: Faculty, subject: Subject, attendance_date: da
             record.faculty_id = faculty.id
             updated += 1
         else:
+            conflict = Attendance.query.filter_by(student_id=student_id, attendance_date=attendance_date, session_number=number).first()
+            if conflict and slot:
+                raise ValueError('This student already has another subject recorded in that session.')
             db.session.add(
                 Attendance(
                     student_id=student_id,
@@ -80,6 +95,11 @@ def save_bulk_attendance(faculty: Faculty, subject: Subject, attendance_date: da
                     attendance_date=attendance_date,
                     status=status,
                     remarks=remarks,
+                    session_number=number,
+                    session_type=slot.session_type if slot else 'Theory',
+                    starts_at=slot.starts_at if slot else None,
+                    ends_at=slot.ends_at if slot else None,
+                    timetable_slot_id=slot.id if slot else None,
                 )
             )
             created += 1

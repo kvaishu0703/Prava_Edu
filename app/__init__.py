@@ -38,6 +38,8 @@ def create_app(config_name: str | None = None) -> Flask:
     app.register_blueprint(admin_bp)
     app.register_blueprint(faculty_bp)
     app.register_blueprint(student_bp)
+    from app.timetable_routes import timetable_bp
+    app.register_blueprint(timetable_bp)
     from app.academics.routes import academics_bp
     from app.activities.routes import activities_bp
     from app.services.college import register_college_context
@@ -95,7 +97,7 @@ def register_commands(app: Flask) -> None:
             db.session.commit()
             click.echo("Added courses.description column.")
         additions = {
-            "students": {"curriculum_id": "INTEGER REFERENCES curricula(id)"},
+            "students": {"curriculum_id": "INTEGER REFERENCES curricula(id)", "practical_batch": "VARCHAR(10)"},
             "subjects": {"curriculum_id": "INTEGER REFERENCES curricula(id)", "curriculum_subject_id": "INTEGER REFERENCES curriculum_subjects(id)"},
             "users": {"admin_scope": "VARCHAR(30) NOT NULL DEFAULT 'office'", "is_demo": "BOOLEAN NOT NULL DEFAULT false", "profile_image": "VARCHAR(255)", "gender": "VARCHAR(20)"},
         }
@@ -106,6 +108,8 @@ def register_commands(app: Flask) -> None:
                     db.session.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {definition}"))
                     db.session.commit()
                     click.echo(f"Added {table}.{name}.")
+        from app.services.attendance_schema import upgrade_attendance_sessions
+        upgrade_attendance_sessions()
         click.echo("Database schema upgraded successfully.")
 
     @app.cli.command("bootstrap-admin")

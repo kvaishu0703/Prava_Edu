@@ -1,0 +1,14 @@
+{
+  "title": "TY B.Sc. (CA) · Hall No. 3 · Semester V",
+  "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "rows": [
+    {"time":"09:10 - 10:10","cells":["DSc\nGRA","DSc\nGRA","SE\nWST","Java/CC\nA/B\nGAS/GKL","Java/CC\nB/C\nGAS/GKL","Java/CC\nC/A\nGAS/GKL"]},
+    {"time":"10:10 - 11:10","cells":["AI\nMSM","CC\nGKL","CC\nGKL","Java/CC\nA/B\nGAS/GKL","Java/CC\nB/C\nGAS/GKL","Java/CC\nC/A\nGAS/GKL"]},
+    {"time":"11:10 - 11:20","break":"Break"},
+    {"time":"11:20 - 12:20","cells":["SE\nWST","SE\nWST","SE\nWST","Java/CC/FP\nA/B/C\nGAS/GKL/TRR","Java/CC\nB/C\nGAS/GKL","Java/CC/FP\nC/A/B\nGAS/GKL/MSM"]},
+    {"time":"12:20 - 13:20","cells":["IOT\nTRR","IOT\nTRR","AI\nMSM","Java/CC/FP\nA/B/C\nGAS/GKL/TRR","Java/CC\nB/C\nGAS/GKL","Java/CC/FP\nC/A/B\nGAS/GKL/MSM"]},
+    {"time":"13:20 - 14:00","break":"Break"},
+    {"time":"14:00 - 15:00","cells":["AI/DSc\nA/B\nMSM/GRA","FP/AI/DSc\nA/B/C\nMSM/MSM/GRA","AI/DSc/FP\nC/A/B\nMSM/GRA/JSM","AI/DSc/FP\nA/B/C\nMSM/GRA/TRR","AI/DSc\nB/C\nMSM/GRA","AI/DSc/FP\nB/C/A\nMSM/GRA/WST"]},
+    {"time":"15:00 - 16:00","cells":["AI/DSc\nA/B\nMSM/GRA","FP/AI/DSc\nA/B/C\nMSM/MSM/GRA","AI/DSc/FP\nC/A/B\nMSM/GRA/JSM","AI/DSc/FP\nA/B/C\nMSM/GRA/TRR","AI/DSc\nB/C\nMSM/GRA","AI/DSc/FP\nB/C/A\nMSM/GRA/WST"]}
+  ]
+}

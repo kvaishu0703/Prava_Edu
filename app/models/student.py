@@ -22,6 +22,7 @@ class Student(TimestampMixin, db.Model):
     profile_image = db.Column(db.String(255))
     curriculum_id = db.Column(db.Integer, db.ForeignKey("curricula.id"))
     curriculum = db.relationship("Curriculum")
+    practical_batch = db.Column(db.String(10))
 
     user = db.relationship("User", back_populates="student_profile")
     course = db.relationship("Course", back_populates="students")

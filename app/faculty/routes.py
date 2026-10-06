@@ -149,70 +149,55 @@ def students():
 @faculty_bp.route("/attendance", methods=["GET", "POST"])
 @roles_required("faculty")
 def attendance():
-    """Mark or edit attendance for an assigned subject and date."""
+    """Mark the selected session, keeping repeated subjects and batches separate."""
+    from app.services.timetable import slots_for_subject, college_today
+    from app.models import TimetableSlot
     faculty = get_faculty_for_user(current_user)
     if faculty is None:
         flash("Faculty profile is not linked yet. Please contact Admin.", "warning")
         return redirect(url_for("faculty.dashboard"))
-
     form = AttendanceSelectionForm()
     form.subject_id.choices = faculty_subject_choices(faculty)
-    if form.attendance_date.data is None:
-        form.attendance_date.data = date.today()
-    if not form.subject_id.choices:
-        flash("No active subjects are assigned to you yet.", "warning")
-        return render_template("faculty/attendance.html", form=form, subject=None, students=[], existing={}, statuses=ATTENDANCE_STATUSES)
-
-    if request.method == "GET":
-        selected_subject = request.args.get("subject_id", type=int) or form.subject_id.choices[0][0]
-        form.subject_id.data = selected_subject
-        if request.args.get("attendance_date"):
-            try:
-                form.attendance_date.data = date.fromisoformat(request.args["attendance_date"])
-            except ValueError:
-                flash("Invalid attendance date. Showing today's attendance.", "warning")
-
-    if form.validate_on_submit():
-        subject = get_faculty_subject(faculty, form.subject_id.data)
-        if subject is None:
-            flash("Selected subject is not assigned to you.", "danger")
-            return redirect(url_for("faculty.attendance"))
-
-        students_list = students_for_subject(subject)
-        rows = []
-        valid_student_ids = {student.id for student in students_list}
-        for student in students_list:
-            status = request.form.get(f"status_{student.id}", "Absent")
-            remarks = request.form.get(f"remarks_{student.id}", "").strip() or None
-            if student.id in valid_student_ids:
-                rows.append({"student_id": student.id, "status": status, "remarks": remarks})
-
+    if request.method == 'GET':
+        form.subject_id.data = request.args.get('subject_id', type=int) or (form.subject_id.choices[0][0] if form.subject_id.choices else None)
         try:
-            created, updated = save_bulk_attendance(faculty, subject, form.attendance_date.data, rows)
-            db.session.commit()
-            flash(f"Attendance saved. Created: {created}, Updated: {updated}.", "success")
-            return redirect(
-                url_for(
-                    "faculty.attendance",
-                    subject_id=subject.id,
-                    attendance_date=form.attendance_date.data.isoformat(),
-                )
-            )
-        except SQLAlchemyError:
-            db.session.rollback()
-            flash("Database error while saving attendance. Please try again.", "danger")
-
-    subject = get_faculty_subject(faculty, form.subject_id.data or form.subject_id.choices[0][0])
-    students_list = students_for_subject(subject) if subject else []
-    existing = attendance_map(subject.id, form.attendance_date.data) if subject and form.attendance_date.data else {}
-    return render_template(
-        "faculty/attendance.html",
-        form=form,
-        subject=subject,
-        students=students_list,
-        existing=existing,
-        statuses=ATTENDANCE_STATUSES,
-    )
+            form.attendance_date.data = date.fromisoformat(request.args.get('attendance_date', college_today().isoformat()))
+        except ValueError:
+            form.attendance_date.data = college_today()
+            flash('Invalid date. Showing today.', 'warning')
+    subject = get_faculty_subject(faculty, form.subject_id.data) if form.subject_id.data else None
+    selected_date = form.attendance_date.data or college_today()
+    slots = slots_for_subject(subject, selected_date) if subject else []
+    has_schedule = bool(subject and TimetableSlot.query.filter_by(subject_id=subject.id).first())
+    form.session_id.choices = [(slot.id, f'Session {slot.session_number}: {slot.starts_at:%H:%M}-{slot.ends_at:%H:%M} | {slot.session_type} | Batch {slot.batch}') for slot in slots]
+    if not slots:
+        form.session_id.choices = [(0, 'No class scheduled on this date' if has_schedule else 'Session 1 - Theory')]
+    if request.method == 'GET':
+        requested_session = request.args.get('session_id', type=int)
+        form.session_id.data = requested_session if requested_session in {choice[0] for choice in form.session_id.choices} else form.session_id.choices[0][0]
+    slot = next((item for item in slots if item.id == form.session_id.data), None)
+    scheduled = not has_schedule or slot is not None
+    students_list = students_for_subject(subject) if subject and scheduled else []
+    if slot and slot.batch != 'All':
+        students_list = [student for student in students_list if (student.practical_batch or 'A') == slot.batch]
+    if form.validate_on_submit():
+        if not subject or not scheduled:
+            flash('Choose a subject and one of its scheduled sessions.', 'danger')
+        else:
+            rows = [{'student_id': student.id, 'status': request.form.get(f'status_{student.id}', 'Absent'), 'remarks': request.form.get(f'remarks_{student.id}', '').strip() or None} for student in students_list]
+            try:
+                created, updated = save_bulk_attendance(faculty, subject, selected_date, rows, slot=slot)
+                db.session.commit()
+                flash(f'Attendance saved. Created: {created}, Updated: {updated}.', 'success')
+                return redirect(url_for('faculty.attendance', subject_id=subject.id, attendance_date=selected_date.isoformat(), session_id=slot.id if slot else 0))
+            except ValueError as error:
+                db.session.rollback()
+                flash(str(error), 'danger')
+            except SQLAlchemyError:
+                db.session.rollback()
+                flash('Database error while saving attendance. Please try again.', 'danger')
+    existing = attendance_map(subject.id, selected_date, slot.session_number if slot else 1) if subject and scheduled else {}
+    return render_template('faculty/attendance.html', form=form, subject=subject, students=students_list, existing=existing, statuses=ATTENDANCE_STATUSES, slot=slot, scheduled=scheduled)
 
 
 @faculty_bp.get("/attendance/report")

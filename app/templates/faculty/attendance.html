@@ -7,7 +7,7 @@
     <div>
         <p class="section-label mb-1">Attendance Module</p>
         <h1>Mark Attendance</h1>
-        <p>Select subject and date, then save attendance for all assigned students.</p>
+        <p>Select the subject, date and class session. Practical batches are shown separately.</p>
     </div>
     <a class="btn btn-outline-secondary" href="{{ url_for('faculty.attendance_report') }}">
         <i class="bi bi-file-earmark-bar-graph"></i> Report
@@ -24,6 +24,7 @@
             {{ form.attendance_date.label(class="form-label") }}
             {{ form.attendance_date(class="form-control") }}
         </div>
+        <div>{{ form.session_id.label(class="form-label") }}{{ form.session_id(class="form-select") }}</div>
         <div class="align-self-end">
             <button class="btn btn-outline-secondary w-100" type="submit">
                 <i class="bi bi-funnel"></i> Load
@@ -33,9 +34,10 @@
 </section>
 
 <section class="data-panel mt-3">
-    {% if subject %}
+    {% if subject and scheduled %}
     <form method="post" novalidate>
         {{ form.hidden_tag() }}
+        <input type="hidden" name="session_id" value="{{ form.session_id.data }}">
         <input type="hidden" name="subject_id" value="{{ form.subject_id.data }}">
         <input type="hidden" name="attendance_date" value="{{ form.attendance_date.data.isoformat() }}">
 
@@ -88,7 +90,7 @@
         </div>
     </form>
     {% else %}
-    <p class="text-secondary mb-0">No subject selected.</p>
+    <p class="text-secondary mb-0">No teaching session is scheduled for the selected subject and date. Choose another date and click Load.</p>
     {% endif %}
 </section>
 {% endblock %}

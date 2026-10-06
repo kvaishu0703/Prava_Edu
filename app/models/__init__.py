@@ -17,9 +17,11 @@ from app.models.curriculum import Curriculum, CurriculumSubject, SyllabusDocumen
 from app.models.campus_activity import CampusActivity, ActivityParticipation
 from app.models.record_import import RecordImport
 from app.models.registration import StudentRegistration
+from app.models.timetable import TimetableSlot
 
 __all__ = [
     "ActivityLog",
+    "TimetableSlot",
     "StudentRegistration",
     "Curriculum", "CurriculumSubject", "SyllabusDocument",
     "CampusActivity", "ActivityParticipation", "RecordImport",

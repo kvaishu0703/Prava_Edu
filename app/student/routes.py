@@ -105,10 +105,34 @@ def subjects():
 @student_bp.get("/attendance")
 @roles_required("student")
 def attendance():
-    """Show subject-wise attendance summary."""
+    """Show weekly, monthly, semester and daily attendance."""
     student = get_student_for_user(current_user)
-    rows = student_attendance_summary(student) if student else []
-    return render_template("student/attendance.html", student=student, rows=rows)
+    from app.services.attendance_summary import build_attendance_overview
+    from app.services.timetable import academic_year_for, college_today
+    year = request.args.get('year', type=int)
+    if year is None or not 2000 <= year <= 2100:
+        year = academic_year_for(college_today())
+    month = request.args.get('month', '')
+    import re
+    if not re.fullmatch(r'\d{4}-(0[1-9]|1[0-2])', month):
+        month = None
+    summary = build_attendance_overview(student, year, month) if student else None
+    return render_template("student/attendance_summary.html", student=student, summary=summary)
+
+
+@student_bp.get('/timetable')
+@roles_required('student')
+def timetable():
+    from app.services.timetable import academic_year_for, college_today, student_slots, timetable_days
+    import json
+    from pathlib import Path
+    student = get_student_for_user(current_user)
+    year = academic_year_for(college_today())
+    slots = student_slots(student, year) if student else []
+    reference = None
+    if student and student.course.code == 'BCA' and student.semester == 5:
+        reference = json.loads((Path(current_app.root_path) / 'data/ty_sem5_timetable.json').read_text(encoding='utf8'))
+    return render_template('student/timetable.html', student=student, days=timetable_days(slots), year=year, reference=reference)
 
 
 @student_bp.get("/marks")
